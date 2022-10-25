@@ -23,6 +23,7 @@ import {
     ImageListItem,
     Snackbar,
     Alert,
+    IconButton,
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
@@ -30,6 +31,8 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import categoryApi from "src/api/categoryApi";
+import productApi from "src/api/productApi";
+import tagApi from "src/api/tagApi";
 
 const preUrls = [
     {
@@ -46,56 +49,6 @@ const preUrls = [
     },
 ];
 
-const top100Films = [
-    { title: "The Shawshank Redemption", year: 1994 },
-    { title: "The Godfather", year: 1972 },
-    { title: "The Godfather: Part II", year: 1974 },
-    { title: "The Dark Knight", year: 2008 },
-    { title: "12 Angry Men", year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: "Pulp Fiction", year: 1994 },
-    {
-        title: "The Lord of the Rings: The Return of the King",
-        year: 2003,
-    },
-    { title: "The Good, the Bad and the Ugly", year: 1966 },
-    { title: "Fight Club", year: 1999 },
-    {
-        title: "The Lord of the Rings: The Fellowship of the Ring",
-        year: 2001,
-    },
-    {
-        title: "Star Wars: Episode V - The Empire Strikes Back",
-        year: 1980,
-    },
-    { title: "Forrest Gump", year: 1994 },
-    { title: "Inception", year: 2010 },
-    {
-        title: "The Lord of the Rings: The Two Towers",
-        year: 2002,
-    },
-    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { title: "Goodfellas", year: 1990 },
-    { title: "The Matrix", year: 1999 },
-    { title: "Seven Samurai", year: 1954 },
-    {
-        title: "Star Wars: Episode IV - A New Hope",
-        year: 1977,
-    },
-    { title: "City of God", year: 2002 },
-    { title: "Se7en", year: 1995 },
-    { title: "The Silence of the Lambs", year: 1991 },
-    { title: "It's a Wonderful Life", year: 1946 },
-    { title: "Life Is Beautiful", year: 1997 },
-    { title: "The Usual Suspects", year: 1995 },
-    { title: "Léon: The Professional", year: 1994 },
-    { title: "Spirited Away", year: 2001 },
-    { title: "Saving Private Ryan", year: 1998 },
-    { title: "Once Upon a Time in the West", year: 1968 },
-    { title: "American History X", year: 1998 },
-    { title: "Interstellar", year: 2014 },
-];
-
 const breadcrumbs = preUrls.map((pre, index) => (
     <Link key={index} underline="hover" color="inherit" href={pre.preUrl}>
         {pre.title}
@@ -103,17 +56,23 @@ const breadcrumbs = preUrls.map((pre, index) => (
 ));
 
 function CreateProduct() {
-    const editorRef = useRef();
+    const descriptionRef = useRef();
+    const detailRef = useRef();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     // data
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
     const [categorySelected, setCategorySelected] = useState("");
+    const [categoryList, setCategoryList] = useState([]);
+    const [tagList, setTagList] = useState([]);
     const [tags, setTags] = useState([]);
+    const [tagAdd, setTagAdd] = useState("");
+    const [tagAddErr, setTagAddErr] = useState("");
     const [selectedImages, setSelectedImages] = useState([]);
     const [uploadImages, setUploadImages] = useState([]);
     const [isUpload, setIsUpload] = useState(false);
+    const [imageUploadUrl, setImageUploadUrl] = useState([]);
     // err
     const [detailContentErr, setDetailContentErr] = useState("");
     const [descriptionContentErr, setDescriptionContentErr] = useState("");
@@ -121,30 +80,45 @@ function CreateProduct() {
     const [codeErr, setCodeErr] = useState("");
     const [priceErr, setPriceErr] = useState("");
     const [categoryErr, setCategoryErr] = useState("");
+    const [textNotify, setTextNotify] = useState({});
 
     useEffect(() => {
-        const getCategories = async () => {
+        const handleLoaderFirst = async () => {
             try {
-                const res = await categoryApi.getAll();
+                const getAllCategories = await categoryApi.getAll();
+                const getAllTags = await tagApi.getAll();
 
-                console.log(res);
+                if (getAllCategories.message !== "FAIL") {
+                    setCategoryList(getAllCategories.categories);
+                }
+
+                if (getAllTags.message !== "FAIL") {
+                    setTagList(getAllTags.tags);
+                }
             } catch (error) {
+                alert(error);
                 console.log(error);
             }
         };
-        getCategories();
+        handleLoaderFirst();
     }, [navigate]);
     //  Handle show image UI
     const handleSelectImage = (e) => {
         const selectedFiles = e.target.files;
         const selectedFilesArray = Array.from(selectedFiles);
-        const arrayCurrent = uploadImages;
-        arrayCurrent.push(...selectedFilesArray);
+        const arrayRequest = uploadImages;
 
-        setUploadImages(arrayCurrent);
+        // Convert list file upload
+        const arrConvert = [];
+        selectedFilesArray.forEach((file) => {
+            arrConvert.push({ key: Math.random(), file });
+        });
+        arrayRequest.push(...arrConvert);
 
-        const imageArray = arrayCurrent.map((img, index) => {
-            return { name: img.name, url: URL.createObjectURL(img) };
+        setUploadImages(arrayRequest);
+
+        const imageArray = arrayRequest.map((img) => {
+            return { key: img.key, url: URL.createObjectURL(img.file) };
         });
 
         setSelectedImages(imageArray);
@@ -154,37 +128,43 @@ function CreateProduct() {
     // Handle upload image
     const handleUploadImage = async (e) => {
         setLoading(true);
-
+        const imageUrl = [];
         const data = new FormData();
 
         for (const file of uploadImages) {
-            data.append("file", file);
+            data.append("file", file.file);
             data.append("upload_preset", "iwn62ygb");
             try {
                 const res = await axios.post(
                     "https://api.cloudinary.com/v1_1/diitw1fjj/image/upload",
                     data
                 );
-                console.log(res);
+                imageUrl.push(res.data.secure_url);
+                setTextNotify({
+                    backgroundColor: "#28A745",
+                    text: "Successfully!!! Tải ảnh thành công",
+                });
+                setIsUpload(true);
             } catch (error) {
                 console.log(error);
                 setLoading(false);
+                setIsUpload(true);
+                setTextNotify({
+                    backgroundColor: "error",
+                    text: "Failed! Tải ảnh thất bại",
+                });
             }
         }
+        setImageUploadUrl(imageUrl);
         setLoading(false);
         setIsUpload(true);
     };
 
-    console.log(uploadImages);
-
     const handleRemoveImageUpload = (image) => {
-        setSelectedImages(selectedImages.filter((e) => e.name !== image.name));
-        for (const item of uploadImages) {
-            const tmp = URL.createObjectURL(item);
-        }
-        setUploadImages(uploadImages.filter((e) => e.name !== image.name));
+        setSelectedImages(selectedImages.filter((e) => e.key !== image.key));
+
+        setUploadImages(uploadImages.filter((e) => e.key !== image.key));
     };
-    // setUploadImages(uploadImages.filter((e) => e !== image));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -194,7 +174,7 @@ function CreateProduct() {
         setDescriptionContentErr("");
         setPriceErr("");
         setCategoryErr("");
-
+        setLoading(true);
         const data = new FormData(e.target);
 
         const name = data.get("name");
@@ -232,28 +212,82 @@ function CreateProduct() {
         }
 
         if (categorySelected === "") {
+            err = true;
             setCategoryErr(`Chọn loại cho sản phẩm`);
         }
-
-        if (!isUpload) {
+        console.log(imageUploadUrl);
+        if (imageUploadUrl.length <= 0) {
             err = true;
-            setLoading(true);
+            setIsUpload(true);
+            setTextNotify({
+                backgroundColor: "#FFC107",
+                text: "Warning! Chú ý bạn chưa tải ảnh lên could",
+            });
         }
 
-        setLoading(true);
+        setLoading(false);
 
         if (err) return;
 
-        const productItem = {
-            name,
-            descriptionContent,
-            detailContent,
-            inStock,
-            categorySelected,
-            tags,
-        };
+        setLoading(true);
 
-        console.log(productItem);
+        try {
+            const res = await productApi.create({
+                name,
+                descriptionContent,
+                detailContent,
+                inStock,
+                categorySelected,
+                tags,
+                imageUploadUrl,
+                price,
+            });
+            if (res) {
+                navigate("/dashboard/products/list");
+            }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+        }
+    };
+
+    const handleCreateTag = async () => {
+        setLoading(true);
+        setTagAddErr("");
+        try {
+            if (tagAdd === "") {
+                setLoading(false);
+                return;
+            }
+            const res = await tagApi.create({ name: tagAdd });
+
+            if (res.message !== "FAIL") {
+                tagList.push(res.tag);
+                tags.push(res.tag);
+                setTagAdd("");
+            }
+            setLoading(false);
+        } catch (error) {
+            setTagAddErr(`Thẻ này đã tồn tại`);
+            setLoading(false);
+        }
+    };
+
+    const handleChangeTagAdd = (e) => {
+        const format = /^[0-9a-zA-Z''-]{0,40}$/;
+
+        const value = e.target.value;
+
+        if (format.test(value)) {
+            setTagAddErr("");
+            setTagAdd(value);
+            return true;
+        } else {
+            console.log(false);
+            setTagAddErr("Không được nhập kí tự đặc biệt");
+            return false;
+        }
     };
 
     return (
@@ -300,18 +334,17 @@ function CreateProduct() {
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
                                         onInit={(e, editor) =>
-                                            (editorRef.current = editor)
+                                            (descriptionRef.current = editor)
                                         }
                                         init={{
+                                            selector: "textarea",
                                             menubar: false,
                                             max_height: 200,
-                                            selector: "textarea",
-                                            a11y_advanced_options: true,
-                                            branding: false,
+                                            plugins: "link image code",
                                         }}
                                         onChange={(e) =>
                                             setDescriptionContent(
-                                                editorRef.current.getContent()
+                                                descriptionRef.current.getContent()
                                             )
                                         }
                                     />
@@ -338,18 +371,18 @@ function CreateProduct() {
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
                                         onInit={(e, editor) =>
-                                            (editorRef.current = editor)
+                                            (detailRef.current = editor)
                                         }
                                         init={{
-                                            menubar: false,
-
                                             selector: "textarea",
-                                            a11y_advanced_options: true,
-                                            branding: false,
+                                            menubar: false,
+                                            plugins: "link image code",
+                                            toolbar:
+                                                "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code",
                                         }}
                                         onChange={(e) =>
                                             setDetailContent(
-                                                editorRef.current.getContent()
+                                                detailRef.current.getContent()
                                             )
                                         }
                                     />
@@ -425,36 +458,34 @@ function CreateProduct() {
                                     </Box>
                                     <ImageList cols={5}>
                                         {!!selectedImages &&
-                                            selectedImages.map(
-                                                (image, index) => (
-                                                    <Box key={index}>
-                                                        <ImageListItem
-                                                            sx={{
-                                                                margin: "12px",
+                                            selectedImages.map((image) => (
+                                                <Box key={image.key}>
+                                                    <ImageListItem
+                                                        sx={{
+                                                            margin: "12px",
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={image.url}
+                                                            alt={image}
+                                                            style={{
+                                                                height: "100px",
+                                                                objectFit:
+                                                                    "contain",
                                                             }}
+                                                        />
+                                                        <Button
+                                                            onClick={() =>
+                                                                handleRemoveImageUpload(
+                                                                    image
+                                                                )
+                                                            }
                                                         >
-                                                            <img
-                                                                src={image.url}
-                                                                alt={image}
-                                                                style={{
-                                                                    height: "100px",
-                                                                    objectFit:
-                                                                        "contain",
-                                                                }}
-                                                            />
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleRemoveImageUpload(
-                                                                        image
-                                                                    )
-                                                                }
-                                                            >
-                                                                Xóa bỏ
-                                                            </Button>
-                                                        </ImageListItem>
-                                                    </Box>
-                                                )
-                                            )}
+                                                            Xóa bỏ
+                                                        </Button>
+                                                    </ImageListItem>
+                                                </Box>
+                                            ))}
                                     </ImageList>
                                     {selectedImages.length > 0 && (
                                         <Box
@@ -522,7 +553,6 @@ function CreateProduct() {
                                 >
                                     <InputLabel>Loại sản phẩm</InputLabel>
                                     <Select
-                                        defaultValue={categorySelected}
                                         value={categorySelected}
                                         label="Loại sản phẩm"
                                         fullWidth
@@ -531,7 +561,14 @@ function CreateProduct() {
                                             setCategorySelected(e.target.value)
                                         }
                                     >
-                                        <MenuItem value={"123"}>123</MenuItem>
+                                        {categoryList.map((category) => (
+                                            <MenuItem
+                                                value={category._id}
+                                                key={category._id}
+                                            >
+                                                {category.name}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                     {!!categoryErr && (
                                         <Typography
@@ -547,10 +584,10 @@ function CreateProduct() {
                                 <Autocomplete
                                     fullWidth
                                     multiple
-                                    id="checkboxes-tags-demo"
-                                    options={top100Films}
+                                    id="checkboxes-tags"
+                                    options={tagList}
                                     disableCloseOnSelect
-                                    getOptionLabel={(option) => option.title}
+                                    getOptionLabel={(option) => option.name}
                                     onChange={(e, value) => setTags(value)}
                                     renderOption={(
                                         props,
@@ -568,17 +605,49 @@ function CreateProduct() {
                                                 style={{ marginRight: 8 }}
                                                 checked={selected}
                                             />
-                                            {option.title}
+                                            {option.name}
                                         </li>
                                     )}
                                     renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Tags"
-                                            placeholder="Favorites"
-                                        />
+                                        <TextField {...params} label="Tags" />
                                     )}
                                 />
+                                <Typography
+                                    variant="body2"
+                                    component={"h4"}
+                                    color={"primary"}
+                                    fontSize={"16px"}
+                                    mt={2}
+                                >
+                                    Thêm mới thẻ tag
+                                </Typography>
+                                <Box
+                                    noValidate
+                                    display={"flex"}
+                                    alignItems="center"
+                                >
+                                    <TextField
+                                        label="Tags"
+                                        name="tag"
+                                        id="tag"
+                                        margin="normal"
+                                        helperText={tagAddErr}
+                                        error={tagAddErr !== ""}
+                                        value={tagAdd}
+                                        fullWidth
+                                        onChange={handleChangeTagAdd}
+                                    />
+                                    <IconButton
+                                        color="primary"
+                                        onClick={handleCreateTag}
+                                        sx={{
+                                            margin: "12px 0",
+                                            border: "1px solid primary",
+                                        }}
+                                    >
+                                        <Icon icon="carbon:add" />
+                                    </IconButton>
+                                </Box>
                             </Box>
                         </Paper>
 
@@ -615,9 +684,10 @@ function CreateProduct() {
                     horizontal: "right",
                 }}
                 autoHideDuration={3000}
+                onClose={() => setIsUpload(false)}
             >
-                <Alert sx={{ backgroundColor: "#f0bd71" }}>
-                    Đã tải ảnh lên could
+                <Alert sx={{ backgroundColor: textNotify.backgroundColor }}>
+                    {textNotify.text}
                 </Alert>
             </Snackbar>
         </Fragment>
