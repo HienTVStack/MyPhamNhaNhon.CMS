@@ -74,7 +74,6 @@ export default function AccountPopover() {
             >
                 <Avatar src={account.photoURL} alt="photoURL" />
             </IconButton>
-
             <MenuPopover
                 open={Boolean(open)}
                 anchorEl={open}

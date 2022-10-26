@@ -19,18 +19,20 @@ import {
     TablePagination,
 } from "@mui/material";
 // components
-import Page from "../components/Page";
-import Label from "../components/Label";
-import Scrollbar from "../components/Scrollbar";
-import Iconify from "../components/Iconify";
-import SearchNotFound from "../components/SearchNotFound";
+import Page from "src/components/Page";
+import Label from "src/components/Label";
+import Scrollbar from "src/components/Scrollbar";
+import Iconify from "src/components/Iconify";
+import SearchNotFound from "src/components/SearchNotFound";
 import {
     UserListHead,
     UserListToolbar,
     UserMoreMenu,
-} from "../sections/@dashboard/user";
+} from "src/sections/@dashboard/user";
 // mock
-import USERLIST from "../_mock/user";
+import { useEffect } from "react";
+import productApi from "src/api/productApi";
+import { NumericFormat } from "react-number-format";
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +41,7 @@ const TABLE_HEAD = [
     { id: "Ngày tạo", label: "Ngày tạo", alignRight: false },
     { id: "Trạng thái", label: "Trạng thái", alignRight: false },
     { id: "Giá", label: "Giá", alignRight: false },
-    { id: "status", label: "Status", alignRight: false },
+    // { id: "status", label: "Status", alignRight: false },
     { id: "" },
 ];
 
@@ -78,7 +80,9 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
+export default function ProductList() {
+    const [loading, setLoading] = useState(false);
+
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState("asc");
@@ -91,6 +95,25 @@ export default function User() {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const [productList, setProductList] = useState([]);
+
+    useEffect(() => {
+        setLoading(true);
+        const getAllProduct = async () => {
+            try {
+                const res = await productApi.getAll();
+
+                if (res.message === "OK") {
+                    setProductList(res.products);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getAllProduct();
+    }, []);
+
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === "asc";
         setOrder(isAsc ? "desc" : "asc");
@@ -99,7 +122,7 @@ export default function User() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
+            const newSelecteds = productList.map((n) => n.name);
             setSelected(newSelecteds);
             return;
         }
@@ -138,10 +161,12 @@ export default function User() {
     };
 
     const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+        page > 0
+            ? Math.max(0, (1 + page) * rowsPerPage - productList.length)
+            : 0;
 
     const filteredUsers = applySortFilter(
-        USERLIST,
+        productList,
         getComparator(order, orderBy),
         filterName
     );
@@ -149,7 +174,7 @@ export default function User() {
     const isUserNotFound = filteredUsers.length === 0;
 
     return (
-        <Page title="User">
+        <Page title="Product">
             <Container>
                 <Stack
                     direction="row"
@@ -158,12 +183,12 @@ export default function User() {
                     mb={5}
                 >
                     <Typography variant="h4" gutterBottom>
-                        Tài khoản
+                        Danh sách sản phẩm
                     </Typography>
                     <Button
                         variant="contained"
                         component={RouterLink}
-                        to="#"
+                        to="/dashboard/products/create"
                         startIcon={<Iconify icon="eva:plus-fill" />}
                     >
                         Thêm mới
@@ -184,7 +209,8 @@ export default function User() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
+                                    // rowCount={USERLIST.length}
+                                    rowCount={productList.length}
                                     numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
                                     onSelectAllClick={handleSelectAllClick}
@@ -199,11 +225,10 @@ export default function User() {
                                             const {
                                                 id,
                                                 name,
-                                                role,
-                                                status,
-                                                company,
-                                                avatarUrl,
-                                                isVerified,
+                                                createdAt,
+                                                image,
+                                                inStock,
+                                                price,
                                             } = row;
                                             const isItemSelected =
                                                 selected.indexOf(name) !== -1;
@@ -244,7 +269,7 @@ export default function User() {
                                                         >
                                                             <Avatar
                                                                 alt={name}
-                                                                src={avatarUrl}
+                                                                src={image}
                                                             />
                                                             <Typography
                                                                 variant="subtitle2"
@@ -255,30 +280,41 @@ export default function User() {
                                                         </Stack>
                                                     </TableCell>
                                                     <TableCell align="left">
-                                                        {company}
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {role}
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {isVerified
-                                                            ? "Yes"
-                                                            : "No"}
+                                                        {createdAt}
                                                     </TableCell>
                                                     <TableCell align="left">
                                                         <Label
                                                             variant="ghost"
                                                             color={
-                                                                (status ===
-                                                                    "banned" &&
-                                                                    "error") ||
-                                                                "success"
+                                                                inStock
+                                                                    ? "success"
+                                                                    : "error"
                                                             }
                                                         >
-                                                            {sentenceCase(
-                                                                status
-                                                            )}
+                                                            {inStock
+                                                                ? "Còn hàng"
+                                                                : "Hết hàng"}
                                                         </Label>
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        {/* {price}
+                                                         */}
+                                                        <NumericFormat
+                                                            value={price}
+                                                            displayType={"text"}
+                                                            thousandSeparator={
+                                                                true
+                                                            }
+                                                            suffix={" đ"}
+                                                            renderText={(
+                                                                value,
+                                                                props
+                                                            ) => (
+                                                                <div {...props}>
+                                                                    {value}
+                                                                </div>
+                                                            )}
+                                                        />
                                                     </TableCell>
 
                                                     <TableCell align="right">
@@ -318,7 +354,8 @@ export default function User() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
+                        // count={USERLIST.length}
+                        count={productList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

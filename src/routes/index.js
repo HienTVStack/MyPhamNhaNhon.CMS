@@ -11,6 +11,8 @@ import Register from "../pages/Register";
 import Products from "../pages/Products";
 import CreateProduct from "src/pages/Product/CreateProduct";
 import DashboardApp from "../pages/DashboardApp";
+import ProductList from "src/pages/Product/ProductList";
+import ProductEdit from "src/pages/Product/ProductEdit";
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +28,9 @@ export default function Router() {
                     path: "products",
                     children: [
                         { path: "create", element: <CreateProduct /> },
-                        { path: "list", element: <Products /> },
+                        { path: "e-list", element: <Products /> },
+                        { path: "list", element: <ProductList /> },
+                        { path: ":slug/edit", element: <ProductEdit /> },
                     ],
                 },
                 { path: "blog", element: <Blog /> },

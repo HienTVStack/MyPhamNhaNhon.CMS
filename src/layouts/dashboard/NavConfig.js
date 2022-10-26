@@ -17,16 +17,20 @@ const navConfig = [
         icon: getIcon("eva:shopping-bag-fill"),
         children: [
             {
-                title: "Danh sách sản phẩm",
+                title: "Danh sách",
                 path: "products/list",
             },
             {
-                title: "Tạo mới sản phẩm",
+                title: "Tạo mới",
                 path: "products/create",
             },
             {
-                title: "Cập nhật sản phẩm",
-                path: "products/:id/update",
+                title: "Chỉnh sửa",
+                path: "products/:slug/edit",
+            },
+            {
+                title: "Sản phẩm",
+                path: "products/:slug/detail",
             },
         ],
     },
