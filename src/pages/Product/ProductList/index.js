@@ -229,6 +229,7 @@ export default function ProductList() {
                                                 image,
                                                 inStock,
                                                 price,
+                                                slug,
                                             } = row;
                                             const isItemSelected =
                                                 selected.indexOf(name) !== -1;
@@ -280,7 +281,19 @@ export default function ProductList() {
                                                         </Stack>
                                                     </TableCell>
                                                     <TableCell align="left">
-                                                        {createdAt}
+                                                        {new Intl.DateTimeFormat(
+                                                            "en-US",
+                                                            {
+                                                                year: "numeric",
+                                                                month: "2-digit",
+                                                                day: "2-digit",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                                second: "2-digit",
+                                                            }
+                                                        ).format(
+                                                            new Date(createdAt)
+                                                        )}
                                                     </TableCell>
                                                     <TableCell align="left">
                                                         <Label
@@ -318,7 +331,9 @@ export default function ProductList() {
                                                     </TableCell>
 
                                                     <TableCell align="right">
-                                                        <UserMoreMenu />
+                                                        <UserMoreMenu
+                                                            slug={slug}
+                                                        />
                                                     </TableCell>
                                                 </TableRow>
                                             );

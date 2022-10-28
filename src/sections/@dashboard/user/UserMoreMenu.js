@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link, Link as RouterLink } from "react-router-dom";
 // material
 import {
     Menu,
@@ -13,7 +13,7 @@ import Iconify from "../../../components/Iconify";
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu() {
+export default function UserMoreMenu({ slug }) {
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -49,7 +49,7 @@ export default function UserMoreMenu() {
 
                 <MenuItem
                     component={RouterLink}
-                    to="#"
+                    to={`/dashboard/products/${slug}/edit`}
                     sx={{ color: "text.secondary" }}
                 >
                     <ListItemIcon>

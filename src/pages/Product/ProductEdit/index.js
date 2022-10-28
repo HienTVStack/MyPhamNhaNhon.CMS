@@ -24,16 +24,12 @@ import {
     Snackbar,
     Alert,
     IconButton,
+    Modal,
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
 import { Fragment, useEffect, useRef, useState } from "react";
-import {
-    useLocation,
-    useNavigate,
-    useParams,
-    useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import categoryApi from "src/api/categoryApi";
 import productApi from "src/api/productApi";
@@ -59,6 +55,19 @@ const breadcrumbs = preUrls.map((pre, index) => (
         {pre.title}
     </Link>
 ));
+
+const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    height: "500px",
+};
 
 function ProductEdit() {
     const descriptionRef = useRef();
@@ -103,7 +112,7 @@ function ProductEdit() {
                 setProductPrice(productItem.price);
                 setCategorySelected(productItem.category);
                 setTags(productItem.tags);
-                // setSelectedImages(productItem.imageList);
+                setSelectedImages(productItem.imageList);
             }
         } catch (error) {
             console.log(error);
@@ -134,25 +143,27 @@ function ProductEdit() {
     //  Handle show image UI
     const handleSelectImage = (e) => {
         const selectedFiles = e.target.files;
-        const selectedFilesArray = Array.from(selectedFiles);
-        const arrayRequest = uploadImages;
+        console.log(selectedFiles);
+        console.log(selectedImages);
+        // const selectedFilesArray = Array.from(selectedFiles);
+        // const arrayRequest = uploadImages;
 
-        // Convert list file upload
-        const arrConvert = [];
-        selectedFilesArray.forEach((file) => {
-            arrConvert.push({ key: Math.random(), file });
-        });
-        arrayRequest.push(...arrConvert);
+        // // Convert list file upload
+        // const arrConvert = [];
+        // selectedFilesArray.forEach((file) => {
+        //     arrConvert.push({ key: Math.random(), file });
+        // });
+        // arrayRequest.push(...arrConvert);
 
-        setUploadImages(arrayRequest);
+        // setUploadImages(arrayRequest);
 
-        const imageArray = arrayRequest.map((img) => {
-            return { key: img.key, url: URL.createObjectURL(img.file) };
-        });
+        // const imageArray = arrayRequest.map((img) => {
+        //     return { key: img.key, url: URL.createObjectURL(img.file) };
+        // });
 
-        setSelectedImages(imageArray);
+        // setSelectedImages(imageArray);
 
-        setIsUpload(false);
+        // setIsUpload(false);
     };
     // Handle upload image
     const handleUploadImage = async (e) => {
@@ -449,6 +460,7 @@ function ProductEdit() {
                                             type="file"
                                             multiple
                                             onChange={handleSelectImage}
+                                            disabled={true}
                                         />
                                         <Box
                                             display="flex"
@@ -494,7 +506,7 @@ function ProductEdit() {
                                     <ImageList cols={5}>
                                         {!!selectedImages &&
                                             selectedImages.map((image) => (
-                                                <Box key={image.key}>
+                                                <Box key={image}>
                                                     <ImageListItem
                                                         sx={{
                                                             margin: "12px",
@@ -730,6 +742,23 @@ function ProductEdit() {
                     {textNotify.text}
                 </Alert>
             </Snackbar>
+            {/* Modal */}
+            <Modal
+                hideBackdrop
+                open={true}
+                // onClose={handleClose}
+                aria-labelledby="child-modal-title"
+                aria-describedby="child-modal-description"
+            >
+                <Box sx={{ ...style, width: 1200, maxWidth: "100%" }}>
+                    <h2 id="child-modal-title">Imag uploads</h2>
+                    {/* <p id="child-modal-description">
+                        Lorem ipsum, dolor sit amet consectetur adipisicing
+                        elit.
+                    </p> */}
+                    <Button>Close Child Modal</Button>
+                </Box>
+            </Modal>
         </Fragment>
     );
 }
