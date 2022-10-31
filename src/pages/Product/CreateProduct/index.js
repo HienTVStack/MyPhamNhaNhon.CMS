@@ -162,7 +162,6 @@ function CreateProduct() {
 
     const handleRemoveImageUpload = (image) => {
         setSelectedImages(selectedImages.filter((e) => e.key !== image.key));
-
         setUploadImages(uploadImages.filter((e) => e.key !== image.key));
     };
 

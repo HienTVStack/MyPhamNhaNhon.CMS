@@ -1,3 +1,4 @@
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
     Box,
     Breadcrumbs,
@@ -25,15 +26,17 @@ import {
     Alert,
     IconButton,
     Modal,
+    Tab,
 } from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { useNavigate, useParams } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import categoryApi from "src/api/categoryApi";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
+import imageApi from "src/api/imageApi";
 
 const preUrls = [
     {
@@ -61,12 +64,21 @@ const style = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
+    width: 1200,
+    maxWidth: "100%",
+    height: "600px",
+    backgroundColor: "#fff",
+    boxShadow: 2,
     p: 4,
-    height: "500px",
+    overflowY: "scroll",
+    borderRadius: "20px",
+};
+
+const styleChecked = {
+    position: "absolute",
+    top: "-5px",
+    right: "-5px",
+    border: "none",
 };
 
 function ProductEdit() {
@@ -74,6 +86,9 @@ function ProductEdit() {
     const detailRef = useRef();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [tabValue, setTableValue] = useState("1");
+    const [isShowModal, setIsShowModal] = useState(false);
+
     // data
     const [productName, setProductName] = useState("");
     const [descriptionContent, setDescriptionContent] = useState("");
@@ -85,8 +100,8 @@ function ProductEdit() {
     const [tags, setTags] = useState([]);
     const [tagAdd, setTagAdd] = useState("");
     const [tagAddErr, setTagAddErr] = useState("");
+    const [imageList, setImageList] = useState([]);
     const [selectedImages, setSelectedImages] = useState([]);
-    const [uploadImages, setUploadImages] = useState([]);
     const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
     // err
@@ -118,9 +133,20 @@ function ProductEdit() {
             console.log(error);
         }
     };
+    const handleImageLoader = async () => {
+        try {
+            const res = await imageApi.getAll();
+            if (res.message === "OK") {
+                setImageList(res.images);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         handleProductLoader();
+        handleImageLoader();
         const handleLoaderFirst = async () => {
             try {
                 const getAllCategories = await categoryApi.getAll();
@@ -140,70 +166,10 @@ function ProductEdit() {
         handleLoaderFirst();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
-    //  Handle show image UI
-    const handleSelectImage = (e) => {
-        const selectedFiles = e.target.files;
-        console.log(selectedFiles);
-        console.log(selectedImages);
-        // const selectedFilesArray = Array.from(selectedFiles);
-        // const arrayRequest = uploadImages;
 
-        // // Convert list file upload
-        // const arrConvert = [];
-        // selectedFilesArray.forEach((file) => {
-        //     arrConvert.push({ key: Math.random(), file });
-        // });
-        // arrayRequest.push(...arrConvert);
-
-        // setUploadImages(arrayRequest);
-
-        // const imageArray = arrayRequest.map((img) => {
-        //     return { key: img.key, url: URL.createObjectURL(img.file) };
-        // });
-
-        // setSelectedImages(imageArray);
-
-        // setIsUpload(false);
-    };
-    // Handle upload image
-    const handleUploadImage = async (e) => {
-        setLoading(true);
-        const imageUrl = [];
-        const data = new FormData();
-
-        for (const file of uploadImages) {
-            data.append("file", file.file);
-            data.append("upload_preset", "iwn62ygb");
-            try {
-                const res = await axios.post(
-                    "https://api.cloudinary.com/v1_1/diitw1fjj/image/upload",
-                    data
-                );
-                imageUrl.push(res.data.secure_url);
-                setTextNotify({
-                    backgroundColor: "#28A745",
-                    text: "Successfully!!! Tải ảnh thành công",
-                });
-                setIsUpload(true);
-            } catch (error) {
-                console.log(error);
-                setLoading(false);
-                setIsUpload(true);
-                setTextNotify({
-                    backgroundColor: "error",
-                    text: "Failed! Tải ảnh thất bại",
-                });
-            }
-        }
-        setImageUploadUrl(imageUrl);
-        setLoading(false);
-        setIsUpload(true);
-    };
-
-    const handleRemoveImageUpload = (image) => {
-        setSelectedImages(selectedImages.filter((e) => e.key !== image.key));
-
-        setUploadImages(uploadImages.filter((e) => e.key !== image.key));
+    // Handle change action tab
+    const handleChangeTabModal = (e, newValue) => {
+        setTableValue(newValue);
     };
 
     const handleSubmit = async (e) => {
@@ -255,15 +221,6 @@ function ProductEdit() {
             err = true;
             setCategoryErr(`Chọn loại cho sản phẩm`);
         }
-        console.log(imageUploadUrl);
-        if (imageUploadUrl.length <= 0) {
-            err = true;
-            setIsUpload(true);
-            setTextNotify({
-                backgroundColor: "#FFC107",
-                text: "Warning! Chú ý bạn chưa tải ảnh lên could",
-            });
-        }
 
         setLoading(false);
 
@@ -279,7 +236,6 @@ function ProductEdit() {
                 inStock,
                 categorySelected,
                 tags,
-                imageUploadUrl,
                 price,
             });
             if (res) {
@@ -328,6 +284,36 @@ function ProductEdit() {
             setTagAddErr("Không được nhập kí tự đặc biệt");
             return false;
         }
+    };
+
+    const handleRemoveImage = (index) => {};
+
+    const handleSelectImageModal = (checked, index, imageUrl) => {
+        if (checked) {
+            imageUploadUrl.push({ key: index, imageUrl });
+        } else {
+            const newArray = imageUploadUrl.filter((img) => img.key !== index);
+            setImageUploadUrl(newArray);
+        }
+    };
+
+    const handleInsertImage = async () => {
+        imageUploadUrl.map((img) => selectedImages.push(img.imageUrl));
+        setLoading(true);
+        try {
+            const res = await productApi.updateImage({
+                slug,
+                imageList: selectedImages,
+            });
+
+            if (res.message === "OK") {
+                setTextNotify({ text: "Cập nhật ảnh thành công" });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setIsShowModal(false);
+        setLoading(false);
     };
 
     return (
@@ -448,91 +434,38 @@ function ProductEdit() {
                                     <FormLabel htmlFor="images">
                                         + Add image
                                     </FormLabel>
-                                    <Box
-                                        fullWidth
-                                        aria-label="upload picture"
-                                        component="label"
-                                        sx={{ cursor: "pointer" }}
-                                    >
-                                        <input
-                                            hidden
-                                            accept="image/*"
-                                            type="file"
-                                            multiple
-                                            onChange={handleSelectImage}
-                                            disabled={true}
-                                        />
-                                        <Box
-                                            display="flex"
-                                            alignItems="center"
-                                            justifyContent={"center"}
-                                            sx={{
-                                                height: "100%",
-                                                backgroundColor:
-                                                    "rgb(244, 246, 248)",
-                                                borderRadius: "12px",
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    fontSize: "70px",
-                                                    color: "#F0BD71",
-                                                    margin: "0 30px",
-                                                }}
-                                            >
-                                                <Icon icon="akar-icons:cloud-upload" />
-                                            </Box>
-                                            <Stack sx={{ margin: "0 20px" }}>
-                                                <Typography
-                                                    variant="body2"
-                                                    color="primary"
-                                                    fontSize="20px"
-                                                    component={"h5"}
-                                                    gutterBottom
-                                                >
-                                                    Kéo hoặc chọn tệp
-                                                </Typography>
-                                                <Typography
-                                                    variant="body2"
-                                                    color="primary"
-                                                    fontSize="14px"
-                                                >
-                                                    Thả tệp vào đây hoặc nhấp
-                                                    vào browser máy của bạn
-                                                </Typography>
-                                            </Stack>
-                                        </Box>
-                                    </Box>
                                     <ImageList cols={5}>
                                         {!!selectedImages &&
-                                            selectedImages.map((image) => (
-                                                <Box key={image}>
-                                                    <ImageListItem
-                                                        sx={{
-                                                            margin: "12px",
-                                                        }}
-                                                    >
-                                                        <img
-                                                            src={image}
-                                                            alt={image}
-                                                            style={{
-                                                                height: "100px",
-                                                                objectFit:
-                                                                    "contain",
+                                            selectedImages.map(
+                                                (image, index) => (
+                                                    <Box key={index}>
+                                                        <ImageListItem
+                                                            sx={{
+                                                                margin: "12px",
                                                             }}
-                                                        />
-                                                        <Button
-                                                            onClick={() =>
-                                                                handleRemoveImageUpload(
-                                                                    image
-                                                                )
-                                                            }
                                                         >
-                                                            Xóa bỏ
-                                                        </Button>
-                                                    </ImageListItem>
-                                                </Box>
-                                            ))}
+                                                            <img
+                                                                src={image}
+                                                                alt={""}
+                                                                style={{
+                                                                    height: "100px",
+                                                                    objectFit:
+                                                                        "contain",
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                onClick={() =>
+                                                                    handleRemoveImage(
+                                                                        index
+                                                                    )
+                                                                }
+                                                            >
+                                                                Xóa bỏ
+                                                            </Button>
+                                                        </ImageListItem>
+                                                    </Box>
+                                                )
+                                            )}
                                     </ImageList>
                                     {selectedImages.length > 0 && (
                                         <Box
@@ -551,9 +484,11 @@ function ProductEdit() {
                                             <Button
                                                 variant="contained"
                                                 sx={{ marginLeft: "16px" }}
-                                                onClick={handleUploadImage}
+                                                onClick={() =>
+                                                    setIsShowModal(true)
+                                                }
                                             >
-                                                Upload image
+                                                Tải thêm ảnh
                                             </Button>
                                         </Box>
                                     )}
@@ -639,7 +574,6 @@ function ProductEdit() {
                                     options={tagList}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option.name}
-                                    // value={tags}
                                     onChange={(e, value) => setTags(value)}
                                     renderOption={(
                                         props,
@@ -742,21 +676,174 @@ function ProductEdit() {
                     {textNotify.text}
                 </Alert>
             </Snackbar>
-            {/* Modal */}
             <Modal
-                hideBackdrop
-                open={true}
-                // onClose={handleClose}
-                aria-labelledby="child-modal-title"
-                aria-describedby="child-modal-description"
+                open={isShowModal}
+                disableAutoFocus
+                disableEnforceFocus
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                onClose={() => setIsShowModal(false)}
             >
-                <Box sx={{ ...style, width: 1200, maxWidth: "100%" }}>
-                    <h2 id="child-modal-title">Imag uploads</h2>
-                    {/* <p id="child-modal-description">
-                        Lorem ipsum, dolor sit amet consectetur adipisicing
-                        elit.
-                    </p> */}
-                    <Button>Close Child Modal</Button>
+                <Box sx={{ ...style }}>
+                    <Typography
+                        variant="body2"
+                        component="h2"
+                        fontSize={"30px"}
+                        fontWeight={700}
+                    >
+                        Insert Media
+                    </Typography>
+                    <Box sx={{ width: "100%" }}>
+                        <TabContext value={tabValue}>
+                            <Box
+                                sx={{ borderBottom: 1, borderColor: "divider" }}
+                            >
+                                <TabList
+                                    onChange={handleChangeTabModal}
+                                    aria-label="lab API tabs example"
+                                >
+                                    <Tab label="Tải ảnh lên" value="1" />
+                                    <Tab label="Thư viện ảnh" value="2" />
+                                    <Tab label="Item Three" value="3" />
+                                </TabList>
+                            </Box>
+                            <TabPanel value="1">
+                                <Box
+                                    display={"flex"}
+                                    alignItems={"center"}
+                                    justifyContent={"center"}
+                                    flexDirection={"column"}
+                                >
+                                    <Typography variant="h3" fontSize={"20px"}>
+                                        Thả tệp để tải lên
+                                    </Typography>
+                                    <Typography
+                                        fontSize={"14px"}
+                                        color={"#ccc"}
+                                    >
+                                        hoặc
+                                    </Typography>
+                                    <Box component="label" mt={2}>
+                                        <input
+                                            hidden
+                                            multiple
+                                            type="file"
+                                            accept="image/*"
+                                        />
+                                        <Button
+                                            variant="outlined"
+                                            component={"p"}
+                                            size="large"
+                                        >
+                                            Chọn tệp
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </TabPanel>
+                            <TabPanel value="2">
+                                <Grid container>
+                                    <Grid item sm={12} md={12} lg={9} xs={9}>
+                                        <ImageList cols={5}>
+                                            {selectedImages.map(
+                                                (image, index) => (
+                                                    <Box key={index}>
+                                                        <ImageListItem
+                                                            sx={{
+                                                                position:
+                                                                    "relative",
+                                                                margin: "12px",
+                                                                border: "1px solid #ccc",
+                                                                borderRadius:
+                                                                    "12px",
+                                                            }}
+                                                        >
+                                                            <Checkbox
+                                                                defaultChecked
+                                                                disabled
+                                                                id={`checkboxImageSelect${index}`}
+                                                                sx={{
+                                                                    ...styleChecked,
+                                                                }}
+                                                            />
+                                                            <label
+                                                                htmlFor={`checkboxImageSelect${index}`}
+                                                            >
+                                                                <img
+                                                                    src={image}
+                                                                    alt={""}
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                />
+                                                            </label>
+                                                        </ImageListItem>
+                                                    </Box>
+                                                )
+                                            )}
+                                            {!!imageList &&
+                                                imageList.map(
+                                                    (image, index) => (
+                                                        <Box key={index}>
+                                                            <ImageListItem
+                                                                sx={{
+                                                                    position:
+                                                                        "relative",
+                                                                    margin: "12px",
+                                                                    border: "1px solid #ccc",
+                                                                    borderRadius:
+                                                                        "12px",
+                                                                }}
+                                                            >
+                                                                <Checkbox
+                                                                    onChange={(
+                                                                        e
+                                                                    ) => {
+                                                                        const checked =
+                                                                            e
+                                                                                .target
+                                                                                .checked;
+                                                                        handleSelectImageModal(
+                                                                            checked,
+                                                                            index,
+                                                                            image.fileUrl
+                                                                        );
+                                                                    }}
+                                                                    id={`checkboxImage${index}`}
+                                                                    sx={{
+                                                                        ...styleChecked,
+                                                                    }}
+                                                                />
+                                                                <label
+                                                                    htmlFor={`checkboxImage${index}`}
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            image.fileUrl
+                                                                        }
+                                                                        alt={
+                                                                            image.caption
+                                                                        }
+                                                                        style={{
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </label>
+                                                            </ImageListItem>
+                                                        </Box>
+                                                    )
+                                                )}
+                                        </ImageList>
+                                    </Grid>
+                                    <Grid item sm={12} md={12} lg={3} xs={3}>
+                                        <Button onClick={handleInsertImage}>
+                                            Insert Media
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </TabPanel>
+                            <TabPanel value="3">Item Three</TabPanel>
+                        </TabContext>
+                    </Box>
                 </Box>
             </Modal>
         </Fragment>
