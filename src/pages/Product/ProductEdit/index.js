@@ -101,7 +101,7 @@ function ProductEdit() {
     const [tagAdd, setTagAdd] = useState("");
     const [tagAddErr, setTagAddErr] = useState("");
     const [imageList, setImageList] = useState([]);
-    const [selectedImages, setSelectedImages] = useState([]);
+    const [selectedImages, setSelectedImages] = useState([{ url: "", id: "" }]);
     const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
     // err
@@ -286,7 +286,23 @@ function ProductEdit() {
         }
     };
 
-    const handleRemoveImage = (index) => {};
+    const handleRemoveImage = (imageUrl) => {
+        const newArray = selectedImages.filter((img) => img !== imageUrl);
+    };
+
+    const handleImageRemoveAll = async () => {
+        setSelectedImages([]);
+        setLoading(true);
+        try {
+            const res = await productApi.updateImage({ slug, imageList: [] });
+
+            if (res.message === "OK") {
+                setLoading(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleSelectImageModal = (checked, index, imageUrl) => {
         if (checked) {
@@ -456,7 +472,7 @@ function ProductEdit() {
                                                             <Button
                                                                 onClick={() =>
                                                                     handleRemoveImage(
-                                                                        index
+                                                                        image
                                                                     )
                                                                 }
                                                             >
@@ -467,31 +483,27 @@ function ProductEdit() {
                                                 )
                                             )}
                                     </ImageList>
-                                    {selectedImages.length > 0 && (
-                                        <Box
-                                            display={"flex"}
-                                            justifyContent="end"
-                                            mt={4}
+                                    {/* {selectedImages.length > 0 && ( */}
+                                    <Box
+                                        display={"flex"}
+                                        justifyContent="end"
+                                        mt={4}
+                                    >
+                                        <Button
+                                            variant="outlined"
+                                            onClick={handleImageRemoveAll}
                                         >
-                                            <Button
-                                                variant="outlined"
-                                                onClick={() =>
-                                                    setSelectedImages([])
-                                                }
-                                            >
-                                                Xóa tất cả
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ marginLeft: "16px" }}
-                                                onClick={() =>
-                                                    setIsShowModal(true)
-                                                }
-                                            >
-                                                Tải thêm ảnh
-                                            </Button>
-                                        </Box>
-                                    )}
+                                            Xóa tất cả
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            sx={{ marginLeft: "16px" }}
+                                            onClick={() => setIsShowModal(true)}
+                                        >
+                                            Tải thêm ảnh
+                                        </Button>
+                                    </Box>
+                                    {/* )} */}
                                 </FormControl>
                             </Box>
                         </Paper>
