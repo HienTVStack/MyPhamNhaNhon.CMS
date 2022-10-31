@@ -297,6 +297,8 @@ function ProductEdit() {
             const res = await productApi.updateImage({ slug, imageList: [] });
 
             if (res.message === "OK") {
+                setSelectedImages(res.product.imageList);
+                setImageUploadUrl([]);
                 setLoading(false);
             }
         } catch (error) {
@@ -321,9 +323,10 @@ function ProductEdit() {
                 slug,
                 imageList: selectedImages,
             });
-
             if (res.message === "OK") {
                 setTextNotify({ text: "Cập nhật ảnh thành công" });
+                setSelectedImages(res.product.imageList);
+                setImageUploadUrl([]);
             }
         } catch (error) {
             console.log(error);
