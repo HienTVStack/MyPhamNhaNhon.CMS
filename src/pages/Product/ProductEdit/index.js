@@ -37,6 +37,7 @@ import categoryApi from "src/api/categoryApi";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
 import imageApi from "src/api/imageApi";
+import axios from "axios";
 
 const preUrls = [
     {
@@ -286,8 +287,8 @@ function ProductEdit() {
         }
     };
 
-    const handleRemoveImage = (imageUrl) => {
-        const newArray = selectedImages.filter((img) => img !== imageUrl);
+    const handleRemoveImage = (url) => {
+        setSelectedImages(selectedImages.filter((item) => item !== url));
     };
 
     const handleImageRemoveAll = async () => {
@@ -325,13 +326,64 @@ function ProductEdit() {
             });
             if (res.message === "OK") {
                 setTextNotify({ text: "Cập nhật ảnh thành công" });
-                setSelectedImages(res.product.imageList);
+                const imageListRequest = [];
+                for (let i = 0; i < res.product.imageList.length; i++) {
+                    imageListRequest.push(res.product.imageList[i]);
+                }
+                setSelectedImages(imageListRequest);
+                console.log(selectedImages);
+                // setSelectedImages()
                 setImageUploadUrl([]);
             }
         } catch (error) {
             console.log(error);
         }
         setIsShowModal(false);
+        setLoading(false);
+    };
+
+    const handleSelectImage = async (e) => {
+        const selectedFiles = e.target.files;
+        const selectedFilesArray = Array.from(selectedFiles);
+
+        setLoading(true);
+        const data = new FormData();
+
+        for (const file of selectedFilesArray) {
+            data.append("file", file);
+            data.append("upload_preset", "iwn62ygb");
+
+            try {
+                const res = await axios.post(
+                    "https://api.cloudinary.com/v1_1/diitw1fjj/image/upload",
+                    data
+                );
+                if (res.statusText === "OK") {
+                    const addImage = await imageApi.create({
+                        fileUrl: res.data.secure_url,
+                    });
+
+                    if (addImage.message === "OK") {
+                        handleImageLoader();
+                        setTableValue("2");
+                        console.log(typeof res.data.secure_url);
+                        selectedImages.push(String(res.data.secure_url));
+
+                        console.log(selectedImages);
+                    }
+                }
+
+                setIsUpload(false);
+            } catch (error) {
+                console.log(error);
+                setLoading(false);
+                setIsUpload(true);
+                setTextNotify({
+                    backgroundColor: "error",
+                    text: "Failed! Tải ảnh thất bại",
+                });
+            }
+        }
         setLoading(false);
     };
 
@@ -454,39 +506,35 @@ function ProductEdit() {
                                         + Add image
                                     </FormLabel>
                                     <ImageList cols={5}>
-                                        {!!selectedImages &&
-                                            selectedImages.map(
-                                                (image, index) => (
-                                                    <Box key={index}>
-                                                        <ImageListItem
-                                                            sx={{
-                                                                margin: "12px",
-                                                            }}
-                                                        >
-                                                            <img
-                                                                src={image}
-                                                                alt={""}
-                                                                style={{
-                                                                    height: "100px",
-                                                                    objectFit:
-                                                                        "contain",
-                                                                }}
-                                                            />
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleRemoveImage(
-                                                                        image
-                                                                    )
-                                                                }
-                                                            >
-                                                                Xóa bỏ
-                                                            </Button>
-                                                        </ImageListItem>
-                                                    </Box>
-                                                )
-                                            )}
+                                        {selectedImages.map((image, index) => (
+                                            <Box key={index}>
+                                                <ImageListItem
+                                                    sx={{
+                                                        margin: "12px",
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={image}
+                                                        alt={""}
+                                                        style={{
+                                                            height: "100px",
+                                                            objectFit:
+                                                                "contain",
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        onClick={() =>
+                                                            handleRemoveImage(
+                                                                image
+                                                            )
+                                                        }
+                                                    >
+                                                        Xóa bỏ
+                                                    </Button>
+                                                </ImageListItem>
+                                            </Box>
+                                        ))}
                                     </ImageList>
-                                    {/* {selectedImages.length > 0 && ( */}
                                     <Box
                                         display={"flex"}
                                         justifyContent="end"
@@ -506,7 +554,6 @@ function ProductEdit() {
                                             Tải thêm ảnh
                                         </Button>
                                     </Box>
-                                    {/* )} */}
                                 </FormControl>
                             </Box>
                         </Paper>
@@ -744,6 +791,7 @@ function ProductEdit() {
                                             multiple
                                             type="file"
                                             accept="image/*"
+                                            onChange={handleSelectImage}
                                         />
                                         <Button
                                             variant="outlined"

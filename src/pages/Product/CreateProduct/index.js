@@ -130,7 +130,7 @@ function CreateProduct() {
         setLoading(true);
         const imageUrl = [];
         const data = new FormData();
-
+        console.log(uploadImages);
         for (const file of uploadImages) {
             data.append("file", file.file);
             data.append("upload_preset", "iwn62ygb");
@@ -140,10 +140,7 @@ function CreateProduct() {
                     data
                 );
                 imageUrl.push(res.data.secure_url);
-                setTextNotify({
-                    backgroundColor: "#28A745",
-                    text: "Successfully!!! Tải ảnh thành công",
-                });
+
                 setIsUpload(true);
             } catch (error) {
                 console.log(error);
@@ -155,6 +152,10 @@ function CreateProduct() {
                 });
             }
         }
+        setTextNotify({
+            backgroundColor: "#28A745",
+            text: "Successfully!!! Tải ảnh thành công",
+        });
         setImageUploadUrl(imageUrl);
         setLoading(false);
         setIsUpload(true);
