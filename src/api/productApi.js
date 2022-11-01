@@ -7,8 +7,9 @@ const productApi = {
     getAll: () => axiosClient.get(`${DEFAULT_URL}/getAll`),
     getProductBySlug: (params) =>
         axiosClient.get(`${DEFAULT_URL}/${params}/detail`),
+    update: (params) => axiosClient.put(`${DEFAULT_URL}/update`, params),
     updateImage: (params) =>
-        axiosClient.post(`${DEFAULT_URL}/updateImage`, params),
+        axiosClient.put(`${DEFAULT_URL}/updateImage`, params),
 };
 
 export default productApi;

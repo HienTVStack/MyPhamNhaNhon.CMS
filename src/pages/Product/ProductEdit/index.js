@@ -229,18 +229,22 @@ function ProductEdit() {
 
         setLoading(true);
 
+        const product = {
+            name: productName,
+            descriptionContent: descriptionContent,
+            detailContent: detailContent,
+            price: productPrice,
+            imageList: selectedImages,
+            category: categorySelected,
+            tags: tags,
+            slug: slug,
+        };
+
         try {
-            const res = await productApi.create({
-                name,
-                descriptionContent,
-                detailContent,
-                inStock,
-                categorySelected,
-                tags,
-                price,
-            });
+            const res = await productApi.update(product, slug);
             if (res) {
-                navigate("/dashboard/products/list");
+                // navigate("/dashboard/products/list");
+                console.log(res);
             }
             setLoading(false);
         } catch (error) {
@@ -366,10 +370,7 @@ function ProductEdit() {
                     if (addImage.message === "OK") {
                         handleImageLoader();
                         setTableValue("2");
-                        console.log(typeof res.data.secure_url);
                         selectedImages.push(String(res.data.secure_url));
-
-                        console.log(selectedImages);
                     }
                 }
 
@@ -391,7 +392,7 @@ function ProductEdit() {
         <Fragment>
             <Box>
                 <Typography variant="h3" component="h3">
-                    Tạo mới sản phẩm
+                    Chỉnh sửa sản phẩm
                 </Typography>
                 <Stack spacing={2}>
                     <Breadcrumbs separator=">" aria-label="breadcrumb">
@@ -708,7 +709,7 @@ function ProductEdit() {
                                 marginTop: "20px",
                             }}
                         >
-                            Tạo mới sản phẩm
+                            Chỉnh sửa
                         </Button>
                     </Grid>
                 </Grid>
@@ -717,7 +718,8 @@ function ProductEdit() {
             <Backdrop
                 sx={{
                     color: "#fff",
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                    // zIndex: (theme) => theme.zIndex.drawer + 1,
+                    zIndex: 9999,
                 }}
                 open={loading}
                 onClick={() => setLoading(false)}
