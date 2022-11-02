@@ -10,10 +10,7 @@ import {
     FormControlLabel,
     Switch,
     Button,
-    Select,
-    MenuItem,
     FormControl,
-    InputLabel,
     Autocomplete,
     Checkbox,
     Backdrop,
@@ -59,9 +56,15 @@ function CreateProduct() {
     const descriptionRef = useRef();
     const detailRef = useRef();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
+    const [loading, setLoading] = useState(false);
+    const [showToastMessage, setShowToastMessage] = useState(false);
+    const [toastMessage, setToastMessage] = useState({
+        type: "error",
+        message: "Err_001",
+    });
+
     // data
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
@@ -81,7 +84,6 @@ function CreateProduct() {
     const [codeErr, setCodeErr] = useState("");
     const [priceErr, setPriceErr] = useState("");
     const [categoryErr, setCategoryErr] = useState("");
-    const [textNotify, setTextNotify] = useState({});
 
     //  Handle show image UI
     const handleSelectImage = (e) => {
@@ -122,21 +124,20 @@ function CreateProduct() {
                     data
                 );
                 imageUrl.push(res.data.secure_url);
-
                 setIsUpload(true);
             } catch (error) {
                 console.log(error);
                 setLoading(false);
                 setIsUpload(true);
-                setTextNotify({
-                    backgroundColor: "error",
-                    text: "Failed! Tải ảnh thất bại",
+                setToastMessage({
+                    type: "error",
+                    message: "Tải ảnh thất bại",
                 });
             }
         }
-        setTextNotify({
-            backgroundColor: "#28A745",
-            text: "Successfully!!! Tải ảnh thành công",
+        setToastMessage({
+            type: "success",
+            message: "Tải ảnh thành công",
         });
         setImageUploadUrl(imageUrl);
         setLoading(false);
@@ -150,7 +151,6 @@ function CreateProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setNameErr("");
         setCodeErr("");
         setDescriptionContentErr("");
@@ -201,15 +201,22 @@ function CreateProduct() {
         if (imageUploadUrl.length <= 0) {
             err = true;
             setIsUpload(true);
-            setTextNotify({
-                backgroundColor: "#FFC107",
-                text: "Warning! Chú ý bạn chưa tải ảnh lên could",
+            setShowToastMessage(true);
+            setToastMessage({
+                type: "warning",
+                message: "Warning! Chú ý bạn chưa tải ảnh lên could",
             });
         }
 
         setLoading(false);
 
-        if (err) return;
+        if (err) {
+            setShowToastMessage(true);
+            setToastMessage({
+                type: "warning",
+                message: "Vui lòng nhập đầy đủ thông tin",
+            });
+        }
 
         setLoading(true);
         console.log(tags);
@@ -685,16 +692,16 @@ function CreateProduct() {
             </Backdrop>
             {/* Snackbar */}
             <Snackbar
-                open={isUpload}
+                open={showToastMessage}
                 anchorOrigin={{
                     vertical: "top",
                     horizontal: "right",
                 }}
                 autoHideDuration={3000}
-                onClose={() => setIsUpload(false)}
+                onClose={() => setShowToastMessage(false)}
             >
-                <Alert sx={{ backgroundColor: textNotify.backgroundColor }}>
-                    {textNotify.text}
+                <Alert severity={toastMessage.type}>
+                    {toastMessage.message}
                 </Alert>
             </Snackbar>
         </Fragment>

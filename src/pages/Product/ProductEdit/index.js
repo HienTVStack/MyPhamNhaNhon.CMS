@@ -119,6 +119,12 @@ function ProductEdit() {
 
     const { slug } = useParams();
 
+    useEffect(() => {
+        handleProductLoader();
+        handleImageLoader();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigate]);
+
     const handleProductLoader = async () => {
         console.log(`handleProductLoader`);
         setLoading(true);
@@ -152,12 +158,6 @@ function ProductEdit() {
             console.log(error);
         }
     };
-
-    useEffect(() => {
-        handleProductLoader();
-        handleImageLoader();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigate]);
 
     // Handle change action tab
     const handleChangeTabModal = (e, newValue) => {
