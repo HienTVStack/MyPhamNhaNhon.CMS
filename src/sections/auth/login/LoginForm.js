@@ -9,11 +9,7 @@ import { Link, Stack, IconButton, InputAdornment } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/Iconify";
-import {
-    FormProvider,
-    RHFTextField,
-    RHFCheckbox,
-} from "../../../components/hook-form";
+import { FormProvider, RHFTextField, RHFCheckbox } from "../../../components/hook-form";
 
 // ----------------------------------------------------------------------
 
@@ -23,9 +19,7 @@ export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
 
     const LoginSchema = Yup.object().shape({
-        email: Yup.string()
-            .email("Email must be a valid email address")
-            .required("Email is required"),
+        email: Yup.string().email("Email must be a valid email address").required("Email is required"),
         password: Yup.string().required("Password is required"),
     });
 
@@ -61,19 +55,8 @@ export default function LoginForm() {
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
-                                    edge="end"
-                                >
-                                    <Iconify
-                                        icon={
-                                            showPassword
-                                                ? "eva:eye-fill"
-                                                : "eva:eye-off-fill"
-                                        }
-                                    />
+                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                    <Iconify icon={showPassword ? "eva:eye-fill" : "eva:eye-off-fill"} />
                                 </IconButton>
                             </InputAdornment>
                         ),
@@ -81,25 +64,14 @@ export default function LoginForm() {
                 />
             </Stack>
 
-            <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ my: 2 }}
-            >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
                 <RHFCheckbox name="remember" label="Remember me" />
                 <Link variant="subtitle2" underline="hover">
                     Forgot password?
                 </Link>
             </Stack>
 
-            <LoadingButton
-                fullWidth
-                size="large"
-                type="submit"
-                variant="contained"
-                loading={isSubmitting}
-            >
+            <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
                 Login
             </LoadingButton>
         </FormProvider>

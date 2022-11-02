@@ -32,6 +32,10 @@ const navConfig = [
                 title: "Sản phẩm",
                 path: "products/:slug/detail",
             },
+            {
+                title: "Thùng rác",
+                path: "products/trash",
+            },
         ],
     },
     {

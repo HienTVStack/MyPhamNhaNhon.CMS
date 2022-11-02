@@ -15,13 +15,7 @@ AppWebsiteVisits.propTypes = {
     chartLabels: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default function AppWebsiteVisits({
-    title,
-    subheader,
-    chartLabels,
-    chartData,
-    ...other
-}) {
+export default function AppWebsiteVisits({ title, subheader, chartLabels, chartData, ...other }) {
     const chartOptions = merge(BaseOptionChart(), {
         plotOptions: { bar: { columnWidth: "16%" } },
         fill: { type: chartData.map((i) => i.fill) },
@@ -46,12 +40,7 @@ export default function AppWebsiteVisits({
             <CardHeader title={title} subheader={subheader} />
 
             <Box sx={{ p: 3, pb: 1 }} dir="ltr">
-                <ReactApexChart
-                    type="line"
-                    series={chartData}
-                    options={chartOptions}
-                    height={364}
-                />
+                <ReactApexChart type="line" series={chartData} options={chartOptions} height={364} />
             </Box>
         </Card>
     );

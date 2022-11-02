@@ -352,10 +352,7 @@ function ProductEdit() {
             data.append("upload_preset", "iwn62ygb");
 
             try {
-                const res = await axios.post(
-                    "https://api.cloudinary.com/v1_1/diitw1fjj/image/upload",
-                    data
-                );
+                const res = await axios.post("https://api.cloudinary.com/v1_1/diitw1fjj/image/upload", data);
                 if (res.statusText === "OK") {
                     const addImage = await imageApi.create({
                         fileUrl: res.data.secure_url,
@@ -397,13 +394,7 @@ function ProductEdit() {
             {/* Content */}
 
             <Stack mt={3}>
-                <Grid
-                    container
-                    spacing={3}
-                    component={"form"}
-                    noValidate
-                    onSubmit={handleSubmit}
-                >
+                <Grid container spacing={3} component={"form"} noValidate onSubmit={handleSubmit}>
                     <Grid item xs={12} md={8}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4} mb={4}>
@@ -413,38 +404,27 @@ function ProductEdit() {
                                     name={"name"}
                                     id={"name"}
                                     value={productName}
-                                    onChange={(e) =>
-                                        setProductName(e.target.value)
-                                    }
+                                    onChange={(e) => setProductName(e.target.value)}
                                     required
                                     fullWidth
                                     disabled={loading}
                                     helperText={nameErr}
                                     error={nameErr !== ""}
                                 />
-                                <FormControl
-                                    sx={{ margin: "16px 0" }}
-                                    fullWidth
-                                >
+                                <FormControl sx={{ margin: "16px 0" }} fullWidth>
                                     <FormLabel>Mô tả ngắn*</FormLabel>
                                     <Editor
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
                                         value={descriptionContent}
-                                        onInit={(e, editor) =>
-                                            (descriptionRef.current = editor)
-                                        }
+                                        onInit={(e, editor) => (descriptionRef.current = editor)}
                                         init={{
                                             selector: "textarea",
                                             menubar: false,
                                             max_height: 200,
                                             plugins: "link image code",
                                         }}
-                                        onChange={(e) =>
-                                            setDescriptionContent(
-                                                descriptionRef.current.getContent()
-                                            )
-                                        }
+                                        onChange={(e) => setDescriptionContent(descriptionRef.current.getContent())}
                                     />
                                     {!!descriptionContentErr && (
                                         <Typography
@@ -460,20 +440,13 @@ function ProductEdit() {
                                     )}
                                 </FormControl>
 
-                                <FormControl
-                                    sx={{ margin: "16px 0" }}
-                                    fullWidth
-                                >
-                                    <FormLabel>
-                                        Mô tả chi tiết sản phẩm*
-                                    </FormLabel>
+                                <FormControl sx={{ margin: "16px 0" }} fullWidth>
+                                    <FormLabel>Mô tả chi tiết sản phẩm*</FormLabel>
                                     <Editor
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
                                         value={detailContent}
-                                        onInit={(e, editor) =>
-                                            (detailRef.current = editor)
-                                        }
+                                        onInit={(e, editor) => (detailRef.current = editor)}
                                         init={{
                                             selector: "textarea",
                                             menubar: false,
@@ -481,11 +454,7 @@ function ProductEdit() {
                                             toolbar:
                                                 "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code",
                                         }}
-                                        onChange={(e) =>
-                                            setDetailContent(
-                                                detailRef.current.getContent()
-                                            )
-                                        }
+                                        onChange={(e) => setDetailContent(detailRef.current.getContent())}
                                     />
                                     {!!descriptionContentErr && (
                                         <Typography
@@ -502,9 +471,7 @@ function ProductEdit() {
                                 </FormControl>
 
                                 <FormControl fullWidth>
-                                    <FormLabel htmlFor="images">
-                                        + Add image
-                                    </FormLabel>
+                                    <FormLabel htmlFor="images">+ Add image</FormLabel>
                                     <ImageList cols={5}>
                                         {selectedImages.map((image, index) => (
                                             <Box key={index}>
@@ -518,39 +485,19 @@ function ProductEdit() {
                                                         alt={""}
                                                         style={{
                                                             height: "100px",
-                                                            objectFit:
-                                                                "contain",
+                                                            objectFit: "contain",
                                                         }}
                                                     />
-                                                    <Button
-                                                        onClick={() =>
-                                                            handleRemoveImage(
-                                                                image
-                                                            )
-                                                        }
-                                                    >
-                                                        Xóa bỏ
-                                                    </Button>
+                                                    <Button onClick={() => handleRemoveImage(image)}>Xóa bỏ</Button>
                                                 </ImageListItem>
                                             </Box>
                                         ))}
                                     </ImageList>
-                                    <Box
-                                        display={"flex"}
-                                        justifyContent="end"
-                                        mt={4}
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            onClick={handleImageRemoveAll}
-                                        >
+                                    <Box display={"flex"} justifyContent="end" mt={4}>
+                                        <Button variant="outlined" onClick={handleImageRemoveAll}>
                                             Xóa tất cả
                                         </Button>
-                                        <Button
-                                            variant="contained"
-                                            sx={{ marginLeft: "16px" }}
-                                            onClick={() => setIsShowModal(true)}
-                                        >
+                                        <Button variant="contained" sx={{ marginLeft: "16px" }} onClick={() => setIsShowModal(true)}>
                                             Tải thêm ảnh
                                         </Button>
                                     </Box>
@@ -561,12 +508,7 @@ function ProductEdit() {
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
-                                <FormControlLabel
-                                    control={<Switch defaultChecked />}
-                                    label="Hiển thị"
-                                    name="inStock"
-                                    id={"inStock"}
-                                />
+                                <FormControlLabel control={<Switch defaultChecked />} label="Hiển thị" name="inStock" id={"inStock"} />
                                 <TextField
                                     placeholder="Code"
                                     label="Code"
@@ -585,9 +527,7 @@ function ProductEdit() {
                                     name={"price"}
                                     id={"price"}
                                     value={productPrice}
-                                    onChange={(e) =>
-                                        setProductPrice(e.target.value)
-                                    }
+                                    onChange={(e) => setProductPrice(e.target.value)}
                                     required
                                     fullWidth
                                     margin="normal"
@@ -602,38 +542,20 @@ function ProductEdit() {
                                     options={categoryList}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) =>
-                                        option.name === value.name
-                                    }
-                                    onChange={(e, value) =>
-                                        setCategorySelected(value)
-                                    }
-                                    renderOption={(
-                                        props,
-                                        option,
-                                        { selected }
-                                    ) => (
+                                    isOptionEqualToValue={(option, value) => option.name === value.name}
+                                    onChange={(e, value) => setCategorySelected(value)}
+                                    renderOption={(props, option, { selected }) => (
                                         <li {...props}>
                                             <Checkbox
-                                                icon={
-                                                    <Icon icon="bx:checkbox" />
-                                                }
-                                                checkedIcon={
-                                                    <Icon icon="bx:checkbox-checked" />
-                                                }
+                                                icon={<Icon icon="bx:checkbox" />}
+                                                checkedIcon={<Icon icon="bx:checkbox-checked" />}
                                                 style={{ marginRight: 8 }}
                                                 checked={selected}
                                             />
                                             {option.name}
                                         </li>
                                     )}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            margin="normal"
-                                            label="Danh mục sản phẩm"
-                                        />
-                                    )}
+                                    renderInput={(params) => <TextField {...params} margin="normal" label="Danh mục sản phẩm" />}
                                 />
                                 <Autocomplete
                                     fullWidth
@@ -642,54 +564,26 @@ function ProductEdit() {
                                     options={tagList}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) =>
-                                        option.name === value.name
-                                    }
-                                    onChange={(e, value) =>
-                                        setTagSelected(value)
-                                    }
-                                    renderOption={(
-                                        props,
-                                        option,
-                                        { selected }
-                                    ) => (
+                                    isOptionEqualToValue={(option, value) => option.name === value.name}
+                                    onChange={(e, value) => setTagSelected(value)}
+                                    renderOption={(props, option, { selected }) => (
                                         <li {...props}>
                                             <Checkbox
-                                                icon={
-                                                    <Icon icon="bx:checkbox" />
-                                                }
-                                                checkedIcon={
-                                                    <Icon icon="bx:checkbox-checked" />
-                                                }
+                                                icon={<Icon icon="bx:checkbox" />}
+                                                checkedIcon={<Icon icon="bx:checkbox-checked" />}
                                                 style={{ marginRight: 8 }}
                                                 checked={selected}
                                             />
                                             {option.name}
                                         </li>
                                     )}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            margin="normal"
-                                            label="Tags"
-                                        />
-                                    )}
+                                    renderInput={(params) => <TextField {...params} margin="normal" label="Tags" />}
                                 />
 
-                                <Typography
-                                    variant="body2"
-                                    component={"h4"}
-                                    color={"primary"}
-                                    fontSize={"16px"}
-                                    mt={2}
-                                >
+                                <Typography variant="body2" component={"h4"} color={"primary"} fontSize={"16px"} mt={2}>
                                     Thêm mới thẻ tag
                                 </Typography>
-                                <Box
-                                    noValidate
-                                    display={"flex"}
-                                    alignItems="center"
-                                >
+                                <Box noValidate display={"flex"} alignItems="center">
                                     <TextField
                                         label="Tags"
                                         name="tag"
@@ -751,9 +645,7 @@ function ProductEdit() {
                 autoHideDuration={3000}
                 onClose={() => setIsUpload(false)}
             >
-                <Alert sx={{ backgroundColor: textNotify.backgroundColor }}>
-                    {textNotify.text}
-                </Alert>
+                <Alert sx={{ backgroundColor: textNotify.backgroundColor }}>{textNotify.text}</Alert>
             </Snackbar>
             <Modal
                 open={isShowModal}
@@ -764,57 +656,29 @@ function ProductEdit() {
                 onClose={() => setIsShowModal(false)}
             >
                 <Box sx={{ ...style }}>
-                    <Typography
-                        variant="body2"
-                        component="h2"
-                        fontSize={"30px"}
-                        fontWeight={700}
-                    >
+                    <Typography variant="body2" component="h2" fontSize={"30px"} fontWeight={700}>
                         Insert Media
                     </Typography>
                     <Box sx={{ width: "100%" }}>
                         <TabContext value={tabValue}>
-                            <Box
-                                sx={{ borderBottom: 1, borderColor: "divider" }}
-                            >
-                                <TabList
-                                    onChange={handleChangeTabModal}
-                                    aria-label="lab API tabs example"
-                                >
+                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                <TabList onChange={handleChangeTabModal} aria-label="lab API tabs example">
                                     <Tab label="Tải ảnh lên" value="1" />
                                     <Tab label="Thư viện ảnh" value="2" />
                                     <Tab label="Item Three" value="3" />
                                 </TabList>
                             </Box>
                             <TabPanel value="1">
-                                <Box
-                                    display={"flex"}
-                                    alignItems={"center"}
-                                    justifyContent={"center"}
-                                    flexDirection={"column"}
-                                >
+                                <Box display={"flex"} alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
                                     <Typography variant="h3" fontSize={"20px"}>
                                         Thả tệp để tải lên
                                     </Typography>
-                                    <Typography
-                                        fontSize={"14px"}
-                                        color={"#ccc"}
-                                    >
+                                    <Typography fontSize={"14px"} color={"#ccc"}>
                                         hoặc
                                     </Typography>
                                     <Box component="label" mt={2}>
-                                        <input
-                                            hidden
-                                            multiple
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleSelectImage}
-                                        />
-                                        <Button
-                                            variant="outlined"
-                                            component={"p"}
-                                            size="large"
-                                        >
+                                        <input hidden multiple type="file" accept="image/*" onChange={handleSelectImage} />
+                                        <Button variant="outlined" component={"p"} size="large">
                                             Chọn tệp
                                         </Button>
                                     </Box>
@@ -824,33 +688,61 @@ function ProductEdit() {
                                 <Grid container>
                                     <Grid item sm={12} md={12} lg={9} xs={9}>
                                         <ImageList cols={5}>
-                                            {selectedImages.map(
-                                                (image, index) => (
+                                            {selectedImages.map((image, index) => (
+                                                <Box key={index}>
+                                                    <ImageListItem
+                                                        sx={{
+                                                            position: "relative",
+                                                            margin: "12px",
+                                                            border: "1px solid #ccc",
+                                                            borderRadius: "12px",
+                                                        }}
+                                                    >
+                                                        <Checkbox
+                                                            defaultChecked
+                                                            disabled
+                                                            id={`checkboxImageSelect${index}`}
+                                                            sx={{
+                                                                ...styleChecked,
+                                                            }}
+                                                        />
+                                                        <label htmlFor={`checkboxImageSelect${index}`}>
+                                                            <img
+                                                                src={image}
+                                                                alt={""}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                }}
+                                                            />
+                                                        </label>
+                                                    </ImageListItem>
+                                                </Box>
+                                            ))}
+                                            {!!imageList &&
+                                                imageList.map((image, index) => (
                                                     <Box key={index}>
                                                         <ImageListItem
                                                             sx={{
-                                                                position:
-                                                                    "relative",
+                                                                position: "relative",
                                                                 margin: "12px",
                                                                 border: "1px solid #ccc",
-                                                                borderRadius:
-                                                                    "12px",
+                                                                borderRadius: "12px",
                                                             }}
                                                         >
                                                             <Checkbox
-                                                                defaultChecked
-                                                                disabled
-                                                                id={`checkboxImageSelect${index}`}
+                                                                onChange={(e) => {
+                                                                    const checked = e.target.checked;
+                                                                    handleSelectImageModal(checked, index, image.fileUrl);
+                                                                }}
+                                                                id={`checkboxImage${index}`}
                                                                 sx={{
                                                                     ...styleChecked,
                                                                 }}
                                                             />
-                                                            <label
-                                                                htmlFor={`checkboxImageSelect${index}`}
-                                                            >
+                                                            <label htmlFor={`checkboxImage${index}`}>
                                                                 <img
-                                                                    src={image}
-                                                                    alt={""}
+                                                                    src={image.fileUrl}
+                                                                    alt={image.caption}
                                                                     style={{
                                                                         cursor: "pointer",
                                                                     }}
@@ -858,66 +750,11 @@ function ProductEdit() {
                                                             </label>
                                                         </ImageListItem>
                                                     </Box>
-                                                )
-                                            )}
-                                            {!!imageList &&
-                                                imageList.map(
-                                                    (image, index) => (
-                                                        <Box key={index}>
-                                                            <ImageListItem
-                                                                sx={{
-                                                                    position:
-                                                                        "relative",
-                                                                    margin: "12px",
-                                                                    border: "1px solid #ccc",
-                                                                    borderRadius:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                <Checkbox
-                                                                    onChange={(
-                                                                        e
-                                                                    ) => {
-                                                                        const checked =
-                                                                            e
-                                                                                .target
-                                                                                .checked;
-                                                                        handleSelectImageModal(
-                                                                            checked,
-                                                                            index,
-                                                                            image.fileUrl
-                                                                        );
-                                                                    }}
-                                                                    id={`checkboxImage${index}`}
-                                                                    sx={{
-                                                                        ...styleChecked,
-                                                                    }}
-                                                                />
-                                                                <label
-                                                                    htmlFor={`checkboxImage${index}`}
-                                                                >
-                                                                    <img
-                                                                        src={
-                                                                            image.fileUrl
-                                                                        }
-                                                                        alt={
-                                                                            image.caption
-                                                                        }
-                                                                        style={{
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                    />
-                                                                </label>
-                                                            </ImageListItem>
-                                                        </Box>
-                                                    )
-                                                )}
+                                                ))}
                                         </ImageList>
                                     </Grid>
                                     <Grid item sm={12} md={12} lg={3} xs={3}>
-                                        <Button onClick={handleInsertImage}>
-                                            Insert Media
-                                        </Button>
+                                        <Button onClick={handleInsertImage}>Insert Media</Button>
                                     </Grid>
                                 </Grid>
                             </TabPanel>

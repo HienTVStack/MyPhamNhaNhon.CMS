@@ -24,11 +24,7 @@ import Label from "src/components/Label";
 import Scrollbar from "src/components/Scrollbar";
 import Iconify from "src/components/Iconify";
 import SearchNotFound from "src/components/SearchNotFound";
-import {
-    UserListHead,
-    UserListToolbar,
-    UserMoreMenu,
-} from "src/sections/@dashboard/user";
+import { UserListHead, UserListToolbar, UserMoreMenu } from "src/sections/@dashboard/user";
 // mock
 import { useEffect } from "react";
 import productApi from "src/api/productApi";
@@ -59,9 +55,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-    return order === "desc"
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
+    return order === "desc" ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 function applySortFilter(array, comparator, query) {
@@ -72,11 +66,7 @@ function applySortFilter(array, comparator, query) {
         return a[1] - b[1];
     });
     if (query) {
-        return filter(
-            array,
-            (_user) =>
-                _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-        );
+        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
 }
@@ -140,10 +130,7 @@ export default function ProductList() {
         } else if (selectedIndex === selected.length - 1) {
             newSelected = newSelected.concat(selected.slice(0, -1));
         } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1)
-            );
+            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
         }
         setSelected(newSelected);
     };
@@ -161,47 +148,26 @@ export default function ProductList() {
         setFilterName(event.target.value);
     };
 
-    const emptyRows =
-        page > 0
-            ? Math.max(0, (1 + page) * rowsPerPage - productList.length)
-            : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - productList.length) : 0;
 
-    const filteredUsers = applySortFilter(
-        productList,
-        getComparator(order, orderBy),
-        filterName
-    );
+    const filteredUsers = applySortFilter(productList, getComparator(order, orderBy), filterName);
 
     const isUserNotFound = filteredUsers.length === 0;
 
     return (
         <Page title="Product">
             <Container>
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    mb={5}
-                >
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
                         Danh sách sản phẩm
                     </Typography>
-                    <Button
-                        variant="contained"
-                        component={RouterLink}
-                        to="/dashboard/products/create"
-                        startIcon={<Iconify icon="eva:plus-fill" />}
-                    >
+                    <Button variant="contained" component={RouterLink} to="/dashboard/products/create" startIcon={<Iconify icon="eva:plus-fill" />}>
                         Thêm mới
                     </Button>
                 </Stack>
 
                 <Card>
-                    <UserListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                    />
+                    <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
                     {loading ? (
                         <Loading />
                     ) : (
@@ -218,137 +184,61 @@ export default function ProductList() {
                                         onSelectAllClick={handleSelectAllClick}
                                     />
                                     <TableBody>
-                                        {filteredUsers
-                                            .slice(
-                                                page * rowsPerPage,
-                                                page * rowsPerPage + rowsPerPage
-                                            )
-                                            .map((row) => {
-                                                const {
-                                                    id,
-                                                    name,
-                                                    createdAt,
-                                                    image,
-                                                    inStock,
-                                                    price,
-                                                    slug,
-                                                } = row;
-                                                const isItemSelected =
-                                                    selected.indexOf(name) !==
-                                                    -1;
+                                        {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                            const { id, name, createdAt, image, inStock, price, slug } = row;
+                                            const isItemSelected = selected.indexOf(name) !== -1;
 
-                                                return (
-                                                    <TableRow
-                                                        hover
-                                                        key={id}
-                                                        tabIndex={-1}
-                                                        role="checkbox"
-                                                        selected={
-                                                            isItemSelected
-                                                        }
-                                                        aria-checked={
-                                                            isItemSelected
-                                                        }
-                                                    >
-                                                        <TableCell padding="checkbox">
-                                                            <Checkbox
-                                                                checked={
-                                                                    isItemSelected
-                                                                }
-                                                                onChange={(
-                                                                    event
-                                                                ) =>
-                                                                    handleClick(
-                                                                        event,
-                                                                        name
-                                                                    )
-                                                                }
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell
-                                                            component="th"
-                                                            scope="row"
-                                                            padding="none"
-                                                        >
-                                                            <Stack
-                                                                direction="row"
-                                                                alignItems="center"
-                                                                spacing={2}
-                                                            >
-                                                                <Avatar
-                                                                    alt={name}
-                                                                    src={image}
-                                                                />
-                                                                <Typography
-                                                                    variant="subtitle2"
-                                                                    noWrap
-                                                                >
-                                                                    {name}
-                                                                </Typography>
-                                                            </Stack>
-                                                        </TableCell>
-                                                        <TableCell align="left">
-                                                            {new Intl.DateTimeFormat(
-                                                                "en-US",
-                                                                {
-                                                                    year: "numeric",
-                                                                    month: "2-digit",
-                                                                    day: "2-digit",
-                                                                    hour: "2-digit",
-                                                                    minute: "2-digit",
-                                                                    second: "2-digit",
-                                                                }
-                                                            ).format(
-                                                                new Date(
-                                                                    createdAt
-                                                                )
-                                                            )}
-                                                        </TableCell>
-                                                        <TableCell align="left">
-                                                            <Label
-                                                                variant="ghost"
-                                                                color={
-                                                                    inStock
-                                                                        ? "success"
-                                                                        : "error"
-                                                                }
-                                                            >
-                                                                {inStock
-                                                                    ? "Còn hàng"
-                                                                    : "Hết hàng"}
-                                                            </Label>
-                                                        </TableCell>
-                                                        <TableCell align="left">
-                                                            <NumericFormat
-                                                                value={price}
-                                                                displayType={
-                                                                    "text"
-                                                                }
-                                                                thousandSeparator={
-                                                                    true
-                                                                }
-                                                                suffix={" đ"}
-                                                                renderText={(
-                                                                    value,
-                                                                    props
-                                                                ) => (
-                                                                    <div
-                                                                        {...props}
-                                                                    >
-                                                                        {value}
-                                                                    </div>
-                                                                )}
-                                                            />
-                                                        </TableCell>
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    key={id}
+                                                    tabIndex={-1}
+                                                    role="checkbox"
+                                                    selected={isItemSelected}
+                                                    aria-checked={isItemSelected}
+                                                >
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row" padding="none">
+                                                        <Stack direction="row" alignItems="center" spacing={2}>
+                                                            <Avatar alt={name} src={image} />
+                                                            <Typography variant="subtitle2" noWrap>
+                                                                {name}
+                                                            </Typography>
+                                                        </Stack>
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        {new Intl.DateTimeFormat("en-US", {
+                                                            year: "numeric",
+                                                            month: "2-digit",
+                                                            day: "2-digit",
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                            second: "2-digit",
+                                                        }).format(new Date(createdAt))}
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        <Label variant="ghost" color={inStock ? "success" : "error"}>
+                                                            {inStock ? "Còn hàng" : "Hết hàng"}
+                                                        </Label>
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        <NumericFormat
+                                                            value={price}
+                                                            displayType={"text"}
+                                                            thousandSeparator={true}
+                                                            suffix={" đ"}
+                                                            renderText={(value, props) => <div {...props}>{value}</div>}
+                                                        />
+                                                    </TableCell>
 
-                                                        <TableCell align="right">
-                                                            <UserMoreMenu
-                                                                slug={slug}
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
+                                                    <TableCell align="right">
+                                                        <UserMoreMenu slug={slug} id={id} />
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
                                         {emptyRows > 0 && (
                                             <TableRow
                                                 style={{
@@ -363,14 +253,8 @@ export default function ProductList() {
                                     {isUserNotFound && (
                                         <TableBody>
                                             <TableRow>
-                                                <TableCell
-                                                    align="center"
-                                                    colSpan={6}
-                                                    sx={{ py: 3 }}
-                                                >
-                                                    <SearchNotFound
-                                                        searchQuery={filterName}
-                                                    />
+                                                <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                                                    <SearchNotFound searchQuery={filterName} />
                                                 </TableCell>
                                             </TableRow>
                                         </TableBody>

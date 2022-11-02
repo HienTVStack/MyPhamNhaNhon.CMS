@@ -1,14 +1,7 @@
 import PropTypes from "prop-types";
 // material
 import { styled } from "@mui/material/styles";
-import {
-    Toolbar,
-    Tooltip,
-    IconButton,
-    Typography,
-    OutlinedInput,
-    InputAdornment,
-} from "@mui/material";
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from "@mui/material";
 // component
 import Iconify from "../../../components/Iconify";
 
@@ -42,11 +35,7 @@ UserListToolbar.propTypes = {
     onFilterName: PropTypes.func,
 };
 
-export default function UserListToolbar({
-    numSelected,
-    filterName,
-    onFilterName,
-}) {
+export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
     return (
         <RootStyle
             sx={{

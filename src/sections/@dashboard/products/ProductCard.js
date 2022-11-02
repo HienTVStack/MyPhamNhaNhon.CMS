@@ -50,22 +50,13 @@ export default function ShopProductCard({ product }) {
             </Box>
 
             <Stack spacing={2} sx={{ p: 3 }}>
-                <Link
-                    to="#"
-                    color="inherit"
-                    underline="hover"
-                    component={RouterLink}
-                >
+                <Link to="#" color="inherit" underline="hover" component={RouterLink}>
                     <Typography variant="subtitle2" noWrap>
                         {name}
                     </Typography>
                 </Link>
 
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <ColorPreview colors={colors} />
                     <Typography variant="subtitle1">
                         <Typography

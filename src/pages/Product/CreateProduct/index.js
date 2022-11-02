@@ -119,10 +119,7 @@ function CreateProduct() {
             data.append("file", file.file);
             data.append("upload_preset", "iwn62ygb");
             try {
-                const res = await axios.post(
-                    "https://api.cloudinary.com/v1_1/diitw1fjj/image/upload",
-                    data
-                );
+                const res = await axios.post("https://api.cloudinary.com/v1_1/diitw1fjj/image/upload", data);
                 imageUrl.push(res.data.secure_url);
                 setIsUpload(true);
             } catch (error) {
@@ -295,13 +292,7 @@ function CreateProduct() {
             </Box>
             {/* Content */}
             <Stack mt={3}>
-                <Grid
-                    container
-                    spacing={3}
-                    component={"form"}
-                    noValidate
-                    onSubmit={handleSubmit}
-                >
+                <Grid container spacing={3} component={"form"} noValidate onSubmit={handleSubmit}>
                     <Grid item xs={12} md={8}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4} mb={4}>
@@ -316,54 +307,33 @@ function CreateProduct() {
                                     helperText={nameErr}
                                     error={nameErr !== ""}
                                 />
-                                <FormControl
-                                    sx={{ margin: "16px 0" }}
-                                    fullWidth
-                                >
+                                <FormControl sx={{ margin: "16px 0" }} fullWidth>
                                     <FormLabel>Mô tả ngắn*</FormLabel>
                                     <Editor
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
-                                        onInit={(e, editor) =>
-                                            (descriptionRef.current = editor)
-                                        }
+                                        onInit={(e, editor) => (descriptionRef.current = editor)}
                                         init={{
                                             selector: "textarea",
                                             menubar: false,
                                             max_height: 200,
                                             plugins: "link image code",
                                         }}
-                                        onChange={(e) =>
-                                            setDescriptionContent(
-                                                descriptionRef.current.getContent()
-                                            )
-                                        }
+                                        onChange={(e) => setDescriptionContent(descriptionRef.current.getContent())}
                                     />
                                     {!!descriptionContentErr && (
-                                        <Typography
-                                            variant="body2"
-                                            color="error"
-                                            fontSize={"0.75rem"}
-                                            sx={{ margin: "3px 14px 0 14px" }}
-                                        >
+                                        <Typography variant="body2" color="error" fontSize={"0.75rem"} sx={{ margin: "3px 14px 0 14px" }}>
                                             {descriptionContentErr}
                                         </Typography>
                                     )}
                                 </FormControl>
 
-                                <FormControl
-                                    sx={{ margin: "16px 0" }}
-                                    fullWidth
-                                >
-                                    <FormLabel>
-                                        Mô tả chi tiết sản phẩm*
-                                    </FormLabel>
+                                <FormControl sx={{ margin: "16px 0" }} fullWidth>
+                                    <FormLabel>Mô tả chi tiết sản phẩm*</FormLabel>
                                     <Editor
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
-                                        onInit={(e, editor) =>
-                                            (detailRef.current = editor)
-                                        }
+                                        onInit={(e, editor) => (detailRef.current = editor)}
                                         init={{
                                             selector: "textarea",
                                             menubar: false,
@@ -371,49 +341,26 @@ function CreateProduct() {
                                             toolbar:
                                                 "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | code",
                                         }}
-                                        onChange={(e) =>
-                                            setDetailContent(
-                                                detailRef.current.getContent()
-                                            )
-                                        }
+                                        onChange={(e) => setDetailContent(detailRef.current.getContent())}
                                     />
                                     {!!descriptionContentErr && (
-                                        <Typography
-                                            variant="body2"
-                                            color="error"
-                                            fontSize={"0.75rem"}
-                                            sx={{ margin: "3px 14px 0 14px" }}
-                                        >
+                                        <Typography variant="body2" color="error" fontSize={"0.75rem"} sx={{ margin: "3px 14px 0 14px" }}>
                                             {detailContentErr}
                                         </Typography>
                                     )}
                                 </FormControl>
 
                                 <FormControl fullWidth>
-                                    <FormLabel htmlFor="images">
-                                        + Add image
-                                    </FormLabel>
-                                    <Box
-                                        fullWidth
-                                        aria-label="upload picture"
-                                        component="label"
-                                        sx={{ cursor: "pointer" }}
-                                    >
-                                        <input
-                                            hidden
-                                            accept="image/*"
-                                            type="file"
-                                            multiple
-                                            onChange={handleSelectImage}
-                                        />
+                                    <FormLabel htmlFor="images">+ Add image</FormLabel>
+                                    <Box fullWidth aria-label="upload picture" component="label" sx={{ cursor: "pointer" }}>
+                                        <input hidden accept="image/*" type="file" multiple onChange={handleSelectImage} />
                                         <Box
                                             display="flex"
                                             alignItems="center"
                                             justifyContent={"center"}
                                             sx={{
                                                 height: "100%",
-                                                backgroundColor:
-                                                    "rgb(244, 246, 248)",
+                                                backgroundColor: "rgb(244, 246, 248)",
                                                 borderRadius: "12px",
                                             }}
                                         >
@@ -427,22 +374,11 @@ function CreateProduct() {
                                                 <Icon icon="akar-icons:cloud-upload" />
                                             </Box>
                                             <Stack sx={{ margin: "0 20px" }}>
-                                                <Typography
-                                                    variant="body2"
-                                                    color="primary"
-                                                    fontSize="20px"
-                                                    component={"h5"}
-                                                    gutterBottom
-                                                >
+                                                <Typography variant="body2" color="primary" fontSize="20px" component={"h5"} gutterBottom>
                                                     Kéo hoặc chọn tệp
                                                 </Typography>
-                                                <Typography
-                                                    variant="body2"
-                                                    color="primary"
-                                                    fontSize="14px"
-                                                >
-                                                    Thả tệp vào đây hoặc nhấp
-                                                    vào browser máy của bạn
+                                                <Typography variant="body2" color="primary" fontSize="14px">
+                                                    Thả tệp vào đây hoặc nhấp vào browser máy của bạn
                                                 </Typography>
                                             </Stack>
                                         </Box>
@@ -461,42 +397,20 @@ function CreateProduct() {
                                                             alt={image}
                                                             style={{
                                                                 height: "100px",
-                                                                objectFit:
-                                                                    "contain",
+                                                                objectFit: "contain",
                                                             }}
                                                         />
-                                                        <Button
-                                                            onClick={() =>
-                                                                handleRemoveImageUpload(
-                                                                    image
-                                                                )
-                                                            }
-                                                        >
-                                                            Xóa bỏ
-                                                        </Button>
+                                                        <Button onClick={() => handleRemoveImageUpload(image)}>Xóa bỏ</Button>
                                                     </ImageListItem>
                                                 </Box>
                                             ))}
                                     </ImageList>
                                     {selectedImages.length > 0 && (
-                                        <Box
-                                            display={"flex"}
-                                            justifyContent="end"
-                                            mt={4}
-                                        >
-                                            <Button
-                                                variant="outlined"
-                                                onClick={() =>
-                                                    setSelectedImages([])
-                                                }
-                                            >
+                                        <Box display={"flex"} justifyContent="end" mt={4}>
+                                            <Button variant="outlined" onClick={() => setSelectedImages([])}>
                                                 Xóa tất cả
                                             </Button>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ marginLeft: "16px" }}
-                                                onClick={handleUploadImage}
-                                            >
+                                            <Button variant="contained" sx={{ marginLeft: "16px" }} onClick={handleUploadImage}>
                                                 Upload image
                                             </Button>
                                         </Box>
@@ -508,12 +422,7 @@ function CreateProduct() {
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
-                                <FormControlLabel
-                                    control={<Switch defaultChecked />}
-                                    label="Hiển thị"
-                                    name="inStock"
-                                    id={"inStock"}
-                                />
+                                <FormControlLabel control={<Switch defaultChecked />} label="Hiển thị" name="inStock" id={"inStock"} />
                                 <TextField
                                     placeholder="Code"
                                     label="Code"
@@ -538,10 +447,7 @@ function CreateProduct() {
                                     error={priceErr !== ""}
                                     helperText={priceErr}
                                 />
-                                <FormControl
-                                    fullWidth
-                                    sx={{ margin: "16px 0" }}
-                                >
+                                <FormControl fullWidth sx={{ margin: "16px 0" }}>
                                     <Autocomplete
                                         autoComplete
                                         fullWidth
@@ -549,45 +455,23 @@ function CreateProduct() {
                                         options={categoryList}
                                         disableCloseOnSelect
                                         getOptionLabel={(option) => option.name}
-                                        isOptionEqualToValue={(option, value) =>
-                                            option.name === value.name
-                                        }
-                                        onChange={(e, value) =>
-                                            setCategorySelected(value)
-                                        }
-                                        renderOption={(
-                                            props,
-                                            option,
-                                            { selected }
-                                        ) => (
+                                        isOptionEqualToValue={(option, value) => option.name === value.name}
+                                        onChange={(e, value) => setCategorySelected(value)}
+                                        renderOption={(props, option, { selected }) => (
                                             <li {...props}>
                                                 <Checkbox
-                                                    icon={
-                                                        <Icon icon="bx:checkbox" />
-                                                    }
-                                                    checkedIcon={
-                                                        <Icon icon="bx:checkbox-checked" />
-                                                    }
+                                                    icon={<Icon icon="bx:checkbox" />}
+                                                    checkedIcon={<Icon icon="bx:checkbox-checked" />}
                                                     style={{ marginRight: 8 }}
                                                     checked={selected}
                                                 />
                                                 {option.name}
                                             </li>
                                         )}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="Danh mục sản phẩm"
-                                            />
-                                        )}
+                                        renderInput={(params) => <TextField {...params} label="Danh mục sản phẩm" />}
                                     />
                                     {!!categoryErr && (
-                                        <Typography
-                                            variant="body2"
-                                            color="error"
-                                            fontSize={"0.75rem"}
-                                            sx={{ margin: "3px 14px 0 14px" }}
-                                        >
+                                        <Typography variant="body2" color="error" fontSize={"0.75rem"} sx={{ margin: "3px 14px 0 14px" }}>
                                             {categoryErr}
                                         </Typography>
                                     )}
@@ -599,47 +483,25 @@ function CreateProduct() {
                                     options={tagList}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) =>
-                                        option.name === value.name
-                                    }
+                                    isOptionEqualToValue={(option, value) => option.name === value.name}
                                     onChange={(e, value) => setTags(value)}
-                                    renderOption={(
-                                        props,
-                                        option,
-                                        { selected }
-                                    ) => (
+                                    renderOption={(props, option, { selected }) => (
                                         <li {...props}>
                                             <Checkbox
-                                                icon={
-                                                    <Icon icon="bx:checkbox" />
-                                                }
-                                                checkedIcon={
-                                                    <Icon icon="bx:checkbox-checked" />
-                                                }
+                                                icon={<Icon icon="bx:checkbox" />}
+                                                checkedIcon={<Icon icon="bx:checkbox-checked" />}
                                                 style={{ marginRight: 8 }}
                                                 checked={selected}
                                             />
                                             {option.name}
                                         </li>
                                     )}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="Tags" />
-                                    )}
+                                    renderInput={(params) => <TextField {...params} label="Tags" />}
                                 />
-                                <Typography
-                                    variant="body2"
-                                    component={"h4"}
-                                    color={"primary"}
-                                    fontSize={"16px"}
-                                    mt={2}
-                                >
+                                <Typography variant="body2" component={"h4"} color={"primary"} fontSize={"16px"} mt={2}>
                                     Thêm mới thẻ tag
                                 </Typography>
-                                <Box
-                                    noValidate
-                                    display={"flex"}
-                                    alignItems="center"
-                                >
+                                <Box noValidate display={"flex"} alignItems="center">
                                     <TextField
                                         label="Tags"
                                         name="tag"
@@ -700,9 +562,7 @@ function CreateProduct() {
                 autoHideDuration={3000}
                 onClose={() => setShowToastMessage(false)}
             >
-                <Alert severity={toastMessage.type}>
-                    {toastMessage.message}
-                </Alert>
+                <Alert severity={toastMessage.type}>{toastMessage.message}</Alert>
             </Snackbar>
         </Fragment>
     );

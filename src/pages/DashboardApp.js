@@ -6,14 +6,7 @@ import { Grid, Container, Typography } from "@mui/material";
 import Page from "../components/Page";
 import Iconify from "../components/Iconify";
 // sections
-import {
-    AppTasks,
-    AppNewsUpdate,
-    AppOrderTimeline,
-    AppWebsiteVisits,
-    AppTrafficBySite,
-    AppWidgetSummary,
-} from "../sections/@dashboard/app";
+import { AppTasks, AppNewsUpdate, AppOrderTimeline, AppWebsiteVisits, AppTrafficBySite, AppWidgetSummary } from "../sections/@dashboard/app";
 
 // ----------------------------------------------------------------------
 
@@ -27,38 +20,19 @@ export default function DashboardApp() {
 
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary
-                            title="Lượng truy cập"
-                            total={714000}
-                            icon={"ant-design:android-filled"}
-                        />
+                        <AppWidgetSummary title="Lượng truy cập" total={714000} icon={"ant-design:android-filled"} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary
-                            title="Người dùng với"
-                            total={1352831}
-                            color="info"
-                            icon={"ant-design:apple-filled"}
-                        />
+                        <AppWidgetSummary title="Người dùng với" total={1352831} color="info" icon={"ant-design:apple-filled"} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary
-                            title="Đơn đặt hàng"
-                            total={100000}
-                            color="warning"
-                            icon={"ant-design:windows-filled"}
-                        />
+                        <AppWidgetSummary title="Đơn đặt hàng" total={100000} color="warning" icon={"ant-design:windows-filled"} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary
-                            title="Hủy đơn"
-                            total={234}
-                            color="error"
-                            icon={"ant-design:bug-filled"}
-                        />
+                        <AppWidgetSummary title="Hủy đơn" total={234} color="error" icon={"ant-design:bug-filled"} />
                     </Grid>
 
                     <Grid item xs={12} md={12} lg={12}>
@@ -83,28 +57,19 @@ export default function DashboardApp() {
                                     name: "Team A",
                                     type: "column",
                                     fill: "solid",
-                                    data: [
-                                        23, 11, 22, 27, 13, 22, 37, 21, 44, 22,
-                                        30,
-                                    ],
+                                    data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
                                 },
                                 {
                                     name: "Team B",
                                     type: "area",
                                     fill: "gradient",
-                                    data: [
-                                        44, 55, 41, 67, 22, 43, 21, 41, 56, 27,
-                                        43,
-                                    ],
+                                    data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
                                 },
                                 {
                                     name: "Team C",
                                     type: "line",
                                     fill: "solid",
-                                    data: [
-                                        30, 25, 36, 30, 45, 35, 64, 52, 59, 36,
-                                        39,
-                                    ],
+                                    data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
                                 },
                             ]}
                         />
@@ -117,9 +82,7 @@ export default function DashboardApp() {
                                 id: faker.datatype.uuid(),
                                 title: faker.name.jobTitle(),
                                 description: faker.name.jobTitle(),
-                                image: `/static/mock-images/covers/cover_${
-                                    index + 1
-                                }.jpg`,
+                                image: `/static/mock-images/covers/cover_${index + 1}.jpg`,
                                 postedAt: faker.date.recent(),
                             }))}
                         />
@@ -150,50 +113,22 @@ export default function DashboardApp() {
                                 {
                                     name: "FaceBook",
                                     value: 323234,
-                                    icon: (
-                                        <Iconify
-                                            icon={"eva:facebook-fill"}
-                                            color="#1877F2"
-                                            width={32}
-                                            height={32}
-                                        />
-                                    ),
+                                    icon: <Iconify icon={"eva:facebook-fill"} color="#1877F2" width={32} height={32} />,
                                 },
                                 {
                                     name: "Google",
                                     value: 341212,
-                                    icon: (
-                                        <Iconify
-                                            icon={"eva:google-fill"}
-                                            color="#DF3E30"
-                                            width={32}
-                                            height={32}
-                                        />
-                                    ),
+                                    icon: <Iconify icon={"eva:google-fill"} color="#DF3E30" width={32} height={32} />,
                                 },
                                 {
                                     name: "Linkedin",
                                     value: 411213,
-                                    icon: (
-                                        <Iconify
-                                            icon={"eva:linkedin-fill"}
-                                            color="#006097"
-                                            width={32}
-                                            height={32}
-                                        />
-                                    ),
+                                    icon: <Iconify icon={"eva:linkedin-fill"} color="#006097" width={32} height={32} />,
                                 },
                                 {
                                     name: "Twitter",
                                     value: 443232,
-                                    icon: (
-                                        <Iconify
-                                            icon={"eva:twitter-fill"}
-                                            color="#1C9CEA"
-                                            width={32}
-                                            height={32}
-                                        />
-                                    ),
+                                    icon: <Iconify icon={"eva:twitter-fill"} color="#1C9CEA" width={32} height={32} />,
                                 },
                             ]}
                         />

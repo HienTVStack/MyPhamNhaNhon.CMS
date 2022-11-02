@@ -1,13 +1,6 @@
 import PropTypes from "prop-types";
 // material
-import {
-    Box,
-    Checkbox,
-    TableRow,
-    TableCell,
-    TableHead,
-    TableSortLabel,
-} from "@mui/material";
+import { Box, Checkbox, TableRow, TableCell, TableHead, TableSortLabel } from "@mui/material";
 
 // ----------------------------------------------------------------------
 
@@ -33,15 +26,7 @@ UserListHead.propTypes = {
     onSelectAllClick: PropTypes.func,
 };
 
-export default function UserListHead({
-    order,
-    orderBy,
-    rowCount,
-    headLabel,
-    numSelected,
-    onRequestSort,
-    onSelectAllClick,
-}) {
+export default function UserListHead({ order, orderBy, rowCount, headLabel, numSelected, onRequestSort, onSelectAllClick }) {
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
@@ -51,9 +36,7 @@ export default function UserListHead({
             <TableRow>
                 <TableCell padding="checkbox">
                     <Checkbox
-                        indeterminate={
-                            numSelected > 0 && numSelected < rowCount
-                        }
+                        indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
                     />
@@ -72,11 +55,7 @@ export default function UserListHead({
                         >
                             {headCell.label}
                             {orderBy === headCell.id ? (
-                                <Box sx={{ ...visuallyHidden }}>
-                                    {order === "desc"
-                                        ? "sorted descending"
-                                        : "sorted ascending"}
-                                </Box>
+                                <Box sx={{ ...visuallyHidden }}>{order === "desc" ? "sorted descending" : "sorted ascending"}</Box>
                             ) : null}
                         </TableSortLabel>
                     </TableCell>

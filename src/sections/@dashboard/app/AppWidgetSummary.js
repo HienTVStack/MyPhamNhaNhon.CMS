@@ -30,14 +30,7 @@ AppWidgetSummary.propTypes = {
     sx: PropTypes.object,
 };
 
-export default function AppWidgetSummary({
-    title,
-    total,
-    icon,
-    color = "primary",
-    sx,
-    ...other
-}) {
+export default function AppWidgetSummary({ title, total, icon, color = "primary", sx, ...other }) {
     return (
         <Card
             sx={{
@@ -54,10 +47,7 @@ export default function AppWidgetSummary({
                 sx={{
                     color: (theme) => theme.palette[color].dark,
                     backgroundImage: (theme) =>
-                        `linear-gradient(135deg, ${alpha(
-                            theme.palette[color].dark,
-                            0
-                        )} 0%, ${alpha(theme.palette[color].dark, 0.24)} 100%)`,
+                        `linear-gradient(135deg, ${alpha(theme.palette[color].dark, 0)} 0%, ${alpha(theme.palette[color].dark, 0.24)} 100%)`,
                 }}
             >
                 <Iconify icon={icon} width={24} height={24} />

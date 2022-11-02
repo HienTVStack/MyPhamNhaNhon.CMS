@@ -29,33 +29,14 @@ export const SORT_BY_OPTIONS = [
     { value: "priceAsc", label: "Price: Low-High" },
 ];
 export const FILTER_GENDER_OPTIONS = ["Men", "Women", "Kids"];
-export const FILTER_CATEGORY_OPTIONS = [
-    "All",
-    "Shose",
-    "Apparel",
-    "Accessories",
-];
-export const FILTER_RATING_OPTIONS = [
-    "up4Star",
-    "up3Star",
-    "up2Star",
-    "up1Star",
-];
+export const FILTER_CATEGORY_OPTIONS = ["All", "Shose", "Apparel", "Accessories"];
+export const FILTER_RATING_OPTIONS = ["up4Star", "up3Star", "up2Star", "up1Star"];
 export const FILTER_PRICE_OPTIONS = [
     { value: "below", label: "Below $25" },
     { value: "between", label: "Between $25 - $75" },
     { value: "above", label: "Above $75" },
 ];
-export const FILTER_COLOR_OPTIONS = [
-    "#00AB55",
-    "#000000",
-    "#FFFFFF",
-    "#FFC0CB",
-    "#FF4842",
-    "#1890FF",
-    "#94D82D",
-    "#FFC107",
-];
+export const FILTER_COLOR_OPTIONS = ["#00AB55", "#000000", "#FFFFFF", "#FFC0CB", "#FF4842", "#1890FF", "#94D82D", "#FFC107"];
 
 // ----------------------------------------------------------------------
 
@@ -65,19 +46,10 @@ ShopFilterSidebar.propTypes = {
     onCloseFilter: PropTypes.func,
 };
 
-export default function ShopFilterSidebar({
-    isOpenFilter,
-    onOpenFilter,
-    onCloseFilter,
-}) {
+export default function ShopFilterSidebar({ isOpenFilter, onOpenFilter, onCloseFilter }) {
     return (
         <>
-            <Button
-                disableRipple
-                color="inherit"
-                endIcon={<Iconify icon="ic:round-filter-list" />}
-                onClick={onOpenFilter}
-            >
+            <Button disableRipple color="inherit" endIcon={<Iconify icon="ic:round-filter-list" />} onClick={onOpenFilter}>
                 Filters&nbsp;
             </Button>
 
@@ -89,12 +61,7 @@ export default function ShopFilterSidebar({
                     sx: { width: 280, border: "none", overflow: "hidden" },
                 }}
             >
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ px: 1, py: 2 }}
-                >
+                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1, py: 2 }}>
                     <Typography variant="subtitle1" sx={{ ml: 1 }}>
                         Filters
                     </Typography>
@@ -113,11 +80,7 @@ export default function ShopFilterSidebar({
                             </Typography>
                             <FormGroup>
                                 {FILTER_GENDER_OPTIONS.map((item) => (
-                                    <FormControlLabel
-                                        key={item}
-                                        control={<Checkbox />}
-                                        label={item}
-                                    />
+                                    <FormControlLabel key={item} control={<Checkbox />} label={item} />
                                 ))}
                             </FormGroup>
                         </div>
@@ -128,12 +91,7 @@ export default function ShopFilterSidebar({
                             </Typography>
                             <RadioGroup>
                                 {FILTER_CATEGORY_OPTIONS.map((item) => (
-                                    <FormControlLabel
-                                        key={item}
-                                        value={item}
-                                        control={<Radio />}
-                                        label={item}
-                                    />
+                                    <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
                                 ))}
                             </RadioGroup>
                         </div>
@@ -156,12 +114,7 @@ export default function ShopFilterSidebar({
                             </Typography>
                             <RadioGroup>
                                 {FILTER_PRICE_OPTIONS.map((item) => (
-                                    <FormControlLabel
-                                        key={item.value}
-                                        value={item.value}
-                                        control={<Radio />}
-                                        label={item.label}
-                                    />
+                                    <FormControlLabel key={item.value} value={item.value} control={<Radio />} label={item.label} />
                                 ))}
                             </RadioGroup>
                         </div>
@@ -179,18 +132,8 @@ export default function ShopFilterSidebar({
                                             <Radio
                                                 disableRipple
                                                 color="default"
-                                                icon={
-                                                    <Rating
-                                                        readOnly
-                                                        value={4 - index}
-                                                    />
-                                                }
-                                                checkedIcon={
-                                                    <Rating
-                                                        readOnly
-                                                        value={4 - index}
-                                                    />
-                                                }
+                                                icon={<Rating readOnly value={4 - index} />}
+                                                checkedIcon={<Rating readOnly value={4 - index} />}
                                             />
                                         }
                                         label="& Up"
@@ -213,14 +156,7 @@ export default function ShopFilterSidebar({
                 </Scrollbar>
 
                 <Box sx={{ p: 3 }}>
-                    <Button
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        color="inherit"
-                        variant="outlined"
-                        startIcon={<Iconify icon="ic:round-clear-all" />}
-                    >
+                    <Button fullWidth size="large" type="submit" color="inherit" variant="outlined" startIcon={<Iconify icon="ic:round-clear-all" />}>
                         Clear All
                     </Button>
                 </Box>

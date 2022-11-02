@@ -2,15 +2,7 @@ import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 // material
 import { alpha, styled } from "@mui/material/styles";
-import {
-    Box,
-    Link,
-    Card,
-    Grid,
-    Avatar,
-    Typography,
-    CardContent,
-} from "@mui/material";
+import { Box, Link, Card, Grid, Avatar, Typography, CardContent } from "@mui/material";
 // utils
 import { fDate } from "../../../utils/formatTime";
 import { fShortenNumber } from "../../../utils/formatNumber";
@@ -77,12 +69,7 @@ export default function BlogPostCard({ post, index }) {
     ];
 
     return (
-        <Grid
-            item
-            xs={12}
-            sm={latestPostLarge ? 12 : 6}
-            md={latestPostLarge ? 6 : 3}
-        >
+        <Grid item xs={12} sm={latestPostLarge ? 12 : 6} md={latestPostLarge ? 6 : 3}>
             <Card sx={{ position: "relative" }}>
                 <CardMediaStyle
                     sx={{
@@ -94,8 +81,7 @@ export default function BlogPostCard({ post, index }) {
                                 width: "100%",
                                 height: "100%",
                                 position: "absolute",
-                                bgcolor: (theme) =>
-                                    alpha(theme.palette.grey[900], 0.72),
+                                bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
                             },
                         }),
                         ...(latestPostLarge && {
@@ -148,11 +134,7 @@ export default function BlogPostCard({ post, index }) {
                         }),
                     }}
                 >
-                    <Typography
-                        gutterBottom
-                        variant="caption"
-                        sx={{ color: "text.disabled", display: "block" }}
-                    >
+                    <Typography gutterBottom variant="caption" sx={{ color: "text.disabled", display: "block" }}>
                         {fDate(createdAt)}
                     </Typography>
 
@@ -188,13 +170,8 @@ export default function BlogPostCard({ post, index }) {
                                     }),
                                 }}
                             >
-                                <Iconify
-                                    icon={info.icon}
-                                    sx={{ width: 16, height: 16, mr: 0.5 }}
-                                />
-                                <Typography variant="caption">
-                                    {fShortenNumber(info.number)}
-                                </Typography>
+                                <Iconify icon={info.icon} sx={{ width: 16, height: 16, mr: 0.5 }} />
+                                <Typography variant="caption">{fShortenNumber(info.number)}</Typography>
                             </Box>
                         ))}
                     </InfoStyle>

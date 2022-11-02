@@ -30,22 +30,10 @@ export default function ShopProductSort() {
                 color="inherit"
                 disableRipple
                 onClick={handleOpen}
-                endIcon={
-                    <Iconify
-                        icon={
-                            open
-                                ? "eva:chevron-up-fill"
-                                : "eva:chevron-down-fill"
-                        }
-                    />
-                }
+                endIcon={<Iconify icon={open ? "eva:chevron-up-fill" : "eva:chevron-down-fill"} />}
             >
                 Sort By:&nbsp;
-                <Typography
-                    component="span"
-                    variant="subtitle2"
-                    sx={{ color: "text.secondary" }}
-                >
+                <Typography component="span" variant="subtitle2" sx={{ color: "text.secondary" }}>
                     Newest
                 </Typography>
             </Button>
@@ -58,12 +46,7 @@ export default function ShopProductSort() {
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
                 {SORT_BY_OPTIONS.map((option) => (
-                    <MenuItem
-                        key={option.value}
-                        selected={option.value === "newest"}
-                        onClick={handleClose}
-                        sx={{ typography: "body2" }}
-                    >
+                    <MenuItem key={option.value} selected={option.value === "newest"} onClick={handleClose} sx={{ typography: "body2" }}>
                         {option.label}
                     </MenuItem>
                 ))}
