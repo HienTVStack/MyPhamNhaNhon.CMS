@@ -1,5 +1,5 @@
 import { filter } from "lodash";
-import { sentenceCase } from "change-case";
+// import { sentenceCase } from "change-case";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 // material
@@ -148,6 +148,23 @@ export default function ProductList() {
         setFilterName(event.target.value);
     };
 
+    const handleRemoveProductItem = async (id) => {
+        setLoading(true);
+        setProductList(productList.filter((item) => item.id !== id));
+        try {
+            if (id) {
+                const res = await productApi.destroyById(id);
+                if (res.message === "OK") {
+                    console.log(`Deleted success`);
+                }
+                setLoading(false);
+            }
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+        }
+    };
+
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - productList.length) : 0;
 
     const filteredUsers = applySortFilter(productList, getComparator(order, orderBy), filterName);
@@ -234,7 +251,7 @@ export default function ProductList() {
                                                     </TableCell>
 
                                                     <TableCell align="right">
-                                                        <UserMoreMenu slug={slug} id={id} />
+                                                        <UserMoreMenu slug={slug} id={id} removeProductItem={handleRemoveProductItem} />
                                                     </TableCell>
                                                 </TableRow>
                                             );

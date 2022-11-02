@@ -8,22 +8,12 @@ import productApi from "src/api/productApi";
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ slug, id }) {
+export default function UserMoreMenu({ slug, id, removeProductItem }) {
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleDeleteProductById = async (id) => {
-        try {
-            if (id) {
-                const res = await productApi.destroyById(id);
-
-                if (res.message === "OK") {
-                    console.log(`Deleted success`);
-                }
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        removeProductItem(id);
     };
 
     return (
