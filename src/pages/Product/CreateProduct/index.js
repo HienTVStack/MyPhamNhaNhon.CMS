@@ -27,12 +27,12 @@ import {
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import categoryApi from "src/api/categoryApi";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
+import { useSelector } from "react-redux";
 
 const preUrls = [
     {
@@ -60,12 +60,13 @@ function CreateProduct() {
     const detailRef = useRef();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const categoryList = useSelector((state) => state.data.categoryList);
+    const tagList = useSelector((state) => state.data.tagList);
     // data
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
-    const [categorySelected, setCategorySelected] = useState("");
-    const [categoryList, setCategoryList] = useState([]);
-    const [tagList, setTagList] = useState([]);
+    const [categorySelected, setCategorySelected] = useState([]);
+
     const [tags, setTags] = useState([]);
     const [tagAdd, setTagAdd] = useState("");
     const [tagAddErr, setTagAddErr] = useState("");
@@ -82,26 +83,6 @@ function CreateProduct() {
     const [categoryErr, setCategoryErr] = useState("");
     const [textNotify, setTextNotify] = useState({});
 
-    useEffect(() => {
-        const handleLoaderFirst = async () => {
-            try {
-                const getAllCategories = await categoryApi.getAll();
-                const getAllTags = await tagApi.getAll();
-
-                if (getAllCategories.message !== "FAIL") {
-                    setCategoryList(getAllCategories.categories);
-                }
-
-                if (getAllTags.message !== "FAIL") {
-                    setTagList(getAllTags.tags);
-                }
-            } catch (error) {
-                alert(error);
-                console.log(error);
-            }
-        };
-        handleLoaderFirst();
-    }, [navigate]);
     //  Handle show image UI
     const handleSelectImage = (e) => {
         const selectedFiles = e.target.files;
@@ -125,6 +106,7 @@ function CreateProduct() {
 
         setIsUpload(false);
     };
+
     // Handle upload image
     const handleUploadImage = async (e) => {
         setLoading(true);
@@ -230,7 +212,7 @@ function CreateProduct() {
         if (err) return;
 
         setLoading(true);
-
+        console.log(tags);
         try {
             const res = await productApi.create({
                 name,
@@ -262,9 +244,11 @@ function CreateProduct() {
             }
             const res = await tagApi.create({ name: tagAdd });
 
-            if (res.message !== "FAIL") {
+            if (res.message === "OK") {
                 tagList.push(res.tag);
                 tags.push(res.tag);
+                console.log(tags);
+                // dispatch(addTag(res.tag));
                 setTagAdd("");
             }
             setLoading(false);
@@ -551,25 +535,45 @@ function CreateProduct() {
                                     fullWidth
                                     sx={{ margin: "16px 0" }}
                                 >
-                                    <InputLabel>Loại sản phẩm</InputLabel>
-                                    <Select
-                                        value={categorySelected}
-                                        label="Loại sản phẩm"
+                                    <Autocomplete
+                                        autoComplete
                                         fullWidth
-                                        error={categoryErr !== ""}
-                                        onChange={(e, value) =>
-                                            setCategorySelected(e.target.value)
+                                        multiple
+                                        options={categoryList}
+                                        disableCloseOnSelect
+                                        getOptionLabel={(option) => option.name}
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.name === value.name
                                         }
-                                    >
-                                        {categoryList.map((category) => (
-                                            <MenuItem
-                                                value={category._id}
-                                                key={category._id}
-                                            >
-                                                {category.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
+                                        onChange={(e, value) =>
+                                            setCategorySelected(value)
+                                        }
+                                        renderOption={(
+                                            props,
+                                            option,
+                                            { selected }
+                                        ) => (
+                                            <li {...props}>
+                                                <Checkbox
+                                                    icon={
+                                                        <Icon icon="bx:checkbox" />
+                                                    }
+                                                    checkedIcon={
+                                                        <Icon icon="bx:checkbox-checked" />
+                                                    }
+                                                    style={{ marginRight: 8 }}
+                                                    checked={selected}
+                                                />
+                                                {option.name}
+                                            </li>
+                                        )}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Danh mục sản phẩm"
+                                            />
+                                        )}
+                                    />
                                     {!!categoryErr && (
                                         <Typography
                                             variant="body2"
@@ -582,12 +586,15 @@ function CreateProduct() {
                                     )}
                                 </FormControl>
                                 <Autocomplete
+                                    autoComplete
                                     fullWidth
                                     multiple
-                                    id="checkboxes-tags"
                                     options={tagList}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option.name}
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.name === value.name
+                                    }
                                     onChange={(e, value) => setTags(value)}
                                     renderOption={(
                                         props,

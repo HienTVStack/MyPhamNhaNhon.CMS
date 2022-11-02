@@ -1,18 +1,12 @@
-export const loadPostStart = () => ({
-    type: "LOAD_POST_START",
+export const setCategories = (data) => ({
+    type: "LOAD_CATEGORY",
+    payload: data,
 });
-
-export const loadPostSuccess = (posts) => ({
-    type: "LOAD_POST_SUCCESS",
-    payload: posts,
+export const setTags = (data) => ({
+    type: "LOAD_TAG",
+    payload: data,
 });
-
-export const loadPostFail = (errors) => ({
-    type: "LOAD_POST_FAIL",
-    payload: errors,
-});
-
-export const removePost = (posts) => ({
-    type: "REMOVE_POST",
-    payload: posts,
+export const addTag = (data) => ({
+    type: "ADD_TAG",
+    payload: data,
 });

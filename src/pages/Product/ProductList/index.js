@@ -33,6 +33,7 @@ import {
 import { useEffect } from "react";
 import productApi from "src/api/productApi";
 import { NumericFormat } from "react-number-format";
+import Loading from "src/components/Loading";
 
 // ----------------------------------------------------------------------
 
@@ -93,7 +94,7 @@ export default function ProductList() {
 
     const [filterName, setFilterName] = useState("");
 
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const [productList, setProductList] = useState([]);
 
@@ -201,175 +202,186 @@ export default function ProductList() {
                         filterName={filterName}
                         onFilterName={handleFilterByName}
                     />
-
-                    <Scrollbar>
-                        <TableContainer sx={{ minWidth: 800 }}>
-                            <Table>
-                                <UserListHead
-                                    order={order}
-                                    orderBy={orderBy}
-                                    headLabel={TABLE_HEAD}
-                                    // rowCount={USERLIST.length}
-                                    rowCount={productList.length}
-                                    numSelected={selected.length}
-                                    onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
-                                />
-                                <TableBody>
-                                    {filteredUsers
-                                        .slice(
-                                            page * rowsPerPage,
-                                            page * rowsPerPage + rowsPerPage
-                                        )
-                                        .map((row) => {
-                                            const {
-                                                id,
-                                                name,
-                                                createdAt,
-                                                image,
-                                                inStock,
-                                                price,
-                                                slug,
-                                            } = row;
-                                            const isItemSelected =
-                                                selected.indexOf(name) !== -1;
-
-                                            return (
-                                                <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={isItemSelected}
-                                                    aria-checked={
-                                                        isItemSelected
-                                                    }
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={
-                                                                isItemSelected
-                                                            }
-                                                            onChange={(event) =>
-                                                                handleClick(
-                                                                    event,
-                                                                    name
-                                                                )
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell
-                                                        component="th"
-                                                        scope="row"
-                                                        padding="none"
-                                                    >
-                                                        <Stack
-                                                            direction="row"
-                                                            alignItems="center"
-                                                            spacing={2}
-                                                        >
-                                                            <Avatar
-                                                                alt={name}
-                                                                src={image}
-                                                            />
-                                                            <Typography
-                                                                variant="subtitle2"
-                                                                noWrap
-                                                            >
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {new Intl.DateTimeFormat(
-                                                            "en-US",
-                                                            {
-                                                                year: "numeric",
-                                                                month: "2-digit",
-                                                                day: "2-digit",
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                                second: "2-digit",
-                                                            }
-                                                        ).format(
-                                                            new Date(createdAt)
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label
-                                                            variant="ghost"
-                                                            color={
-                                                                inStock
-                                                                    ? "success"
-                                                                    : "error"
-                                                            }
-                                                        >
-                                                            {inStock
-                                                                ? "Còn hàng"
-                                                                : "Hết hàng"}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {/* {price}
-                                                         */}
-                                                        <NumericFormat
-                                                            value={price}
-                                                            displayType={"text"}
-                                                            thousandSeparator={
-                                                                true
-                                                            }
-                                                            suffix={" đ"}
-                                                            renderText={(
-                                                                value,
-                                                                props
-                                                            ) => (
-                                                                <div {...props}>
-                                                                    {value}
-                                                                </div>
-                                                            )}
-                                                        />
-                                                    </TableCell>
-
-                                                    <TableCell align="right">
-                                                        <UserMoreMenu
-                                                            slug={slug}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    {emptyRows > 0 && (
-                                        <TableRow
-                                            style={{ height: 53 * emptyRows }}
-                                        >
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-
-                                {isUserNotFound && (
+                    {loading ? (
+                        <Loading />
+                    ) : (
+                        <Scrollbar>
+                            <TableContainer sx={{ minWidth: 800 }}>
+                                <Table>
+                                    <UserListHead
+                                        order={order}
+                                        orderBy={orderBy}
+                                        headLabel={TABLE_HEAD}
+                                        rowCount={productList.length}
+                                        numSelected={selected.length}
+                                        onRequestSort={handleRequestSort}
+                                        onSelectAllClick={handleSelectAllClick}
+                                    />
                                     <TableBody>
-                                        <TableRow>
-                                            <TableCell
-                                                align="center"
-                                                colSpan={6}
-                                                sx={{ py: 3 }}
-                                            >
-                                                <SearchNotFound
-                                                    searchQuery={filterName}
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                )}
-                            </Table>
-                        </TableContainer>
-                    </Scrollbar>
+                                        {filteredUsers
+                                            .slice(
+                                                page * rowsPerPage,
+                                                page * rowsPerPage + rowsPerPage
+                                            )
+                                            .map((row) => {
+                                                const {
+                                                    id,
+                                                    name,
+                                                    createdAt,
+                                                    image,
+                                                    inStock,
+                                                    price,
+                                                    slug,
+                                                } = row;
+                                                const isItemSelected =
+                                                    selected.indexOf(name) !==
+                                                    -1;
 
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        key={id}
+                                                        tabIndex={-1}
+                                                        role="checkbox"
+                                                        selected={
+                                                            isItemSelected
+                                                        }
+                                                        aria-checked={
+                                                            isItemSelected
+                                                        }
+                                                    >
+                                                        <TableCell padding="checkbox">
+                                                            <Checkbox
+                                                                checked={
+                                                                    isItemSelected
+                                                                }
+                                                                onChange={(
+                                                                    event
+                                                                ) =>
+                                                                    handleClick(
+                                                                        event,
+                                                                        name
+                                                                    )
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell
+                                                            component="th"
+                                                            scope="row"
+                                                            padding="none"
+                                                        >
+                                                            <Stack
+                                                                direction="row"
+                                                                alignItems="center"
+                                                                spacing={2}
+                                                            >
+                                                                <Avatar
+                                                                    alt={name}
+                                                                    src={image}
+                                                                />
+                                                                <Typography
+                                                                    variant="subtitle2"
+                                                                    noWrap
+                                                                >
+                                                                    {name}
+                                                                </Typography>
+                                                            </Stack>
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            {new Intl.DateTimeFormat(
+                                                                "en-US",
+                                                                {
+                                                                    year: "numeric",
+                                                                    month: "2-digit",
+                                                                    day: "2-digit",
+                                                                    hour: "2-digit",
+                                                                    minute: "2-digit",
+                                                                    second: "2-digit",
+                                                                }
+                                                            ).format(
+                                                                new Date(
+                                                                    createdAt
+                                                                )
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            <Label
+                                                                variant="ghost"
+                                                                color={
+                                                                    inStock
+                                                                        ? "success"
+                                                                        : "error"
+                                                                }
+                                                            >
+                                                                {inStock
+                                                                    ? "Còn hàng"
+                                                                    : "Hết hàng"}
+                                                            </Label>
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            <NumericFormat
+                                                                value={price}
+                                                                displayType={
+                                                                    "text"
+                                                                }
+                                                                thousandSeparator={
+                                                                    true
+                                                                }
+                                                                suffix={" đ"}
+                                                                renderText={(
+                                                                    value,
+                                                                    props
+                                                                ) => (
+                                                                    <div
+                                                                        {...props}
+                                                                    >
+                                                                        {value}
+                                                                    </div>
+                                                                )}
+                                                            />
+                                                        </TableCell>
+
+                                                        <TableCell align="right">
+                                                            <UserMoreMenu
+                                                                slug={slug}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        {emptyRows > 0 && (
+                                            <TableRow
+                                                style={{
+                                                    height: 53 * emptyRows,
+                                                }}
+                                            >
+                                                <TableCell colSpan={6} />
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+
+                                    {isUserNotFound && (
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell
+                                                    align="center"
+                                                    colSpan={6}
+                                                    sx={{ py: 3 }}
+                                                >
+                                                    <SearchNotFound
+                                                        searchQuery={filterName}
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    )}
+                                </Table>
+                            </TableContainer>
+                        </Scrollbar>
+                    )}
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        // count={USERLIST.length}
                         count={productList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}

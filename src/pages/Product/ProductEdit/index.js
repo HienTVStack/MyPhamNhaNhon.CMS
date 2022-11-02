@@ -32,12 +32,14 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useNavigate, useParams } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 import categoryApi from "src/api/categoryApi";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
 import imageApi from "src/api/imageApi";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import Loading from "src/components/Loading";
 
 const preUrls = [
     {
@@ -86,20 +88,21 @@ function ProductEdit() {
     const descriptionRef = useRef();
     const detailRef = useRef();
     const navigate = useNavigate();
+    const categoryList = useSelector((state) => state.data.categoryList);
+    const tagList = useSelector((state) => state.data.tagList);
+
     const [loading, setLoading] = useState(false);
     const [tabValue, setTableValue] = useState("1");
     const [isShowModal, setIsShowModal] = useState(false);
+    const [tagAdd, setTagAdd] = useState("");
 
     // data
     const [productName, setProductName] = useState("");
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
     const [productPrice, setProductPrice] = useState(0);
-    const [categorySelected, setCategorySelected] = useState("");
-    const [categoryList, setCategoryList] = useState([]);
-    const [tagList, setTagList] = useState([]);
-    const [tags, setTags] = useState([]);
-    const [tagAdd, setTagAdd] = useState("");
+    const [categorySelected, setCategorySelected] = useState([]);
+    const [tagSelected, setTagSelected] = useState([]);
     const [tagAddErr, setTagAddErr] = useState("");
     const [imageList, setImageList] = useState([]);
     const [selectedImages, setSelectedImages] = useState([{ url: "", id: "" }]);
@@ -117,6 +120,8 @@ function ProductEdit() {
     const { slug } = useParams();
 
     const handleProductLoader = async () => {
+        console.log(`handleProductLoader`);
+        setLoading(true);
         try {
             const res = await productApi.getProductBySlug(slug);
 
@@ -127,13 +132,16 @@ function ProductEdit() {
                 setDetailContent(productItem.detailContent);
                 setProductPrice(productItem.price);
                 setCategorySelected(productItem.category);
-                setTags(productItem.tags);
+                setTagSelected(productItem.tags);
                 setSelectedImages(productItem.imageList);
+                setLoading(false);
             }
         } catch (error) {
             console.log(error);
+            setLoading(false);
         }
     };
+
     const handleImageLoader = async () => {
         try {
             const res = await imageApi.getAll();
@@ -148,23 +156,6 @@ function ProductEdit() {
     useEffect(() => {
         handleProductLoader();
         handleImageLoader();
-        const handleLoaderFirst = async () => {
-            try {
-                const getAllCategories = await categoryApi.getAll();
-                const getAllTags = await tagApi.getAll();
-
-                if (getAllCategories.message !== "FAIL") {
-                    setCategoryList(getAllCategories.categories);
-                }
-
-                if (getAllTags.message !== "FAIL") {
-                    setTagList(getAllTags.tags);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        handleLoaderFirst();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 
@@ -174,6 +165,7 @@ function ProductEdit() {
     };
 
     const handleSubmit = async (e) => {
+        console.log(`submit`);
         e.preventDefault();
         setLoading(true);
         setNameErr("");
@@ -181,11 +173,10 @@ function ProductEdit() {
         setDescriptionContentErr("");
         setPriceErr("");
         setCategoryErr("");
-        setLoading(true);
         const data = new FormData(e.target);
 
         const name = data.get("name");
-        const inStock = data.get("inStock");
+        // const inStock = data.get("inStock");
         const code = data.get("code");
         const price = data.get("price");
 
@@ -236,15 +227,14 @@ function ProductEdit() {
             price: productPrice,
             imageList: selectedImages,
             category: categorySelected,
-            tags: tags,
+            tags: tagSelected,
             slug: slug,
         };
 
         try {
             const res = await productApi.update(product, slug);
             if (res) {
-                // navigate("/dashboard/products/list");
-                console.log(res);
+                navigate("/dashboard/products/list");
             }
             setLoading(false);
         } catch (error) {
@@ -254,6 +244,8 @@ function ProductEdit() {
     };
 
     const handleCreateTag = async () => {
+        console.log(`handleCreateTag`);
+
         setLoading(true);
         setTagAddErr("");
         try {
@@ -265,7 +257,7 @@ function ProductEdit() {
 
             if (res.message !== "FAIL") {
                 tagList.push(res.tag);
-                tags.push(res.tag);
+                tagSelected.push(res.tag);
                 setTagAdd("");
             }
             setLoading(false);
@@ -296,6 +288,7 @@ function ProductEdit() {
     };
 
     const handleImageRemoveAll = async () => {
+        console.log(`handleImageRemoveAll`);
         setSelectedImages([]);
         setLoading(true);
         try {
@@ -321,6 +314,7 @@ function ProductEdit() {
     };
 
     const handleInsertImage = async () => {
+        console.log(`handleInsertImage`);
         imageUploadUrl.map((img) => selectedImages.push(img.imageUrl));
         setLoading(true);
         try {
@@ -349,7 +343,7 @@ function ProductEdit() {
     const handleSelectImage = async (e) => {
         const selectedFiles = e.target.files;
         const selectedFilesArray = Array.from(selectedFiles);
-
+        console.log(`handleSelectImage`);
         setLoading(true);
         const data = new FormData();
 
@@ -401,6 +395,7 @@ function ProductEdit() {
                 </Stack>
             </Box>
             {/* Content */}
+
             <Stack mt={3}>
                 <Grid
                     container
@@ -456,7 +451,9 @@ function ProductEdit() {
                                             variant="body2"
                                             color="error"
                                             fontSize={"0.75rem"}
-                                            sx={{ margin: "3px 14px 0 14px" }}
+                                            sx={{
+                                                margin: "3px 14px 0 14px",
+                                            }}
                                         >
                                             {descriptionContentErr}
                                         </Typography>
@@ -495,7 +492,9 @@ function ProductEdit() {
                                             variant="body2"
                                             color="error"
                                             fontSize={"0.75rem"}
-                                            sx={{ margin: "3px 14px 0 14px" }}
+                                            sx={{
+                                                margin: "3px 14px 0 14px",
+                                            }}
                                         >
                                             {detailContentErr}
                                         </Typography>
@@ -596,48 +595,19 @@ function ProductEdit() {
                                     error={priceErr !== ""}
                                     helperText={priceErr}
                                 />
-                                <FormControl
-                                    fullWidth
-                                    sx={{ margin: "16px 0" }}
-                                >
-                                    <InputLabel>Loại sản phẩm</InputLabel>
-                                    <Select
-                                        value={categorySelected}
-                                        label="Loại sản phẩm"
-                                        fullWidth
-                                        error={categoryErr !== ""}
-                                        onChange={(e, value) =>
-                                            setCategorySelected(e.target.value)
-                                        }
-                                    >
-                                        {categoryList.map((category) => (
-                                            <MenuItem
-                                                value={category._id}
-                                                key={category._id}
-                                            >
-                                                {category.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {!!categoryErr && (
-                                        <Typography
-                                            variant="body2"
-                                            color="error"
-                                            fontSize={"0.75rem"}
-                                            sx={{ margin: "3px 14px 0 14px" }}
-                                        >
-                                            {categoryErr}
-                                        </Typography>
-                                    )}
-                                </FormControl>
                                 <Autocomplete
                                     fullWidth
                                     multiple
-                                    id="checkboxes-tags"
-                                    options={tagList}
+                                    value={categorySelected}
+                                    options={categoryList}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option.name}
-                                    onChange={(e, value) => setTags(value)}
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.name === value.name
+                                    }
+                                    onChange={(e, value) =>
+                                        setCategorySelected(value)
+                                    }
                                     renderOption={(
                                         props,
                                         option,
@@ -658,9 +628,54 @@ function ProductEdit() {
                                         </li>
                                     )}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Tags" />
+                                        <TextField
+                                            {...params}
+                                            margin="normal"
+                                            label="Danh mục sản phẩm"
+                                        />
                                     )}
                                 />
+                                <Autocomplete
+                                    fullWidth
+                                    multiple
+                                    value={tagSelected}
+                                    options={tagList}
+                                    disableCloseOnSelect
+                                    getOptionLabel={(option) => option.name}
+                                    isOptionEqualToValue={(option, value) =>
+                                        option.name === value.name
+                                    }
+                                    onChange={(e, value) =>
+                                        setTagSelected(value)
+                                    }
+                                    renderOption={(
+                                        props,
+                                        option,
+                                        { selected }
+                                    ) => (
+                                        <li {...props}>
+                                            <Checkbox
+                                                icon={
+                                                    <Icon icon="bx:checkbox" />
+                                                }
+                                                checkedIcon={
+                                                    <Icon icon="bx:checkbox-checked" />
+                                                }
+                                                style={{ marginRight: 8 }}
+                                                checked={selected}
+                                            />
+                                            {option.name}
+                                        </li>
+                                    )}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            margin="normal"
+                                            label="Tags"
+                                        />
+                                    )}
+                                />
+
                                 <Typography
                                     variant="body2"
                                     component={"h4"}

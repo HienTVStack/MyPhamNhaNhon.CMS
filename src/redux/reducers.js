@@ -1,33 +1,25 @@
 const initialState = {
-    loading: false,
-    posts: [],
-    errors: null,
+    categoryList: [],
+    tagList: [],
+    user: {},
 };
 
 const appReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "LOAD_POST_START":
+        case "LOAD_CATEGORY": {
             return {
                 ...state,
-                loading: true,
+                categoryList: action.payload,
             };
-        case "LOAD_POST_SUCCESS":
+        }
+        case "LOAD_TAG": {
             return {
                 ...state,
-                loading: false,
-                posts: action.payload,
+                tagList: action.payload,
             };
-        case "LOAD_POST_FAIL":
-            return {
-                ...state,
-                loading: false,
-                errors: action.payload,
-            };
-        case "REMOVE_POST":
-            return {
-                ...state,
-                posts: [],
-            };
+        }
+        case "ADD_TAG":
+            return [...state, { tagList: action.payload }];
         default:
             return state;
     }

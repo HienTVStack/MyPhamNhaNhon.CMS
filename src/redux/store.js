@@ -1,15 +1,6 @@
-import { createStore, applyMiddleware } from "redux";
-import createSagaMiddleware from "@redux-saga/core";
-import { logger } from "redux-logger";
+import { createStore } from "redux";
 import rootReducer from "./root-reducer";
 
-import { onLoadPost } from "./saga";
-
-const sagaMiddleWare = createSagaMiddleware();
-const middleware = [logger, sagaMiddleWare];
-
-const store = createStore(rootReducer, applyMiddleware(...middleware));
-
-sagaMiddleWare.run(onLoadPost);
+const store = createStore(rootReducer);
 
 export default store;
