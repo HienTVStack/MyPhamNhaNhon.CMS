@@ -29,7 +29,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addProduct } from "src/redux/actions";
 
 const preUrls = [
     {
@@ -56,13 +57,14 @@ function CreateProduct() {
     const descriptionRef = useRef();
     const detailRef = useRef();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
     const [loading, setLoading] = useState(false);
-    const [showToastMessage, setShowToastMessage] = useState(false);
     const [toastMessage, setToastMessage] = useState({
+        open: false,
         type: "error",
-        message: "Err_001",
+        message: "ERR_001",
     });
 
     // data
@@ -75,7 +77,7 @@ function CreateProduct() {
     const [tagAddErr, setTagAddErr] = useState("");
     const [selectedImages, setSelectedImages] = useState([]);
     const [uploadImages, setUploadImages] = useState([]);
-    const [isUpload, setIsUpload] = useState(false);
+    // const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
     // err
     const [detailContentErr, setDetailContentErr] = useState("");
@@ -105,8 +107,6 @@ function CreateProduct() {
         });
 
         setSelectedImages(imageArray);
-
-        setIsUpload(false);
     };
 
     // Handle upload image
@@ -114,31 +114,30 @@ function CreateProduct() {
         setLoading(true);
         const imageUrl = [];
         const data = new FormData();
-        console.log(uploadImages);
         for (const file of uploadImages) {
             data.append("file", file.file);
             data.append("upload_preset", "iwn62ygb");
             try {
                 const res = await axios.post("https://api.cloudinary.com/v1_1/diitw1fjj/image/upload", data);
                 imageUrl.push(res.data.secure_url);
-                setIsUpload(true);
+                setToastMessage({
+                    open: true,
+                    type: "success",
+                    message: "Tải ảnh thành công",
+                });
             } catch (error) {
                 console.log(error);
                 setLoading(false);
-                setIsUpload(true);
                 setToastMessage({
+                    open: true,
                     type: "error",
                     message: "Tải ảnh thất bại",
                 });
             }
         }
-        setToastMessage({
-            type: "success",
-            message: "Tải ảnh thành công",
-        });
         setImageUploadUrl(imageUrl);
         setLoading(false);
-        setIsUpload(true);
+        // setIsUpload(true);
     };
 
     const handleRemoveImageUpload = (image) => {
@@ -175,9 +174,9 @@ function CreateProduct() {
             setPriceErr(`Nhập giá của sản phẩm`);
         }
 
-        if (price !== "" && Number(price) <= 0) {
+        if (!Number(price) || parseFloat(price) <= 0) {
             err = true;
-            setPriceErr(`Giá của sản phẩm phải lớn hơn 0`);
+            setPriceErr(`Phải là số lớn hơn hoặc bằng 0`);
         }
 
         if (descriptionContent === "") {
@@ -194,12 +193,11 @@ function CreateProduct() {
             err = true;
             setCategoryErr(`Chọn loại cho sản phẩm`);
         }
-        console.log(imageUploadUrl);
+
         if (imageUploadUrl.length <= 0) {
             err = true;
-            setIsUpload(true);
-            setShowToastMessage(true);
             setToastMessage({
+                open: true,
                 type: "warning",
                 message: "Warning! Chú ý bạn chưa tải ảnh lên could",
             });
@@ -208,15 +206,15 @@ function CreateProduct() {
         setLoading(false);
 
         if (err) {
-            setShowToastMessage(true);
             setToastMessage({
+                open: true,
                 type: "warning",
                 message: "Vui lòng nhập đầy đủ thông tin",
             });
+            return;
         }
 
         setLoading(true);
-        console.log(tags);
         try {
             const res = await productApi.create({
                 name,
@@ -229,12 +227,18 @@ function CreateProduct() {
                 price,
             });
             if (res) {
+                dispatch(addProduct(res.product));
                 navigate("/dashboard/products/list");
             }
             setLoading(false);
         } catch (error) {
-            setLoading(false);
             console.log(error);
+            const errors = error.data.errors[0].msg;
+            if (errors) {
+                setNameErr(errors);
+            }
+            setToastMessage({ open: true, type: "error", message: `Kiểm tra lại` });
+            setLoading(false);
         }
     };
 
@@ -251,13 +255,18 @@ function CreateProduct() {
             if (res.message === "OK") {
                 tagList.push(res.tag);
                 tags.push(res.tag);
-                console.log(tags);
                 // dispatch(addTag(res.tag));
-                setTagAdd("");
             }
+            setTagAdd("");
             setLoading(false);
         } catch (error) {
-            setTagAddErr(`Thẻ này đã tồn tại`);
+            console.log(error);
+            const errors = error.data.errors;
+            console.log(errors);
+            if (errors) {
+                setTagAddErr(errors[0].msg);
+            }
+            setToastMessage({ open: true, type: "error", message: `Kiểm tra lại` });
             setLoading(false);
         }
     };
@@ -272,7 +281,6 @@ function CreateProduct() {
             setTagAdd(value);
             return true;
         } else {
-            console.log(false);
             setTagAddErr("Không được nhập kí tự đặc biệt");
             return false;
         }
@@ -554,15 +562,17 @@ function CreateProduct() {
             </Backdrop>
             {/* Snackbar */}
             <Snackbar
-                open={showToastMessage}
+                open={toastMessage.open}
                 anchorOrigin={{
                     vertical: "top",
                     horizontal: "right",
                 }}
                 autoHideDuration={3000}
-                onClose={() => setShowToastMessage(false)}
+                onClose={() => setToastMessage({ open: false })}
             >
-                <Alert severity={toastMessage.type}>{toastMessage.message}</Alert>
+                <Alert variant="filled" hidden={3000} severity={toastMessage.type} x={{ minWidth: "200px" }}>
+                    {toastMessage.message}
+                </Alert>
             </Snackbar>
         </Fragment>
     );
