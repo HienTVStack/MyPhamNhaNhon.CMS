@@ -13,6 +13,7 @@ import CreateProduct from "src/pages/Product/CreateProduct";
 import DashboardApp from "../pages/DashboardApp";
 import ProductList from "src/pages/Product/ProductList";
 import ProductEdit from "src/pages/Product/ProductEdit";
+import ProductTrash from "src/pages/Product/ProductTrash";
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +32,7 @@ export default function Router() {
                         { path: "e-list", element: <Products /> },
                         { path: "list", element: <ProductList /> },
                         { path: ":slug/edit", element: <ProductEdit /> },
+                        { path: "trash", element: <ProductTrash /> },
                     ],
                 },
                 { path: "blog", element: <Blog /> },

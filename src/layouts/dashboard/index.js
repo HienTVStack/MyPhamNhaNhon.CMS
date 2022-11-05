@@ -9,7 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import categoryApi from "src/api/categoryApi";
 import tagApi from "src/api/tagApi";
-import { setCategories, setTags } from "src/redux/actions";
+import {
+    loadProductTrash as _loadProductTrash,
+    loadCategory as _loadCategory,
+    loadProduct as _loadProduct,
+    loadTag as _loadTag,
+    loadProductStart,
+} from "src/redux/actions";
+import productApi from "src/api/productApi";
+import Loading from "src/components/Loading";
 
 // ----------------------------------------------------------------------
 
@@ -41,44 +49,73 @@ export default function DashboardLayout() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
+    const productList = useSelector((state) => state.data.productList);
 
     // load category
     const loadCategory = async () => {
-        const res = await categoryApi.getAll();
-        if (res.message === "OK") {
-            dispatch(setCategories(res.categories));
+        setLoading(true);
+        try {
+            const res = await categoryApi.getAll();
+            if (res.message === "OK") {
+                dispatch(_loadCategory(res.categories));
+            }
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
         }
     };
     //load tag
     const loadTag = async () => {
-        const res = await tagApi.getAll();
-        if (res.message === "OK") {
-            dispatch(setTags(res.tags));
+        setLoading(true);
+        try {
+            const res = await tagApi.getAll();
+            if (res.message === "OK") {
+                dispatch(_loadTag(res.tags));
+            }
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
+
+    const loadProductTrash = async () => {
+        setLoading(true);
+        try {
+            const res = await productApi.getTrash();
+            if (res.message === "OK") {
+                dispatch(_loadProductTrash(res.products));
+            }
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (categoryList.length <= 0) {
+        if (categoryList.length === 0 || tagList.length === 0 || productList.length === 0 || productList.length === 0) {
             loadCategory();
-        }
-        if (tagList.length <= 0) {
+            // loadProduct();
+            // dispatch(loadProduct);
+            // loadProductTrash();
             loadTag();
         }
+
+        dispatch(loadProductStart());
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 
     return (
         <RootStyle>
             <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
-            <DashboardSidebar
-                isOpenSidebar={open}
-                onCloseSidebar={() => setOpen(false)}
-            />
-            <MainStyle>
-                <Outlet />
-            </MainStyle>
+            <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+            <MainStyle>{loading ? <Loading /> : <Outlet />}</MainStyle>
         </RootStyle>
     );
 }

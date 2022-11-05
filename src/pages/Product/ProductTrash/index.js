@@ -26,20 +26,20 @@ import Iconify from "src/components/Iconify";
 import SearchNotFound from "src/components/SearchNotFound";
 import { UserListHead } from "src/sections/@dashboard/user";
 import { ProductListToolbar } from "src/sections/@dashboard/products";
+import MoreMenuTrash from "./MoreMenuTrash";
 // mock
+import { useEffect } from "react";
 import productApi from "src/api/productApi";
-import { NumericFormat } from "react-number-format";
 import Loading from "src/components/Loading";
-import { useMemo } from "react";
-import MoreMenuProduct from "./MoreMenuProduct";
+import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
     { id: "name", label: "Name", alignRight: false },
-    { id: "createdAt", label: "Ngày tạo", alignRight: false },
-    { id: "status", label: "Trạng thái", alignRight: false },
-    { id: "price", label: "Giá", alignRight: false },
+    { id: "deletedAt", label: "Ngày xóa", alignRight: false },
+    { id: "author", label: "Người xóa", alignRight: false },
+    { id: "quantityStock", label: "Tồn", alignRight: false },
     { id: "" },
 ];
 
@@ -72,22 +72,23 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function ProductList() {
+export default function ProductTrash() {
+    const productTrashStore = useSelector((state) => state.data.productTrash);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const [order, setOrder] = useState("desc");
+    const [order, setOrder] = useState("asc");
     const [selected, setSelected] = useState([]);
-    const [orderBy, setOrderBy] = useState("createdAt");
+    const [orderBy, setOrderBy] = useState("name");
     const [filterName, setFilterName] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [productList, setProductList] = useState([]);
+    const [productTrashList, setProductTrashList] = useState([]);
 
-    const fetchProductList = async () => {
+    const fetchProductTrash = async () => {
         setLoading(true);
         try {
-            const res = await productApi.getAll();
+            const res = await productApi.getTrash();
             if (res.message === "OK") {
-                setProductList(res.products);
+                setProductTrashList(res.products);
             }
             setLoading(false);
         } catch (error) {
@@ -96,9 +97,9 @@ export default function ProductList() {
         }
     };
 
-    useMemo(() => {
-        fetchProductList();
-    }, []);
+    useEffect(() => {
+        fetchProductTrash();
+    }, [productTrashStore]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === "asc";
@@ -108,7 +109,7 @@ export default function ProductList() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = productList.map((n) => n.id);
+            const newSelecteds = productTrashList.map((n) => n.id);
             setSelected(newSelecteds);
             return;
         }
@@ -130,7 +131,7 @@ export default function ProductList() {
         setSelected(newSelected);
     };
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = (newPage) => {
         setPage(newPage);
     };
 
@@ -143,37 +144,40 @@ export default function ProductList() {
         setFilterName(event.target.value);
     };
 
-    const handleRemoveProductItem = async (id) => {
+    const handleRestoreProductItem = async (id) => {
         setLoading(true);
         try {
-            const res = await productApi.destroyById(id);
+            const res = await productApi.restoredById(id);
             if (res.message === "OK") {
-                setProductList(productList.filter((product) => product.id !== id));
+                setProductTrashList(productTrashList.filter((product) => product.id !== id));
+            }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+        }
+    };
+
+    const handleDeleteProductItem = async (id) => {
+        console.log(id);
+        setLoading(true);
+        try {
+            if (id) {
+                const res = await productApi.forceDelete(id);
+                if (res.message === "OK") {
+                    setProductTrashList(productTrashList.filter((item) => item.id !== id));
+                }
                 setLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setLoading(false);
+            console.log(error);
         }
     };
 
-    const handleDestroyMultipleProduct = async (idList) => {
-        setLoading(true);
-        try {
-            const res = await productApi.destroyMultiple({ idList });
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - productTrashList.length) : 0;
 
-            if (res.message === "OK") {
-                fetchProductList();
-            }
-        } catch (error) {
-            console.log(error);
-            setLoading(false);
-        }
-    };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - productList.length) : 0;
-
-    const filteredUsers = applySortFilter(productList, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(productTrashList, getComparator(order, orderBy), filterName);
 
     const isUserNotFound = filteredUsers.length === 0;
 
@@ -182,7 +186,7 @@ export default function ProductList() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
-                        Danh sách sản phẩm
+                        Thùng rác
                     </Typography>
                     <Button variant="contained" component={RouterLink} to="/dashboard/products/create" startIcon={<Iconify icon="eva:plus-fill" />}>
                         Thêm mới
@@ -195,7 +199,6 @@ export default function ProductList() {
                         filterName={filterName}
                         onFilterName={handleFilterByName}
                         productsSelected={selected}
-                        destroyMultipleProduct={handleDestroyMultipleProduct}
                     />
                     {loading ? (
                         <Loading />
@@ -207,14 +210,14 @@ export default function ProductList() {
                                         order={order}
                                         orderBy={orderBy}
                                         headLabel={TABLE_HEAD}
-                                        rowCount={productList.length}
+                                        rowCount={productTrashList.length}
                                         numSelected={selected.length}
                                         onRequestSort={handleRequestSort}
                                         onSelectAllClick={handleSelectAllClick}
                                     />
                                     <TableBody>
                                         {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                            const { id, name, createdAt, image, inStock, price, slug } = row;
+                                            const { id, name, deletedAt, image, inStock, quantityStock } = row;
                                             const isItemSelected = selected.indexOf(id) !== -1;
 
                                             return (
@@ -245,25 +248,21 @@ export default function ProductList() {
                                                             hour: "2-digit",
                                                             minute: "2-digit",
                                                             second: "2-digit",
-                                                        }).format(new Date(createdAt))}
+                                                        }).format(new Date(deletedAt))}
                                                     </TableCell>
                                                     <TableCell align="left">
                                                         <Label variant="ghost" color={inStock ? "success" : "error"}>
                                                             {inStock ? "Còn hàng" : "Hết hàng"}
                                                         </Label>
                                                     </TableCell>
-                                                    <TableCell align="left">
-                                                        <NumericFormat
-                                                            value={price}
-                                                            displayType={"text"}
-                                                            thousandSeparator={true}
-                                                            suffix={" đ"}
-                                                            renderText={(value, props) => <div {...props}>{value}</div>}
-                                                        />
-                                                    </TableCell>
+                                                    <TableCell align="left">{quantityStock}</TableCell>
 
                                                     <TableCell align="right">
-                                                        <MoreMenuProduct slug={slug} product={row} removeProductItem={handleRemoveProductItem} />
+                                                        <MoreMenuTrash
+                                                            product={row}
+                                                            deleteProductItem={handleDeleteProductItem}
+                                                            restoreProductItem={handleRestoreProductItem}
+                                                        />
                                                     </TableCell>
                                                 </TableRow>
                                             );
@@ -295,7 +294,7 @@ export default function ProductList() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={productList.length}
+                        count={productTrashList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

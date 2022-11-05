@@ -7,16 +7,12 @@ import Iconify from "../../../components/Iconify";
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ slug, id, removeProductItem, restoreProductItem }) {
+export default function MoreMenuProduct({ product, removeProductItem }) {
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleDeleteProductById = (id) => {
-        removeProductItem(id);
-    };
-
-    const handleRestoreProductItem = (id) => {
-        restoreProductItem(id);
+    const handleDeleteProductById = (product) => {
+        removeProductItem(product.id);
     };
 
     return (
@@ -35,14 +31,14 @@ export default function UserMoreMenu({ slug, id, removeProductItem, restoreProdu
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-                <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleDeleteProductById(id)}>
+                <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleDeleteProductById(product)}>
                     <ListItemIcon>
                         <Iconify icon="eva:trash-2-outline" width={24} height={24} />
                     </ListItemIcon>
                     <ListItemText primary="Delete" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
 
-                <MenuItem component={RouterLink} to={`/dashboard/products/${slug}/edit`} sx={{ color: "text.secondary" }}>
+                <MenuItem component={RouterLink} to={`/dashboard/products/${product.slug}/edit`} sx={{ color: "text.secondary" }}>
                     <ListItemIcon>
                         <Iconify icon="eva:edit-outline" width={24} height={24} />
                     </ListItemIcon>

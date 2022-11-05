@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from "@mui/material";
 // component
@@ -7,16 +6,16 @@ import Iconify from "../../../components/Iconify";
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ slug, id, removeProductItem, restoreProductItem }) {
+export default function MoreMenuTrash({ product, restoreProductItem, deleteProductItem }) {
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleDeleteProductById = (id) => {
-        removeProductItem(id);
+    const handleRestoreProductItem = (product) => {
+        restoreProductItem(product.id);
     };
 
-    const handleRestoreProductItem = (id) => {
-        restoreProductItem(id);
+    const handleDeleteProductItem = (product) => {
+        deleteProductItem(product.id);
     };
 
     return (
@@ -35,18 +34,18 @@ export default function UserMoreMenu({ slug, id, removeProductItem, restoreProdu
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-                <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleDeleteProductById(id)}>
+                <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleRestoreProductItem(product)}>
                     <ListItemIcon>
-                        <Iconify icon="eva:trash-2-outline" width={24} height={24} />
+                        <Iconify icon="clarity:backup-restore-line" width={24} height={24} />
                     </ListItemIcon>
-                    <ListItemText primary="Delete" primaryTypographyProps={{ variant: "body2" }} />
+                    <ListItemText primary="Restore" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
 
-                <MenuItem component={RouterLink} to={`/dashboard/products/${slug}/edit`} sx={{ color: "text.secondary" }}>
+                <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleDeleteProductItem(product)}>
                     <ListItemIcon>
-                        <Iconify icon="eva:edit-outline" width={24} height={24} />
+                        <Iconify icon="ant-design:delete-outlined" width={24} height={24} />
                     </ListItemIcon>
-                    <ListItemText primary="Edit" primaryTypographyProps={{ variant: "body2" }} />
+                    <ListItemText primary="Xóa vĩnh viễn" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
             </Menu>
         </>

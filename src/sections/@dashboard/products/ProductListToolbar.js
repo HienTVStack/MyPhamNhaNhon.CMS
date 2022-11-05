@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from "@mui/material";
 // component
 import Iconify from "../../../components/Iconify";
+import productApi from "src/api/productApi";
 
 // ----------------------------------------------------------------------
 
@@ -29,13 +30,20 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-UserListToolbar.propTypes = {
+ProductListToolbar.propTypes = {
     numSelected: PropTypes.number,
     filterName: PropTypes.string,
     onFilterName: PropTypes.func,
+    productsSelected: PropTypes.array,
+    destroyMultipleProduct: PropTypes.func,
 };
 
-export default function UserListToolbar({ numSelected, filterName, onFilterName }) {
+export default function ProductListToolbar({ numSelected, filterName, onFilterName, productsSelected, destroyMultipleProduct }) {
+    const handleDeleteMultipleProduct = (idList) => {
+        console.log(idList);
+        destroyMultipleProduct(idList);
+    };
+
     return (
         <RootStyle
             sx={{
@@ -71,7 +79,7 @@ export default function UserListToolbar({ numSelected, filterName, onFilterName 
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton>
+                    <IconButton onClick={() => handleDeleteMultipleProduct(productsSelected)}>
                         <Iconify icon="eva:trash-2-fill" />
                     </IconButton>
                 </Tooltip>
