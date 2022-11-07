@@ -30,7 +30,8 @@ import axios from "axios";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
 import { useDispatch, useSelector } from "react-redux";
-// import { addProduct } from "src/redux/actions";
+import { addProduct } from "src/redux/actions";
+import blogApi from "src/api/blogApi";
 
 const preUrls = [
     {
@@ -39,11 +40,11 @@ const preUrls = [
     },
     {
         preUrl: "/products",
-        title: "Sản phẩm",
+        title: "Bài viết",
     },
     {
         preUrl: "/create",
-        title: "Tạo mới sản phẩm",
+        title: "Tạo mới",
     },
 ];
 
@@ -53,12 +54,11 @@ const breadcrumbs = preUrls.map((pre, index) => (
     </Link>
 ));
 
-function CreateProduct() {
+function BlogCreate() {
     const descriptionRef = useRef();
     const detailRef = useRef();
     const navigate = useNavigate();
-    // const dispatch = useDispatch();
-    const categoryList = useSelector((state) => state.data.categoryList);
+    const dispatch = useDispatch();
     const tagList = useSelector((state) => state.data.tagList);
     const [loading, setLoading] = useState(false);
     const [toastMessage, setToastMessage] = useState({
@@ -70,22 +70,17 @@ function CreateProduct() {
     // data
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
-    const [categorySelected, setCategorySelected] = useState([]);
 
     const [tags, setTags] = useState([]);
     const [tagAdd, setTagAdd] = useState("");
     const [tagAddErr, setTagAddErr] = useState("");
     const [selectedImages, setSelectedImages] = useState([]);
     const [uploadImages, setUploadImages] = useState([]);
-    // const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
     // err
     const [detailContentErr, setDetailContentErr] = useState("");
     const [descriptionContentErr, setDescriptionContentErr] = useState("");
     const [nameErr, setNameErr] = useState("");
-    const [codeErr, setCodeErr] = useState("");
-    const [priceErr, setPriceErr] = useState("");
-    const [categoryErr, setCategoryErr] = useState("");
 
     //  Handle show image UI
     const handleSelectImage = (e) => {
@@ -148,35 +143,20 @@ function CreateProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setNameErr("");
-        setCodeErr("");
         setDescriptionContentErr("");
-        setPriceErr("");
-        setCategoryErr("");
         setLoading(true);
         const data = new FormData(e.target);
 
-        const name = data.get("name");
-        const inStock = data.get("inStock");
-        const code = data.get("code");
-        const price = data.get("price");
+        const title = data.get("title");
+        const isPublic = data.get("isPublic");
+        const isReview = data.get("isReview");
+        const metaTitle = data.get("metaTitle");
+        const metaDescription = data.get("metaDescription");
 
         let err = false;
-        if (name === "") {
+        if (title === "") {
             err = true;
             setNameErr(`Hãy nhập tên sản phẩm`);
-        }
-        if (code === "") {
-            err = true;
-            setCodeErr(`Hãy nhập mã sản phẩm`);
-        }
-        if (price === "") {
-            err = true;
-            setPriceErr(`Nhập giá của sản phẩm`);
-        }
-
-        if (!Number(price) || parseFloat(price) <= 0) {
-            err = true;
-            setPriceErr(`Phải là số lớn hơn hoặc bằng 0`);
         }
 
         if (descriptionContent === "") {
@@ -187,11 +167,6 @@ function CreateProduct() {
         if (detailContent === "") {
             err = true;
             setDetailContentErr("Nhập mô tả chi tiết cho sản phẩm");
-        }
-
-        if (categorySelected === "") {
-            err = true;
-            setCategoryErr(`Chọn loại cho sản phẩm`);
         }
 
         if (imageUploadUrl.length <= 0) {
@@ -215,21 +190,24 @@ function CreateProduct() {
         }
 
         setLoading(true);
+
         try {
-            const res = await productApi.create({
-                name,
-                descriptionContent,
-                detailContent,
-                inStock,
-                categorySelected,
+            const res = await blogApi.create({
+                title,
+                description: descriptionContent,
+                content: detailContent,
+                isPublic,
+                isReview,
                 tags,
-                imageUploadUrl,
-                price,
+                image: imageUploadUrl[0],
+                metaTitle,
+                metaDescription,
             });
-            if (res) {
+            if (res.message === "OK") {
                 // dispatch(addProduct(res.product));
-                navigate("/dashboard/products/list");
+                navigate("/dashboard/blog/list");
             }
+            console.log(res.blog);
             setLoading(false);
         } catch (error) {
             console.log(error);
@@ -290,7 +268,7 @@ function CreateProduct() {
         <Fragment>
             <Box>
                 <Typography variant="h3" component="h3">
-                    Tạo mới sản phẩm
+                    Tạo mới bài viết
                 </Typography>
                 <Stack spacing={2}>
                     <Breadcrumbs separator=">" aria-label="breadcrumb">
@@ -305,18 +283,19 @@ function CreateProduct() {
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4} mb={4}>
                                 <TextField
-                                    placeholder="Tên sản phẩm"
-                                    label="Tên sản phẩm"
-                                    name={"name"}
-                                    id={"name"}
+                                    placeholder="Tiêu đề bài viết"
+                                    label="Tiêu đề bài viết"
+                                    name={"title"}
+                                    id={"title"}
                                     required
                                     fullWidth
                                     disabled={loading}
                                     helperText={nameErr}
                                     error={nameErr !== ""}
                                 />
+
                                 <FormControl sx={{ margin: "16px 0" }} fullWidth>
-                                    <FormLabel>Mô tả ngắn*</FormLabel>
+                                    <FormLabel>Mô tả*</FormLabel>
                                     <Editor
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
@@ -337,7 +316,7 @@ function CreateProduct() {
                                 </FormControl>
 
                                 <FormControl sx={{ margin: "16px 0" }} fullWidth>
-                                    <FormLabel>Mô tả chi tiết sản phẩm*</FormLabel>
+                                    <FormLabel>Mô tả chi tiết*</FormLabel>
                                     <Editor
                                         apiKey="xcpm3lsqinf0dc322yb7650lq0koqilbdsxq3fzx6rgz59y8"
                                         plugins={"code"}
@@ -361,7 +340,7 @@ function CreateProduct() {
                                 <FormControl fullWidth>
                                     <FormLabel htmlFor="images">+ Add image</FormLabel>
                                     <Box fullWidth aria-label="upload picture" component="label" sx={{ cursor: "pointer" }}>
-                                        <input hidden accept="image/*" type="file" multiple onChange={handleSelectImage} />
+                                        <input hidden accept="image/*" type="file" onChange={handleSelectImage} />
                                         <Box
                                             display="flex"
                                             alignItems="center"
@@ -430,60 +409,24 @@ function CreateProduct() {
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
-                                <FormControlLabel control={<Switch defaultChecked />} label="Hiển thị" name="inStock" id={"inStock"} />
-                                <TextField
-                                    placeholder="Code"
-                                    label="Code"
-                                    name={"code"}
-                                    id={"code"}
-                                    required
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={loading}
-                                    helperText={codeErr}
-                                    error={codeErr !== ""}
+                                <FormControlLabel
+                                    control={<Switch defaultChecked />}
+                                    label="Hiển thị"
+                                    labelPlacement="start"
+                                    name="isPublic"
+                                    id={"isPublic"}
+                                    sx={{ width: "100%", justifyContent: "space-between" }}
                                 />
-                                <TextField
-                                    placeholder="Giá sản phẩm"
-                                    label="Giá sản phẩm"
-                                    name={"price"}
-                                    id={"price"}
-                                    required
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={loading}
-                                    error={priceErr !== ""}
-                                    helperText={priceErr}
+                                <br />
+                                <FormControlLabel
+                                    control={<Switch defaultChecked />}
+                                    label="Cho phép bình luận"
+                                    labelPlacement="start"
+                                    name="isReview"
+                                    id={"isReview"}
+                                    sx={{ width: "100%", justifyContent: "space-between" }}
                                 />
-                                <FormControl fullWidth sx={{ margin: "16px 0" }}>
-                                    <Autocomplete
-                                        autoComplete
-                                        fullWidth
-                                        multiple
-                                        options={categoryList}
-                                        disableCloseOnSelect
-                                        getOptionLabel={(option) => option.name}
-                                        isOptionEqualToValue={(option, value) => option.name === value.name}
-                                        onChange={(e, value) => setCategorySelected(value)}
-                                        renderOption={(props, option, { selected }) => (
-                                            <li {...props}>
-                                                <Checkbox
-                                                    icon={<Icon icon="bx:checkbox" />}
-                                                    checkedIcon={<Icon icon="bx:checkbox-checked" />}
-                                                    style={{ marginRight: 8 }}
-                                                    checked={selected}
-                                                />
-                                                {option.name}
-                                            </li>
-                                        )}
-                                        renderInput={(params) => <TextField {...params} label="Danh mục sản phẩm" />}
-                                    />
-                                    {!!categoryErr && (
-                                        <Typography variant="body2" color="error" fontSize={"0.75rem"} sx={{ margin: "3px 14px 0 14px" }}>
-                                            {categoryErr}
-                                        </Typography>
-                                    )}
-                                </FormControl>
+
                                 <Autocomplete
                                     autoComplete
                                     fullWidth
@@ -507,7 +450,7 @@ function CreateProduct() {
                                     renderInput={(params) => <TextField {...params} label="Tags" />}
                                 />
                                 <Typography variant="body2" component={"h4"} color={"primary"} fontSize={"16px"} mt={2}>
-                                    Thêm mới thẻ tag
+                                    Thêm mới thẻ
                                 </Typography>
                                 <Box noValidate display={"flex"} alignItems="center">
                                     <TextField
@@ -534,6 +477,26 @@ function CreateProduct() {
                                 </Box>
                             </Box>
                         </Paper>
+                        <Paper elevation={3} sx={{ padding: "20px", marginTop: "20px" }}>
+                            <TextField
+                                placeholder="Meta title"
+                                label="Meta title"
+                                name={"metaTitle"}
+                                id={"metaTitle"}
+                                margin="normal"
+                                fullWidth
+                                disabled={loading}
+                            />
+                            <TextField
+                                placeholder="Meta description"
+                                label="Meta description"
+                                name={"metaDescription"}
+                                id={"metaDescription"}
+                                fullWidth
+                                disabled={loading}
+                                margin="normal"
+                            />
+                        </Paper>
 
                         <Button
                             type="submit"
@@ -544,7 +507,7 @@ function CreateProduct() {
                                 marginTop: "20px",
                             }}
                         >
-                            Tạo mới sản phẩm
+                            Đăng tải
                         </Button>
                     </Grid>
                 </Grid>
@@ -578,4 +541,4 @@ function CreateProduct() {
     );
 }
 
-export default CreateProduct;
+export default BlogCreate;

@@ -17,6 +17,8 @@ import {
     Typography,
     TableContainer,
     TablePagination,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 // components
 import Page from "src/components/Page";
@@ -32,6 +34,8 @@ import { NumericFormat } from "react-number-format";
 import Loading from "src/components/Loading";
 import { useMemo } from "react";
 import MoreMenuProduct from "./MoreMenuProduct";
+import { useEffect } from "react";
+import { Fragment } from "react";
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +85,11 @@ export default function ProductList() {
     const [filterName, setFilterName] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [productList, setProductList] = useState([]);
+    const [toastMessage, setToastMessage] = useState({
+        open: false,
+        type: "error",
+        message: "ERR",
+    });
 
     const fetchProductList = async () => {
         setLoading(true);
@@ -96,7 +105,7 @@ export default function ProductList() {
         }
     };
 
-    useMemo(() => {
+    useEffect(() => {
         fetchProductList();
     }, []);
 
@@ -151,9 +160,11 @@ export default function ProductList() {
                 setProductList(productList.filter((product) => product.id !== id));
                 setLoading(false);
             }
+            setToastMessage({ open: true, type: "success", message: "Xóa thành công" });
         } catch (error) {
             console.log(error);
             setLoading(false);
+            setToastMessage({ open: true, type: "error", message: "Có lỗi khi xóa sản phẩm" });
         }
     };
 
@@ -165,9 +176,11 @@ export default function ProductList() {
             if (res.message === "OK") {
                 fetchProductList();
             }
+            setToastMessage({ open: true, type: "success", message: "Xóa thành công" });
         } catch (error) {
             console.log(error);
             setLoading(false);
+            setToastMessage({ open: true, type: "error", message: "Có lỗi khi xóa sản phẩm" });
         }
     };
 
@@ -178,131 +191,151 @@ export default function ProductList() {
     const isUserNotFound = filteredUsers.length === 0;
 
     return (
-        <Page title="Product">
-            <Container>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Typography variant="h4" gutterBottom>
-                        Danh sách sản phẩm
-                    </Typography>
-                    <Button variant="contained" component={RouterLink} to="/dashboard/products/create" startIcon={<Iconify icon="eva:plus-fill" />}>
-                        Thêm mới
-                    </Button>
-                </Stack>
+        <Fragment>
+            <Page title="Product">
+                <Container>
+                    <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                        <Typography variant="h4" gutterBottom>
+                            Danh sách sản phẩm
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            component={RouterLink}
+                            to="/dashboard/products/create"
+                            startIcon={<Iconify icon="eva:plus-fill" />}
+                        >
+                            Thêm mới
+                        </Button>
+                    </Stack>
 
-                <Card>
-                    <ProductListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                        productsSelected={selected}
-                        destroyMultipleProduct={handleDestroyMultipleProduct}
-                    />
-                    {loading ? (
-                        <Loading />
-                    ) : (
-                        <Scrollbar>
-                            <TableContainer sx={{ minWidth: 800 }}>
-                                <Table>
-                                    <UserListHead
-                                        order={order}
-                                        orderBy={orderBy}
-                                        headLabel={TABLE_HEAD}
-                                        rowCount={productList.length}
-                                        numSelected={selected.length}
-                                        onRequestSort={handleRequestSort}
-                                        onSelectAllClick={handleSelectAllClick}
-                                    />
-                                    <TableBody>
-                                        {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                            const { id, name, createdAt, image, inStock, price, slug } = row;
-                                            const isItemSelected = selected.indexOf(id) !== -1;
+                    <Card>
+                        <ProductListToolbar
+                            numSelected={selected.length}
+                            filterName={filterName}
+                            onFilterName={handleFilterByName}
+                            productsSelected={selected}
+                            destroyMultipleProduct={handleDestroyMultipleProduct}
+                        />
+                        {loading ? (
+                            <Loading />
+                        ) : (
+                            <Scrollbar>
+                                <TableContainer sx={{ minWidth: 800 }}>
+                                    <Table>
+                                        <UserListHead
+                                            order={order}
+                                            orderBy={orderBy}
+                                            headLabel={TABLE_HEAD}
+                                            rowCount={productList.length}
+                                            numSelected={selected.length}
+                                            onRequestSort={handleRequestSort}
+                                            onSelectAllClick={handleSelectAllClick}
+                                        />
+                                        <TableBody>
+                                            {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                                const { id, name, createdAt, image, inStock, price, slug } = row;
+                                                const isItemSelected = selected.indexOf(id) !== -1;
 
-                                            return (
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        key={id}
+                                                        tabIndex={-1}
+                                                        role="checkbox"
+                                                        selected={isItemSelected}
+                                                        aria-checked={isItemSelected}
+                                                    >
+                                                        <TableCell padding="checkbox">
+                                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
+                                                        </TableCell>
+                                                        <TableCell component="th" scope="row" padding="none">
+                                                            <Stack direction="row" alignItems="center" spacing={2}>
+                                                                <Avatar alt={name} src={image} />
+                                                                <Typography variant="subtitle2" noWrap>
+                                                                    {name}
+                                                                </Typography>
+                                                            </Stack>
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            {new Intl.DateTimeFormat("en-US", {
+                                                                year: "numeric",
+                                                                month: "2-digit",
+                                                                day: "2-digit",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                                second: "2-digit",
+                                                            }).format(new Date(createdAt))}
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            <Label variant="ghost" color={inStock ? "success" : "error"}>
+                                                                {inStock ? "Còn hàng" : "Hết hàng"}
+                                                            </Label>
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            <NumericFormat
+                                                                value={price}
+                                                                displayType={"text"}
+                                                                thousandSeparator={true}
+                                                                suffix={" đ"}
+                                                                renderText={(value, props) => <div {...props}>{value}</div>}
+                                                            />
+                                                        </TableCell>
+
+                                                        <TableCell align="right">
+                                                            <MoreMenuProduct slug={slug} product={row} removeProductItem={handleRemoveProductItem} />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                            {emptyRows > 0 && (
                                                 <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={isItemSelected}
-                                                    aria-checked={isItemSelected}
+                                                    style={{
+                                                        height: 53 * emptyRows,
+                                                    }}
                                                 >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
-                                                    </TableCell>
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={image} />
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {new Intl.DateTimeFormat("en-US", {
-                                                            year: "numeric",
-                                                            month: "2-digit",
-                                                            day: "2-digit",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                            second: "2-digit",
-                                                        }).format(new Date(createdAt))}
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label variant="ghost" color={inStock ? "success" : "error"}>
-                                                            {inStock ? "Còn hàng" : "Hết hàng"}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <NumericFormat
-                                                            value={price}
-                                                            displayType={"text"}
-                                                            thousandSeparator={true}
-                                                            suffix={" đ"}
-                                                            renderText={(value, props) => <div {...props}>{value}</div>}
-                                                        />
-                                                    </TableCell>
+                                                    <TableCell colSpan={6} />
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
 
-                                                    <TableCell align="right">
-                                                        <MoreMenuProduct slug={slug} product={row} removeProductItem={handleRemoveProductItem} />
+                                        {isUserNotFound && (
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                                                        <SearchNotFound searchQuery={filterName} />
                                                     </TableCell>
                                                 </TableRow>
-                                            );
-                                        })}
-                                        {emptyRows > 0 && (
-                                            <TableRow
-                                                style={{
-                                                    height: 53 * emptyRows,
-                                                }}
-                                            >
-                                                <TableCell colSpan={6} />
-                                            </TableRow>
+                                            </TableBody>
                                         )}
-                                    </TableBody>
-
-                                    {isUserNotFound && (
-                                        <TableBody>
-                                            <TableRow>
-                                                <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                                                    <SearchNotFound searchQuery={filterName} />
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    )}
-                                </Table>
-                            </TableContainer>
-                        </Scrollbar>
-                    )}
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={productList.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Card>
-            </Container>
-        </Page>
+                                    </Table>
+                                </TableContainer>
+                            </Scrollbar>
+                        )}
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={productList.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </Card>
+                </Container>
+            </Page>
+            <Snackbar
+                open={toastMessage.open}
+                anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                }}
+                autoHideDuration={3000}
+                onClose={() => setToastMessage({ open: false })}
+            >
+                <Alert variant="filled" hidden={3000} severity={toastMessage.type} x={{ minWidth: "200px" }}>
+                    {toastMessage.message}
+                </Alert>
+            </Snackbar>
+        </Fragment>
     );
 }

@@ -28,10 +28,10 @@ const navConfig = [
                 title: "Chỉnh sửa",
                 path: "products/:slug/edit",
             },
-            {
-                title: "Sản phẩm",
-                path: "products/:slug/detail",
-            },
+            // {
+            //     title: "Sản phẩm",
+            //     path: "products/:slug/detail",
+            // },
             {
                 title: "Thùng rác",
                 path: "products/trash",
@@ -65,34 +65,38 @@ const navConfig = [
             {
                 title: "Danh sách",
                 path: "/dashboard/invoice/list",
+                icon: getIcon("eva:file-text-fill"),
             },
             {
                 title: "Chi tiết",
                 path: "/dashboard/invoice/details",
+                icon: getIcon("eva:file-text-fill"),
             },
             {
                 title: "Tạo mới",
                 path: "/dashboard/invoice/create",
+                icon: getIcon("eva:file-text-fill"),
             },
             {
                 title: "Cập nhật",
                 path: "/dashboard/invoice/edit",
+                icon: getIcon("eva:file-text-fill"),
             },
         ],
     },
 
     {
-        title: "Bài viết",
+        title: "Blog",
         path: "/dashboard/blog",
         icon: getIcon("eva:file-text-fill"),
         children: [
             {
                 title: "Danh sách bài viết",
-                path: "/dashboard/blog",
+                path: "/dashboard/blog/list",
                 icon: getIcon("eva:file-text-fill"),
             },
             {
-                title: "Tạo mới bài viết",
+                title: "Tạo mới",
                 path: "/dashboard/blog/create",
                 icon: getIcon("eva:file-text-fill"),
             },

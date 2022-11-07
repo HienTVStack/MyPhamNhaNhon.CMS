@@ -9,14 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import categoryApi from "src/api/categoryApi";
 import tagApi from "src/api/tagApi";
-import {
-    loadProductTrash as _loadProductTrash,
-    loadCategory as _loadCategory,
-    loadProduct as _loadProduct,
-    loadTag as _loadTag,
-    loadProductStart,
-} from "src/redux/actions";
-import productApi from "src/api/productApi";
+import { loadCategory as _loadCategory, loadTag as _loadTag } from "src/redux/actions";
 import Loading from "src/components/Loading";
 
 // ----------------------------------------------------------------------
@@ -52,7 +45,6 @@ export default function DashboardLayout() {
     const [loading, setLoading] = useState(false);
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
-    const productList = useSelector((state) => state.data.productList);
 
     // load category
     const loadCategory = async () => {
@@ -83,31 +75,11 @@ export default function DashboardLayout() {
         }
     };
 
-    const loadProductTrash = async () => {
-        setLoading(true);
-        try {
-            const res = await productApi.getTrash();
-            if (res.message === "OK") {
-                dispatch(_loadProductTrash(res.products));
-            }
-            setLoading(false);
-        } catch (error) {
-            console.log(error);
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        if (categoryList.length === 0 || tagList.length === 0 || productList.length === 0 || productList.length === 0) {
+        if (categoryList.length === 0 || tagList.length === 0) {
             loadCategory();
-            // loadProduct();
-            // dispatch(loadProduct);
-            // loadProductTrash();
             loadTag();
         }
-
-        dispatch(loadProductStart());
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 

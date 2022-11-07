@@ -58,7 +58,7 @@ BlogPostCard.propTypes = {
 };
 
 export default function BlogPostCard({ post, index }) {
-    const { cover, title, view, comment, share, author, createdAt } = post;
+    const { image, title, view, comment, share, author, createdAt } = post;
     const latestPostLarge = index === 0;
     const latestPost = index === 1 || index === 2;
 
@@ -108,8 +108,8 @@ export default function BlogPostCard({ post, index }) {
                         }}
                     />
                     <AvatarStyle
-                        alt={author.name}
-                        src={author.avatarUrl}
+                        // alt={author.name}
+                        // src={author.avatarUrl}
                         sx={{
                             ...((latestPostLarge || latestPost) && {
                                 zIndex: 9,
@@ -121,7 +121,7 @@ export default function BlogPostCard({ post, index }) {
                         }}
                     />
 
-                    <CoverImgStyle alt={title} src={cover} />
+                    <CoverImgStyle alt={title} src={image} />
                 </CardMediaStyle>
 
                 <CardContent

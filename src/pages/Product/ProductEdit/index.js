@@ -11,10 +11,7 @@ import {
     FormControlLabel,
     Switch,
     Button,
-    Select,
-    MenuItem,
     FormControl,
-    InputLabel,
     Autocomplete,
     Checkbox,
     Backdrop,
@@ -33,7 +30,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
 // import { v4 as uuidv4 } from "uuid";
-import categoryApi from "src/api/categoryApi";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
 import imageApi from "src/api/imageApi";
@@ -119,14 +115,24 @@ function ProductEdit() {
 
     const { slug } = useParams();
 
+    const loadProductFirst = async () => {
+        const res = await productApi.getAll();
+
+        if (res.message === "OK") {
+            navigate(`/dashboard/products/${res.products[0].slug}/edit`);
+        }
+    };
+
     useEffect(() => {
+        if (slug === ":slug") {
+            loadProductFirst();
+        }
         handleProductLoader();
         handleImageLoader();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 
     const handleProductLoader = async () => {
-        console.log(`handleProductLoader`);
         setLoading(true);
         try {
             const res = await productApi.getProductBySlug(slug);
@@ -624,7 +630,7 @@ function ProductEdit() {
                 </Grid>
             </Stack>
             {/* Backdrop */}
-            <Backdrop
+            {/* <Backdrop
                 sx={{
                     color: "#fff",
                     // zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -634,7 +640,7 @@ function ProductEdit() {
                 onClick={() => setLoading(false)}
             >
                 <CircularProgress color="inherit" />
-            </Backdrop>
+            </Backdrop> */}
             {/* Snackbar */}
             <Snackbar
                 open={isUpload}
@@ -655,71 +661,43 @@ function ProductEdit() {
                 aria-describedby="modal-modal-description"
                 onClose={() => setIsShowModal(false)}
             >
-                <Box sx={{ ...style }}>
-                    <Typography variant="body2" component="h2" fontSize={"30px"} fontWeight={700}>
-                        Insert Media
-                    </Typography>
-                    <Box sx={{ width: "100%" }}>
-                        <TabContext value={tabValue}>
-                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                <TabList onChange={handleChangeTabModal} aria-label="lab API tabs example">
-                                    <Tab label="Tải ảnh lên" value="1" />
-                                    <Tab label="Thư viện ảnh" value="2" />
-                                    <Tab label="Item Three" value="3" />
-                                </TabList>
-                            </Box>
-                            <TabPanel value="1">
-                                <Box display={"flex"} alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
-                                    <Typography variant="h3" fontSize={"20px"}>
-                                        Thả tệp để tải lên
-                                    </Typography>
-                                    <Typography fontSize={"14px"} color={"#ccc"}>
-                                        hoặc
-                                    </Typography>
-                                    <Box component="label" mt={2}>
-                                        <input hidden multiple type="file" accept="image/*" onChange={handleSelectImage} />
-                                        <Button variant="outlined" component={"p"} size="large">
-                                            Chọn tệp
-                                        </Button>
-                                    </Box>
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <Box sx={{ ...style }}>
+                        <Typography variant="body2" component="h2" fontSize={"30px"} fontWeight={700}>
+                            Insert Media
+                        </Typography>
+                        <Box sx={{ width: "100%" }}>
+                            <TabContext value={tabValue}>
+                                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                    <TabList onChange={handleChangeTabModal} aria-label="lab API tabs example">
+                                        <Tab label="Tải ảnh lên" value="1" />
+                                        <Tab label="Thư viện ảnh" value="2" />
+                                        <Tab label="Item Three" value="3" />
+                                    </TabList>
                                 </Box>
-                            </TabPanel>
-                            <TabPanel value="2">
-                                <Grid container>
-                                    <Grid item sm={12} md={12} lg={9} xs={9}>
-                                        <ImageList cols={5}>
-                                            {selectedImages.map((image, index) => (
-                                                <Box key={index}>
-                                                    <ImageListItem
-                                                        sx={{
-                                                            position: "relative",
-                                                            margin: "12px",
-                                                            border: "1px solid #ccc",
-                                                            borderRadius: "12px",
-                                                        }}
-                                                    >
-                                                        <Checkbox
-                                                            defaultChecked
-                                                            disabled
-                                                            id={`checkboxImageSelect${index}`}
-                                                            sx={{
-                                                                ...styleChecked,
-                                                            }}
-                                                        />
-                                                        <label htmlFor={`checkboxImageSelect${index}`}>
-                                                            <img
-                                                                src={image}
-                                                                alt={""}
-                                                                style={{
-                                                                    cursor: "pointer",
-                                                                }}
-                                                            />
-                                                        </label>
-                                                    </ImageListItem>
-                                                </Box>
-                                            ))}
-                                            {!!imageList &&
-                                                imageList.map((image, index) => (
+                                <TabPanel value="1">
+                                    <Box display={"flex"} alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
+                                        <Typography variant="h3" fontSize={"20px"}>
+                                            Thả tệp để tải lên
+                                        </Typography>
+                                        <Typography fontSize={"14px"} color={"#ccc"}>
+                                            hoặc
+                                        </Typography>
+                                        <Box component="label" mt={2}>
+                                            <input hidden multiple type="file" accept="image/*" onChange={handleSelectImage} />
+                                            <Button variant="outlined" component={"p"} size="large">
+                                                Chọn tệp
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                </TabPanel>
+                                <TabPanel value="2">
+                                    <Grid container>
+                                        <Grid item sm={12} md={12} lg={9} xs={9}>
+                                            <ImageList cols={5}>
+                                                {selectedImages.map((image, index) => (
                                                     <Box key={index}>
                                                         <ImageListItem
                                                             sx={{
@@ -730,19 +708,17 @@ function ProductEdit() {
                                                             }}
                                                         >
                                                             <Checkbox
-                                                                onChange={(e) => {
-                                                                    const checked = e.target.checked;
-                                                                    handleSelectImageModal(checked, index, image.fileUrl);
-                                                                }}
-                                                                id={`checkboxImage${index}`}
+                                                                defaultChecked
+                                                                disabled
+                                                                id={`checkboxImageSelect${index}`}
                                                                 sx={{
                                                                     ...styleChecked,
                                                                 }}
                                                             />
-                                                            <label htmlFor={`checkboxImage${index}`}>
+                                                            <label htmlFor={`checkboxImageSelect${index}`}>
                                                                 <img
-                                                                    src={image.fileUrl}
-                                                                    alt={image.caption}
+                                                                    src={image}
+                                                                    alt={""}
                                                                     style={{
                                                                         cursor: "pointer",
                                                                     }}
@@ -751,17 +727,51 @@ function ProductEdit() {
                                                         </ImageListItem>
                                                     </Box>
                                                 ))}
-                                        </ImageList>
+                                                {!!imageList &&
+                                                    imageList.map((image, index) => (
+                                                        <Box key={index}>
+                                                            <ImageListItem
+                                                                sx={{
+                                                                    position: "relative",
+                                                                    margin: "12px",
+                                                                    border: "1px solid #ccc",
+                                                                    borderRadius: "12px",
+                                                                }}
+                                                            >
+                                                                <Checkbox
+                                                                    onChange={(e) => {
+                                                                        const checked = e.target.checked;
+                                                                        handleSelectImageModal(checked, index, image.fileUrl);
+                                                                    }}
+                                                                    id={`checkboxImage${index}`}
+                                                                    sx={{
+                                                                        ...styleChecked,
+                                                                    }}
+                                                                />
+                                                                <label htmlFor={`checkboxImage${index}`}>
+                                                                    <img
+                                                                        src={image.fileUrl}
+                                                                        alt={image.caption}
+                                                                        style={{
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </label>
+                                                            </ImageListItem>
+                                                        </Box>
+                                                    ))}
+                                            </ImageList>
+                                        </Grid>
+                                        <Grid item sm={12} md={12} lg={3} xs={3}>
+                                            <Button onClick={handleInsertImage}>Insert Media</Button>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item sm={12} md={12} lg={3} xs={3}>
-                                        <Button onClick={handleInsertImage}>Insert Media</Button>
-                                    </Grid>
-                                </Grid>
-                            </TabPanel>
-                            <TabPanel value="3">Item Three</TabPanel>
-                        </TabContext>
+                                </TabPanel>
+                                <TabPanel value="3">Item Three</TabPanel>
+                            </TabContext>
+                        </Box>
                     </Box>
-                </Box>
+                )}
             </Modal>
         </Fragment>
     );

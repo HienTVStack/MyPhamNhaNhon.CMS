@@ -3,7 +3,7 @@ import { Navigate, useRoutes } from "react-router-dom";
 import DashboardLayout from "../layouts/dashboard";
 import LogoOnlyLayout from "../layouts/LogoOnlyLayout";
 //
-import Blog from "../pages/Blog";
+import Blog from "../pages/Blog/BlogList";
 import User from "../pages/User";
 import Login from "../pages/Login";
 import NotFound from "../pages/Page404";
@@ -14,6 +14,7 @@ import DashboardApp from "../pages/DashboardApp";
 import ProductList from "src/pages/Product/ProductList";
 import ProductEdit from "src/pages/Product/ProductEdit";
 import ProductTrash from "src/pages/Product/ProductTrash";
+import BlogCreate from "src/pages/Blog/BlogCreate";
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,13 @@ export default function Router() {
                         { path: "trash", element: <ProductTrash /> },
                     ],
                 },
-                { path: "blog", element: <Blog /> },
+                {
+                    path: "blog",
+                    children: [
+                        { path: "list", element: <Blog /> },
+                        { path: "create", element: <BlogCreate /> },
+                    ],
+                },
             ],
         },
         {

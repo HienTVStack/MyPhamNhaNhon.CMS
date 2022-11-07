@@ -17,6 +17,8 @@ import {
     Typography,
     TableContainer,
     TablePagination,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 // components
 import Page from "src/components/Page";
@@ -32,6 +34,7 @@ import { useEffect } from "react";
 import productApi from "src/api/productApi";
 import Loading from "src/components/Loading";
 import { useSelector } from "react-redux";
+import { Fragment } from "react";
 
 // ----------------------------------------------------------------------
 
@@ -82,6 +85,11 @@ export default function ProductTrash() {
     const [filterName, setFilterName] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [productTrashList, setProductTrashList] = useState([]);
+    const [toastMessage, setToastMessage] = useState({
+        open: false,
+        type: "error",
+        message: "ERR",
+    });
 
     const fetchProductTrash = async () => {
         setLoading(true);
@@ -152,9 +160,11 @@ export default function ProductTrash() {
                 setProductTrashList(productTrashList.filter((product) => product.id !== id));
             }
             setLoading(false);
+            setToastMessage({ open: true, type: "success", message: "Nạp sản phẩm thành công" });
         } catch (error) {
             setLoading(false);
             console.log(error);
+            setToastMessage({ open: true, type: "error", message: "Không thực hiện được" });
         }
     };
 
@@ -182,126 +192,146 @@ export default function ProductTrash() {
     const isUserNotFound = filteredUsers.length === 0;
 
     return (
-        <Page title="Product">
-            <Container>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                    <Typography variant="h4" gutterBottom>
-                        Thùng rác
-                    </Typography>
-                    <Button variant="contained" component={RouterLink} to="/dashboard/products/create" startIcon={<Iconify icon="eva:plus-fill" />}>
-                        Thêm mới
-                    </Button>
-                </Stack>
+        <Fragment>
+            <Page title="Product">
+                <Container>
+                    <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                        <Typography variant="h4" gutterBottom>
+                            Thùng rác
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            component={RouterLink}
+                            to="/dashboard/products/create"
+                            startIcon={<Iconify icon="eva:plus-fill" />}
+                        >
+                            Thêm mới
+                        </Button>
+                    </Stack>
 
-                <Card>
-                    <ProductListToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                        productsSelected={selected}
-                    />
-                    {loading ? (
-                        <Loading />
-                    ) : (
-                        <Scrollbar>
-                            <TableContainer sx={{ minWidth: 800 }}>
-                                <Table>
-                                    <UserListHead
-                                        order={order}
-                                        orderBy={orderBy}
-                                        headLabel={TABLE_HEAD}
-                                        rowCount={productTrashList.length}
-                                        numSelected={selected.length}
-                                        onRequestSort={handleRequestSort}
-                                        onSelectAllClick={handleSelectAllClick}
-                                    />
-                                    <TableBody>
-                                        {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                            const { id, name, deletedAt, image, inStock, quantityStock } = row;
-                                            const isItemSelected = selected.indexOf(id) !== -1;
+                    <Card>
+                        <ProductListToolbar
+                            numSelected={selected.length}
+                            filterName={filterName}
+                            onFilterName={handleFilterByName}
+                            productsSelected={selected}
+                        />
+                        {loading ? (
+                            <Loading />
+                        ) : (
+                            <Scrollbar>
+                                <TableContainer sx={{ minWidth: 800 }}>
+                                    <Table>
+                                        <UserListHead
+                                            order={order}
+                                            orderBy={orderBy}
+                                            headLabel={TABLE_HEAD}
+                                            rowCount={productTrashList.length}
+                                            numSelected={selected.length}
+                                            onRequestSort={handleRequestSort}
+                                            onSelectAllClick={handleSelectAllClick}
+                                        />
+                                        <TableBody>
+                                            {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                                const { id, name, deletedAt, image, inStock, quantityStock } = row;
+                                                const isItemSelected = selected.indexOf(id) !== -1;
 
-                                            return (
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        key={id}
+                                                        tabIndex={-1}
+                                                        role="checkbox"
+                                                        selected={isItemSelected}
+                                                        aria-checked={isItemSelected}
+                                                    >
+                                                        <TableCell padding="checkbox">
+                                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
+                                                        </TableCell>
+                                                        <TableCell component="th" scope="row" padding="none">
+                                                            <Stack direction="row" alignItems="center" spacing={2}>
+                                                                <Avatar alt={name} src={image} />
+                                                                <Typography variant="subtitle2" noWrap>
+                                                                    {name}
+                                                                </Typography>
+                                                            </Stack>
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            {new Intl.DateTimeFormat("en-US", {
+                                                                year: "numeric",
+                                                                month: "2-digit",
+                                                                day: "2-digit",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                                second: "2-digit",
+                                                            }).format(new Date(deletedAt))}
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            <Label variant="ghost" color={inStock ? "success" : "error"}>
+                                                                {inStock ? "Còn hàng" : "Hết hàng"}
+                                                            </Label>
+                                                        </TableCell>
+                                                        <TableCell align="left">{quantityStock}</TableCell>
+
+                                                        <TableCell align="right">
+                                                            <MoreMenuTrash
+                                                                product={row}
+                                                                deleteProductItem={handleDeleteProductItem}
+                                                                restoreProductItem={handleRestoreProductItem}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                            {emptyRows > 0 && (
                                                 <TableRow
-                                                    hover
-                                                    key={id}
-                                                    tabIndex={-1}
-                                                    role="checkbox"
-                                                    selected={isItemSelected}
-                                                    aria-checked={isItemSelected}
+                                                    style={{
+                                                        height: 53 * emptyRows,
+                                                    }}
                                                 >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
-                                                    </TableCell>
-                                                    <TableCell component="th" scope="row" padding="none">
-                                                        <Stack direction="row" alignItems="center" spacing={2}>
-                                                            <Avatar alt={name} src={image} />
-                                                            <Typography variant="subtitle2" noWrap>
-                                                                {name}
-                                                            </Typography>
-                                                        </Stack>
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {new Intl.DateTimeFormat("en-US", {
-                                                            year: "numeric",
-                                                            month: "2-digit",
-                                                            day: "2-digit",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                            second: "2-digit",
-                                                        }).format(new Date(deletedAt))}
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        <Label variant="ghost" color={inStock ? "success" : "error"}>
-                                                            {inStock ? "Còn hàng" : "Hết hàng"}
-                                                        </Label>
-                                                    </TableCell>
-                                                    <TableCell align="left">{quantityStock}</TableCell>
+                                                    <TableCell colSpan={6} />
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
 
-                                                    <TableCell align="right">
-                                                        <MoreMenuTrash
-                                                            product={row}
-                                                            deleteProductItem={handleDeleteProductItem}
-                                                            restoreProductItem={handleRestoreProductItem}
-                                                        />
+                                        {isUserNotFound && (
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                                                        <SearchNotFound searchQuery={filterName} />
                                                     </TableCell>
                                                 </TableRow>
-                                            );
-                                        })}
-                                        {emptyRows > 0 && (
-                                            <TableRow
-                                                style={{
-                                                    height: 53 * emptyRows,
-                                                }}
-                                            >
-                                                <TableCell colSpan={6} />
-                                            </TableRow>
+                                            </TableBody>
                                         )}
-                                    </TableBody>
-
-                                    {isUserNotFound && (
-                                        <TableBody>
-                                            <TableRow>
-                                                <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                                                    <SearchNotFound searchQuery={filterName} />
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    )}
-                                </Table>
-                            </TableContainer>
-                        </Scrollbar>
-                    )}
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={productTrashList.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Card>
-            </Container>
-        </Page>
+                                    </Table>
+                                </TableContainer>
+                            </Scrollbar>
+                        )}
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={productTrashList.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </Card>
+                </Container>
+            </Page>
+            <Snackbar
+                open={toastMessage.open}
+                anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                }}
+                autoHideDuration={3000}
+                onClose={() => setToastMessage({ open: false })}
+            >
+                <Alert variant="filled" hidden={3000} severity={toastMessage.type} x={{ minWidth: "200px" }}>
+                    {toastMessage.message}
+                </Alert>
+            </Snackbar>
+        </Fragment>
     );
 }
