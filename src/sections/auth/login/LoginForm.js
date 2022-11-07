@@ -1,79 +1,96 @@
-import * as Yup from "yup";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // form
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 // @mui
-import { Link, Stack, IconButton, InputAdornment } from "@mui/material";
+import { Box, Stack, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import authApi from "src/api/authApi";
 // components
-import Iconify from "../../../components/Iconify";
-import { FormProvider, RHFTextField, RHFCheckbox } from "../../../components/hook-form";
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [usernameErr, setUsernameErr] = useState("");
+    const [passwordErr, setPasswordErr] = useState("");
 
-    const [showPassword, setShowPassword] = useState(false);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const data = new FormData(e.target);
 
-    const LoginSchema = Yup.object().shape({
-        email: Yup.string().email("Email must be a valid email address").required("Email is required"),
-        password: Yup.string().required("Password is required"),
-    });
+        const username = data.get("username");
+        const password = data.get("password");
 
-    const defaultValues = {
-        email: "",
-        password: "",
-        remember: true,
-    };
+        let err = false;
+        if (username === "") {
+            err = true;
+            setUsernameErr("Trường này không được để trống");
+        }
+        if (password === "") {
+            err = true;
+            setPasswordErr("Trường này không được để trống");
+        }
+        setLoading(false);
+        if (err) return;
 
-    const methods = useForm({
-        resolver: yupResolver(LoginSchema),
-        defaultValues,
-    });
+        try {
+            setLoading(true);
+            const res = await authApi.login({ username, password });
+            localStorage.setItem("token", res.token);
+            setLoading(false);
+            navigate("/dashboard/app");
+        } catch (error) {
+            setLoading(false);
+            const errors = error.data.errors;
 
-    const {
-        handleSubmit,
-        formState: { isSubmitting },
-    } = methods;
-
-    const onSubmit = async () => {
-        navigate("/dashboard", { replace: true });
+            errors.forEach((e) => {
+                if (e.param === "username") {
+                    setUsernameErr(e.msg);
+                }
+                if (e.param === "password") {
+                    setPasswordErr(e.msg);
+                }
+            });
+        }
     };
 
     return (
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
             <Stack spacing={3}>
-                <RHFTextField name="email" label="Email address" />
-
-                <RHFTextField
-                    name="password"
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                    <Iconify icon={showPassword ? "eva:eye-fill" : "eva:eye-off-fill"} />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
+                <TextField
+                    margin={"normal"}
+                    fullWidth
+                    placeholder={"Tên đăng nhâp"}
+                    label={"Tên đăng nhập"}
+                    name={"username"}
+                    id={"username"}
+                    required
+                    disabled={loading}
+                    error={usernameErr !== ""}
+                    helperText={usernameErr}
+                />
+                <TextField
+                    margin={"normal"}
+                    fullWidth
+                    placeholder={"Mật khẩu"}
+                    label={"Mật khẩu"}
+                    name={"password"}
+                    id={"password"}
+                    type="password"
+                    required
+                    disabled={loading}
+                    error={passwordErr !== ""}
+                    helperText={passwordErr}
                 />
             </Stack>
 
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-                <RHFCheckbox name="remember" label="Remember me" />
-                <Link variant="subtitle2" underline="hover">
-                    Forgot password?
-                </Link>
-            </Stack>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}></Stack>
 
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-                Login
+            <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={loading}>
+                Đăng nhập
             </LoadingButton>
-        </FormProvider>
+        </Box>
     );
 }
