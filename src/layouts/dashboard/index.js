@@ -9,8 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import categoryApi from "src/api/categoryApi";
 import tagApi from "src/api/tagApi";
-import { loadCategory as _loadCategory, loadTag as _loadTag } from "src/redux/actions";
+import { loadCategory as _loadCategory, loadTag as _loadTag, setUser } from "src/redux/actions";
 import Loading from "src/components/Loading";
+import authUtil from "src/utils/authUtil";
 
 // ----------------------------------------------------------------------
 
@@ -41,10 +42,11 @@ const MainStyle = styled("div")(({ theme }) => ({
 export default function DashboardLayout() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
+    // const user = useSelector((state) => state.data.user);
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     // load category
     const loadCategory = async () => {
@@ -75,11 +77,23 @@ export default function DashboardLayout() {
         }
     };
 
+    const checkLogin = async () => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const user = await authUtil.isAuthenticated();
+            dispatch(setUser(user));
+        } else {
+            navigate("/login");
+        }
+    };
     useEffect(() => {
+        checkLogin();
+
         if (categoryList.length === 0 || tagList.length === 0) {
             loadCategory();
             loadTag();
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 

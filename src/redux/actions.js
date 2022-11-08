@@ -12,27 +12,32 @@ export const addTag = (data) => ({
 });
 // Product actions
 
-export const loadProduct = (data) => ({
-    type: "LOAD_PRODUCT",
-    payload: data,
-});
+// export const loadProduct = (data) => ({
+//     type: "LOAD_PRODUCT",
+//     payload: data,
+// });
 
-export const addProduct = (data) => ({
-    type: "ADD_PRODUCT",
-    payload: data,
-});
+// export const addProduct = (data) => ({
+//     type: "ADD_PRODUCT",
+//     payload: data,
+// });
 
-export const loadProductTrash = (data) => ({
-    type: "LOAD_PRODUCT_TRASH",
-    payload: data,
-});
+// export const loadProductTrash = (data) => ({
+//     type: "LOAD_PRODUCT_TRASH",
+//     payload: data,
+// });
 
-export const addProductTrash = (data) => ({
-    type: "ADD_PRODUCT_TRASH",
-    payload: data,
-});
+// export const addProductTrash = (data) => ({
+//     type: "ADD_PRODUCT_TRASH",
+//     payload: data,
+// });
 
-export const removeProduct = (id) => ({
-    type: "REMOVE_PRODUCT",
-    payload: id,
+// export const removeProduct = (id) => ({
+//     type: "REMOVE_PRODUCT",
+//     payload: id,
+// });
+
+export const setUser = (data) => ({
+    type: "SET_USER",
+    payload: data,
 });

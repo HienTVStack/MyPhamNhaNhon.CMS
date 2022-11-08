@@ -58,6 +58,7 @@ function CreateProduct() {
     const detailRef = useRef();
     const navigate = useNavigate();
     // const dispatch = useDispatch();
+    const user = useSelector((state) => state.data.user);
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
     const [loading, setLoading] = useState(false);
@@ -225,8 +226,9 @@ function CreateProduct() {
                 tags,
                 imageUploadUrl,
                 price,
+                author: user,
             });
-            if (res) {
+            if (res.message === "OK") {
                 // dispatch(addProduct(res.product));
                 navigate("/dashboard/products/list");
             }

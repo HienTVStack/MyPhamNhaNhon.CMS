@@ -22,34 +22,38 @@ const appReducer = (state = initialState, action) => {
         }
         case "ADD_TAG":
             return [...state, { tagList: action.payload }];
-        case "LOAD_PRODUCT":
+        // case "LOAD_PRODUCT":
+        //     return {
+        //         ...state,
+        //         productList: action.payload,
+        //     };
+        // case "ADD_PRODUCT":
+        //     return {
+        //         ...state,
+        //         productList: [...state.productList, action.payload],
+        //     };
+        // // Product trash
+        // case "LOAD_PRODUCT_TRASH":
+        //     return {
+        //         ...state,
+        //         productTrash: action.payload,
+        //     };
+        // case "ADD_PRODUCT_TRASH":
+        //     return {
+        //         ...state,
+        //         productTrash: [...state.productTrash, action.payload],
+        //     };
+        // case "REMOVE_PRODUCT":
+        //     return {
+        //         // ...state,
+        //         productList: state.productList.filter((product) => product.id !== action.payload.id),
+        //         productTrash: [...state.productTrash, action.payload],
+        //     };
+        case "SET_USER":
             return {
                 ...state,
-                productList: action.payload,
+                user: action.payload,
             };
-        case "ADD_PRODUCT":
-            return {
-                ...state,
-                productList: [...state.productList, action.payload],
-            };
-        // Product trash
-        case "LOAD_PRODUCT_TRASH":
-            return {
-                ...state,
-                productTrash: action.payload,
-            };
-        case "ADD_PRODUCT_TRASH":
-            return {
-                ...state,
-                productTrash: [...state.productTrash, action.payload],
-            };
-        case "REMOVE_PRODUCT":
-            return {
-                // ...state,
-                productList: state.productList.filter((product) => product.id !== action.payload.id),
-                productTrash: [...state.productTrash, action.payload],
-            };
-
         default:
             return state;
     }

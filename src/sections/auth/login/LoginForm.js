@@ -5,12 +5,17 @@ import { useNavigate } from "react-router-dom";
 import { Box, Stack, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import authApi from "src/api/authApi";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "src/redux/actions";
+import { useEffect } from "react";
 // components
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [loading, setLoading] = useState(false);
     const [usernameErr, setUsernameErr] = useState("");
     const [passwordErr, setPasswordErr] = useState("");
@@ -38,9 +43,13 @@ export default function LoginForm() {
         try {
             setLoading(true);
             const res = await authApi.login({ username, password });
-            localStorage.setItem("token", res.token);
+
+            if (res.message === "OK") {
+                localStorage.setItem("token", res.token);
+                dispatch(setUser(res.user));
+                navigate("/dashboard/app");
+            }
             setLoading(false);
-            navigate("/dashboard/app");
         } catch (error) {
             setLoading(false);
             const errors = error.data.errors;

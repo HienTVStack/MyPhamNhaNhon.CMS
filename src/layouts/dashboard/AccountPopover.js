@@ -2,19 +2,12 @@ import { useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 // @mui
 import { alpha } from "@mui/material/styles";
-import {
-    Box,
-    Divider,
-    Typography,
-    Stack,
-    MenuItem,
-    Avatar,
-    IconButton,
-} from "@mui/material";
+import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from "@mui/material";
 // components
 import MenuPopover from "../../components/MenuPopover";
 // mocks_
 import account from "../../_mock/account";
+import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +33,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
     const anchorRef = useRef(null);
+    const user = useSelector((state) => state.data.user);
 
     const [open, setOpen] = useState(null);
 
@@ -66,8 +60,7 @@ export default function AccountPopover() {
                             height: "100%",
                             borderRadius: "50%",
                             position: "absolute",
-                            bgcolor: (theme) =>
-                                alpha(theme.palette.grey[900], 0.8),
+                            bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
                         },
                     }),
                 }}
@@ -90,14 +83,10 @@ export default function AccountPopover() {
             >
                 <Box sx={{ my: 1.5, px: 2.5 }}>
                     <Typography variant="subtitle2" noWrap>
-                        {account.displayName}
+                        {user.fullName}
                     </Typography>
-                    <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                        noWrap
-                    >
-                        {account.email}
+                    <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
+                        {user.email}
                     </Typography>
                 </Box>
 
@@ -105,12 +94,7 @@ export default function AccountPopover() {
 
                 <Stack sx={{ p: 1 }}>
                     {MENU_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.label}
-                            to={option.linkTo}
-                            component={RouterLink}
-                            onClick={handleClose}
-                        >
+                        <MenuItem key={option.label} to={option.linkTo} component={RouterLink} onClick={handleClose}>
                             {option.label}
                         </MenuItem>
                     ))}
