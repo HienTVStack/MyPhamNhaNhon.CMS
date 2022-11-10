@@ -15,6 +15,7 @@ import ProductList from "src/pages/Product/ProductList";
 import ProductEdit from "src/pages/Product/ProductEdit";
 import ProductTrash from "src/pages/Product/ProductTrash";
 import BlogCreate from "src/pages/Blog/BlogCreate";
+import Order from "src/pages/Order";
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ export default function Router() {
                         { path: "e-list", element: <Products /> },
                         { path: "list", element: <ProductList /> },
                         { path: ":slug/edit", element: <ProductEdit /> },
+                        { path: "order", element: <Order /> },
                         { path: "trash", element: <ProductTrash /> },
                     ],
                 },

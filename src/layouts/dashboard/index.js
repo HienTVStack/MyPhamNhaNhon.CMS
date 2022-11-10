@@ -12,6 +12,7 @@ import tagApi from "src/api/tagApi";
 import { loadCategory as _loadCategory, loadTag as _loadTag, setUser } from "src/redux/actions";
 import Loading from "src/components/Loading";
 import authUtil from "src/utils/authUtil";
+import { util } from "prettier";
 
 // ----------------------------------------------------------------------
 
@@ -77,18 +78,17 @@ export default function DashboardLayout() {
         }
     };
 
-    const checkLogin = async () => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            const user = await authUtil.isAuthenticated();
-            dispatch(setUser(user));
-        } else {
-            navigate("/login");
-        }
-    };
     useEffect(() => {
-        checkLogin();
-
+        const checkAuth = async () => {
+            const user = await authUtil.isAuthenticated();
+            if (!user) {
+                navigate("/login");
+            } else {
+                dispatch(setUser(user));
+                setLoading(false);
+            }
+        };
+        checkAuth();
         if (categoryList.length === 0 || tagList.length === 0) {
             loadCategory();
             loadTag();

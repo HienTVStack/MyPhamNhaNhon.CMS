@@ -32,7 +32,6 @@ import { ProductListToolbar } from "src/sections/@dashboard/products";
 import productApi from "src/api/productApi";
 import { NumericFormat } from "react-number-format";
 import Loading from "src/components/Loading";
-import { useMemo } from "react";
 import MoreMenuProduct from "./MoreMenuProduct";
 import { useEffect } from "react";
 import { Fragment } from "react";

@@ -5,9 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { Box, Stack, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import authApi from "src/api/authApi";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUser } from "src/redux/actions";
-import { useEffect } from "react";
 // components
 
 // ----------------------------------------------------------------------
@@ -25,8 +24,8 @@ export default function LoginForm() {
         setLoading(true);
         const data = new FormData(e.target);
 
-        const username = data.get("username");
-        const password = data.get("password");
+        const username = data.get("username").trim();
+        const password = data.get("password").trim();
 
         let err = false;
         if (username === "") {

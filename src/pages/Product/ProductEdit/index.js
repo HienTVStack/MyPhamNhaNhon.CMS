@@ -14,8 +14,8 @@ import {
     FormControl,
     Autocomplete,
     Checkbox,
-    Backdrop,
-    CircularProgress,
+    // Backdrop,
+    // CircularProgress,
     FormLabel,
     ImageList,
     ImageListItem,
@@ -563,6 +563,7 @@ function ProductEdit() {
                                     )}
                                     renderInput={(params) => <TextField {...params} margin="normal" label="Danh mục sản phẩm" />}
                                 />
+
                                 <Autocomplete
                                     fullWidth
                                     multiple

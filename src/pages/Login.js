@@ -12,6 +12,7 @@ import { LoginForm } from "../sections/auth/login";
 import images from "../assets/images";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import authUtil from "src/utils/authUtil";
 
 // ----------------------------------------------------------------------
 
@@ -52,13 +53,19 @@ const ContentStyle = styled("div")(({ theme }) => ({
 export default function Login() {
     const smUp = useResponsive("up", "sm");
     const navigate = useNavigate();
+    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            navigate("/dashboard/app");
-        }
-    }, []);
+        const checkAuth = async () => {
+            const isAuth = await authUtil.isAuthenticated();
+            if (!isAuth) {
+                // setLoading(false);
+            } else {
+                navigate("/");
+            }
+        };
+        checkAuth();
+    }, [navigate]);
 
     return (
         <Page title="Login">

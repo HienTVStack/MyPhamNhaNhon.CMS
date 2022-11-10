@@ -27,10 +27,8 @@ import { Icon } from "@iconify/react";
 import { Fragment, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct } from "src/redux/actions";
 import blogApi from "src/api/blogApi";
 
 const preUrls = [
