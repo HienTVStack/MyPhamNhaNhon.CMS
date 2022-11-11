@@ -26,8 +26,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { v4 as uuidv4 } from "uuid";
-// import Paper from '@mui/material/Paper';
-// import { Icon } from "@iconify/react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -40,6 +38,7 @@ import { useNavigate } from "react-router-dom";
 import { fNumber } from "src/utils/formatNumber";
 import Loading from "src/components/Loading";
 import OrderMoreMenu from "./OrderMoreMenu";
+import { jsPDF } from "jspdf";
 
 const preUrls = [
     {
@@ -151,6 +150,14 @@ function Order() {
         setInvoiceList(invoiceList.filter((item) => item.key !== id));
     };
 
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+
+        doc.text("Hello world!", 10, 10);
+        // doc.table().data;
+        doc.save("a4.pdf");
+    };
+
     return (
         <Fragment>
             <Box>
@@ -245,6 +252,20 @@ function Order() {
                         </LocalizationProvider>
                     </Stack>
                     {/*  */}
+                    <Stack direction={"row"} mt={2}>
+                        <Button onClick={handleExportPDF}>
+                            <Iconify height={"25px"} width={"25px"} icon={"carbon:add-alt"} />
+                        </Button>
+                        <Button>
+                            <Iconify height={"25px"} width={"25px"} icon={"fluent:print-20-filled"} />
+                        </Button>
+                        <Button>
+                            <Iconify height={"25px"} width={"25px"} icon={"ant-design:download-outlined"} />
+                        </Button>
+                        <Button>
+                            <Iconify height={"25px"} width={"25px"} icon={"bxs:share-alt"} />
+                        </Button>
+                    </Stack>
                     <Stack p={3}>
                         <Typography variant="body1" component={"h4"} fontSize={"25px"} lineHeight={"37px"} fontWeight={"600"}>
                             Chi tiết
@@ -353,51 +374,51 @@ function Order() {
                         </Stack>
                     </Stack>
                     {/*  */}
-                    <Stack p={3}>
-                        <Typography variant={"body1"} component={"h3"} fontSize={"25px"} lineHeight={"37px"} fontWeight={"600"}>
-                            Danh sách
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table sx={{ minWidth: 700 }} aria-label="spanning table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell align="center" colSpan={4}>
-                                            Chi tiết
-                                        </TableCell>
-                                        <TableCell colSpan={2} align="left">
-                                            Tổng tiền
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell align="left">Sản phẩm</TableCell>
-                                        <TableCell align="right">Danh mục</TableCell>
-                                        <TableCell align="right">Số lượng</TableCell>
-                                        <TableCell align="right">Giá</TableCell>
-                                        <TableCell align="right">Tổng tiền</TableCell>
-                                        <TableCell />
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {invoiceList.map((row, index) => (
-                                        <TableRow key={index} hover tabIndex={-1}>
-                                            <TableCell>{row.name}</TableCell>
-                                            <TableCell align="right">
-                                                {row.category.map((item) => (
-                                                    <p key={item._id}>{item.name}</p>
-                                                ))}
+                    {invoiceList.length > 0 && (
+                        <Stack p={3}>
+                            <Typography variant={"body1"} component={"h3"} fontSize={"25px"} lineHeight={"37px"} fontWeight={"600"}>
+                                Danh sách
+                            </Typography>
+                            <TableContainer component={Paper}>
+                                <Table sx={{ minWidth: 700 }} aria-label="spanning table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell align="center" colSpan={4}>
+                                                Chi tiết
                                             </TableCell>
-                                            <TableCell align="right">{row.quantity}</TableCell>
-                                            <TableCell align="right">{fNumber(row.price)}</TableCell>
-                                            <TableCell align="right">{`${fNumber(row.total)} VNĐ`}</TableCell>
-                                            <TableCell align={"center"}>
-                                                <OrderMoreMenu id={row.key} removeProductItem={handleDeletedProductInvoice} />
+                                            <TableCell colSpan={2} align="left">
+                                                Tổng tiền
                                             </TableCell>
                                         </TableRow>
-                                    ))}
-                                    <TableRow>
-                                        <TableCell colSpan={6} sx={{ height: "100px" }} />
-                                    </TableRow>
-                                    {invoiceList.length > 0 && (
+                                        <TableRow>
+                                            <TableCell align="left">Sản phẩm</TableCell>
+                                            <TableCell align="right">Danh mục</TableCell>
+                                            <TableCell align="right">Số lượng</TableCell>
+                                            <TableCell align="right">Giá</TableCell>
+                                            <TableCell align="right">Tổng tiền</TableCell>
+                                            <TableCell />
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {invoiceList.map((row, index) => (
+                                            <TableRow key={index} hover tabIndex={-1}>
+                                                <TableCell>{row.name}</TableCell>
+                                                <TableCell align="right">
+                                                    {row.category.map((item) => (
+                                                        <p key={item._id}>{item.name}</p>
+                                                    ))}
+                                                </TableCell>
+                                                <TableCell align="right">{row.quantity}</TableCell>
+                                                <TableCell align="right">{fNumber(row.price)}</TableCell>
+                                                <TableCell align="right">{`${fNumber(row.total)} VNĐ`}</TableCell>
+                                                <TableCell align={"center"}>
+                                                    <OrderMoreMenu id={row.key} removeProductItem={handleDeletedProductInvoice} />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                        <TableRow>
+                                            <TableCell colSpan={6} sx={{ height: "100px" }} />
+                                        </TableRow>
                                         <>
                                             <TableRow>
                                                 <TableCell rowSpan={3} colSpan={2} />
@@ -413,11 +434,11 @@ function Order() {
                                                 <TableCell align="right">{`${fNumber(totalPriceInvoice(invoiceList))} VNĐ`}</TableCell>
                                             </TableRow>
                                         </>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Stack>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Stack>
+                    )}
                 </Paper>
             )}
             <Snackbar

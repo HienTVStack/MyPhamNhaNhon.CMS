@@ -81,6 +81,7 @@ export default function DashboardLayout() {
     useEffect(() => {
         const checkAuth = async () => {
             const user = await authUtil.isAuthenticated();
+
             if (!user) {
                 navigate("/login");
             } else {

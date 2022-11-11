@@ -30,6 +30,7 @@ import axios from "axios";
 import productApi from "src/api/productApi";
 import tagApi from "src/api/tagApi";
 import { useSelector } from "react-redux";
+import Iconify from "src/components/Iconify";
 // import { addProduct } from "src/redux/actions";
 
 const preUrls = [
@@ -80,6 +81,7 @@ function CreateProduct() {
     const [uploadImages, setUploadImages] = useState([]);
     // const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
+    const [inputTypeList, setInputTypeList] = useState([{ nameType: "", price: "" }]);
     // err
     const [detailContentErr, setDetailContentErr] = useState("");
     const [descriptionContentErr, setDescriptionContentErr] = useState("");
@@ -227,6 +229,7 @@ function CreateProduct() {
                 imageUploadUrl,
                 price,
                 author: user,
+                type: inputTypeList.sort((a, b) => a.price - b.price),
             });
             if (res.message === "OK") {
                 // dispatch(addProduct(res.product));
@@ -286,6 +289,23 @@ function CreateProduct() {
             setTagAddErr("Không được nhập kí tự đặc biệt");
             return false;
         }
+    };
+
+    const handleInputTypeProductChange = (e, index) => {
+        const { name, value } = e.target;
+        const list = [...inputTypeList];
+        list[index][name] = value;
+        setInputTypeList(list);
+    };
+    const handleAddInputTypeClick = (e, index) => {
+        setInputTypeList([...inputTypeList, { nameType: "", price: "" }]);
+    };
+
+    const handleRemoveInputType = (index) => {
+        console.log(index);
+        const list = [...inputTypeList];
+        list.splice(index, 1);
+        setInputTypeList(list);
     };
 
     return (
@@ -445,7 +465,7 @@ function CreateProduct() {
                                     helperText={codeErr}
                                     error={codeErr !== ""}
                                 />
-                                <TextField
+                                {/* <TextField
                                     placeholder="Giá sản phẩm"
                                     label="Giá sản phẩm"
                                     name={"price"}
@@ -456,7 +476,59 @@ function CreateProduct() {
                                     disabled={loading}
                                     error={priceErr !== ""}
                                     helperText={priceErr}
-                                />
+                                /> */}
+                                <Paper sx={{ backgroundColor: "rgb(244, 246, 248)", padding: "20px" }}>
+                                    <Typography>Loại sản phẩm</Typography>
+                                    {inputTypeList.map((x, i) => {
+                                        return (
+                                            <Stack sx={{ margin: "20px 0" }} alignItems="end" key={i}>
+                                                <Stack direction={"row"} spacing={2} alignItems={"center"}>
+                                                    <TextField
+                                                        placeholder="Thể loại"
+                                                        label="Thể loại"
+                                                        name={"nameType"}
+                                                        id={"nameType"}
+                                                        required
+                                                        fullWidth
+                                                        disabled={loading}
+                                                        error={priceErr !== ""}
+                                                        helperText={priceErr}
+                                                        sx={{ flex: 2 }}
+                                                        onChange={(e) => handleInputTypeProductChange(e, i)}
+                                                    />
+                                                    <TextField
+                                                        placeholder="Giá"
+                                                        label="Giá"
+                                                        name={"price"}
+                                                        id={"price"}
+                                                        required
+                                                        fullWidth
+                                                        disabled={loading}
+                                                        error={priceErr !== ""}
+                                                        helperText={priceErr}
+                                                        sx={{ flex: 1 }}
+                                                        onChange={(e) => handleInputTypeProductChange(e, i)}
+                                                    />
+                                                </Stack>
+                                                {inputTypeList.length !== 1 && (
+                                                    <Button
+                                                        variant="text"
+                                                        color="error"
+                                                        startIcon={<Iconify icon="bi:trash-fill" />}
+                                                        onClick={() => handleRemoveInputType(i)}
+                                                        sx={{ width: "40%", marginTop: "8px" }}
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                )}
+                                            </Stack>
+                                        );
+                                    })}
+
+                                    <Button variant="text" startIcon={<Iconify icon="carbon:add" />} onClick={handleAddInputTypeClick}>
+                                        Add item
+                                    </Button>
+                                </Paper>
                                 <FormControl fullWidth sx={{ margin: "16px 0" }}>
                                     <Autocomplete
                                         autoComplete

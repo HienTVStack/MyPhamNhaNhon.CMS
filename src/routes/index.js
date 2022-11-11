@@ -9,7 +9,7 @@ import Login from "../pages/Login";
 import NotFound from "../pages/Page404";
 import Register from "../pages/Register";
 import Products from "../pages/Products";
-import CreateProduct from "src/pages/Product/CreateProduct";
+import CreateProduct from "src/pages/Product/ProductCreate";
 import DashboardApp from "../pages/DashboardApp";
 import ProductList from "src/pages/Product/ProductList";
 import ProductEdit from "src/pages/Product/ProductEdit";

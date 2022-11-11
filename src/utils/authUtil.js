@@ -1,4 +1,4 @@
-import authApi from "../api/authApi";
+import employeeApi from "src/api/employeeApi";
 
 const authUtil = {
     isAuthenticated: async () => {
@@ -6,7 +6,7 @@ const authUtil = {
         if (!token) return false;
 
         try {
-            const res = await authApi.verifyToken();
+            const res = await employeeApi.verifyToken();
             return res.user;
         } catch {
             return false;

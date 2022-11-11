@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 // @mui
 import { Box, Stack, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import authApi from "src/api/authApi";
+import employeeApi from "src/api/employeeApi";
 import { useDispatch } from "react-redux";
 import { setUser } from "src/redux/actions";
 // components
@@ -41,7 +41,7 @@ export default function LoginForm() {
 
         try {
             setLoading(true);
-            const res = await authApi.login({ username, password });
+            const res = await employeeApi.login({ username, password });
 
             if (res.message === "OK") {
                 localStorage.setItem("token", res.token);
