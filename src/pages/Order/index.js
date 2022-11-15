@@ -39,6 +39,9 @@ import { fNumber } from "src/utils/formatNumber";
 import Loading from "src/components/Loading";
 import OrderMoreMenu from "./OrderMoreMenu";
 import { jsPDF } from "jspdf";
+import * as XLSX from "xlsx";
+import * as FileSaver from "file-saver";
+import saleOrderApi from "src/api/saleOrderApi";
 
 const preUrls = [
     {
@@ -80,16 +83,21 @@ function totalPriceInvoice(invoice) {
 function Order() {
     const navigate = useNavigate();
     const categories = useSelector((state) => state.data.categoryList);
+    const user = useSelector((state) => state.data.user);
     const [dateCreate, setDateCreate] = useState(new Date());
     const [dateDue, setDateDue] = useState(null);
     const [code, setCode] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("Draft");
     const [productList, setProductList] = useState([]);
     const [productSelected, setProductSelected] = useState({});
     const [quantityProductItem, setQuantityProductItem] = useState(1);
     const [categoryProductSelected, setCategoryProductSelected] = useState([]);
+    const [typeProductSelected, setTypeProductSelected] = useState({});
+    const [typeProductList, setTypeProductList] = useState([]);
     const [invoiceList, setInvoiceList] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [description, setDescription] = useState("");
+
     const [toastMessage, setToastMessage] = useState({
         open: false,
         type: "error",
@@ -106,6 +114,8 @@ function Order() {
                 setProductList(res.products);
                 setProductSelected(res.products[0]);
                 setCategoryProductSelected(res.products[0].category);
+                setTypeProductList(res.products[0].type || []);
+                setTypeProductSelected(res.products[0].type[0]);
             }
             setLoading(false);
         } catch (error) {
@@ -130,9 +140,10 @@ function Order() {
             key: uuidv4(),
             name: productSelected.name,
             quantity: quantityProductItem,
+            category: categoryProductSelected,
+            type: typeProductSelected,
             price: productSelected.price,
             total: productSelected.price * quantityProductItem,
-            category: categoryProductSelected,
         };
 
         setInvoiceList([...invoiceList, productItem]);
@@ -143,6 +154,8 @@ function Order() {
     const handleSelectedProduct = (value) => {
         setNameProductErr("");
         setProductSelected(value);
+        setTypeProductList(value.type);
+        setTypeProductSelected(value.type[0]);
         setCategoryProductSelected(value.category);
     };
 
@@ -156,6 +169,91 @@ function Order() {
         doc.text("Hello world!", 10, 10);
         // doc.table().data;
         doc.save("a4.pdf");
+    };
+
+    const handleExportXLSX = () => {
+        const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+        const invoiceExport = [];
+        invoiceList.map((item) => {
+            return invoiceExport.push({
+                name: item.name,
+                // category: item.category.map(c => reut),
+                // category: item.category.map((c) => c.name),
+                type: item.type.nameType,
+                price: `${fNumber(item.price)} VNĐ`,
+                quantity: item.quantity,
+                total: `${fNumber(item.total)} VNĐ`,
+            });
+        });
+
+        const ws = XLSX.utils.json_to_sheet(invoiceExport);
+
+        XLSX.utils.sheet_add_aoa(ws, [["Name", "Type", "Price", "Quantity", "Total"]], { origin: "A1" });
+
+        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const data = new Blob([excelBuffer], { type: fileType });
+        FileSaver.saveAs(data, `export.xlsx`);
+    };
+
+    const handleOrder = async () => {
+        let err = false;
+        if (!dateDue) {
+            err = true;
+        }
+        if (err) {
+            setToastMessage({
+                open: true,
+                type: "warning",
+                message: "Kiểm tra lại",
+            });
+            return;
+        }
+        const newSaleOrderProductArray = [];
+        for (const item of invoiceList) {
+            newSaleOrderProductArray.push({
+                name: item.name,
+                quantity: item.quantity,
+                category: item.category,
+                type: item.type.nameType,
+                total: item.total,
+            });
+        }
+        const invoice = {
+            fromOrder: {
+                name: "Tiệm mỹ phẩm nhà Nhơn",
+                address: "Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam",
+                phone: "365-374-4961",
+            },
+            toOrder: {
+                name: "Tiệm mỹ phẩm nhà Nhơn",
+                address: "Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam",
+                phone: "365-374-4961",
+            },
+            status: status,
+            createdDate: dateCreate,
+            dueDate: dateDue,
+            products: newSaleOrderProductArray,
+            description: description,
+            createdBy: user.fullName,
+        };
+
+        setLoading(true);
+        try {
+            const res = await saleOrderApi.create(invoice);
+            if (res.message === "OK") {
+                setToastMessage({
+                    open: true,
+                    type: "success",
+                    message: "Tạo đơn thành công",
+                });
+                setInvoiceList([]);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     };
 
     return (
@@ -225,9 +323,9 @@ function Order() {
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Status</InputLabel>
                             <Select value={status} label="Status" onChange={(e) => setStatus(e.target.value)} displayEmpty>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                <MenuItem value={"Draft"}>Draft</MenuItem>
+                                <MenuItem value={"Save"}>Save</MenuItem>
+                                <MenuItem value={"Order"}>Order</MenuItem>
                             </Select>
                         </FormControl>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -259,7 +357,7 @@ function Order() {
                         <Button>
                             <Iconify height={"25px"} width={"25px"} icon={"fluent:print-20-filled"} />
                         </Button>
-                        <Button>
+                        <Button onClick={handleExportXLSX}>
                             <Iconify height={"25px"} width={"25px"} icon={"ant-design:download-outlined"} />
                         </Button>
                         <Button>
@@ -299,6 +397,7 @@ function Order() {
                                 fullWidth
                                 multiple
                                 disabled
+                                disableListWrap
                                 value={categoryProductSelected}
                                 options={categories}
                                 disableClearable
@@ -319,6 +418,30 @@ function Order() {
                                 )}
                                 renderInput={(params) => <TextField {...params} label="Danh mục sản phẩm" disabled />}
                             />
+
+                            <Autocomplete
+                                autoComplete
+                                fullWidth
+                                disableClearable
+                                value={typeProductSelected}
+                                options={typeProductList}
+                                getOptionLabel={(option) => option.nameType || ""}
+                                isOptionEqualToValue={(option, value) => option.nameType === value.nameType}
+                                onChange={(e, value) => setTypeProductList(value)}
+                                sx={{ width: 300, margin: 0 }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        fullWidth
+                                        {...params}
+                                        required
+                                        placeholder={"Type"}
+                                        label={"Type"}
+                                        error={nameProductErr !== ""}
+                                        helperText={nameProductErr}
+                                    />
+                                )}
+                            />
+
                             <TextField
                                 placeholder="Num"
                                 label={"Num"}
@@ -356,7 +479,13 @@ function Order() {
                             />
                         </Stack>
                         <Stack pt={2}>
-                            <Typography variant="body1" component={"h3"}>
+                            <Typography
+                                variant="body1"
+                                component={"h3"}
+                                name="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            >
                                 Ghi chú
                             </Typography>
                             <TextField fullWidth placeholder="Ghi chú" sx={{ mt: 1 }} />
@@ -386,13 +515,14 @@ function Order() {
                                             <TableCell align="center" colSpan={4}>
                                                 Chi tiết
                                             </TableCell>
-                                            <TableCell colSpan={2} align="left">
+                                            <TableCell colSpan={3} align="left">
                                                 Tổng tiền
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell align="left">Sản phẩm</TableCell>
                                             <TableCell align="right">Danh mục</TableCell>
+                                            <TableCell align="right">Loại</TableCell>
                                             <TableCell align="right">Số lượng</TableCell>
                                             <TableCell align="right">Giá</TableCell>
                                             <TableCell align="right">Tổng tiền</TableCell>
@@ -402,12 +532,13 @@ function Order() {
                                     <TableBody>
                                         {invoiceList.map((row, index) => (
                                             <TableRow key={index} hover tabIndex={-1}>
-                                                <TableCell>{row.name}</TableCell>
+                                                <TableCell sx={{ maxWidth: "300px" }}>{row.name}</TableCell>
                                                 <TableCell align="right">
                                                     {row.category.map((item) => (
                                                         <p key={item._id}>{item.name}</p>
                                                     ))}
                                                 </TableCell>
+                                                <TableCell align="right">{row.type.nameType}</TableCell>
                                                 <TableCell align="right">{row.quantity}</TableCell>
                                                 <TableCell align="right">{fNumber(row.price)}</TableCell>
                                                 <TableCell align="right">{`${fNumber(row.total)} VNĐ`}</TableCell>
@@ -437,6 +568,17 @@ function Order() {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+                            <Stack justifyContent={"center"} alignItems={"center"} mt={3}>
+                                <Button
+                                    startIcon={<Iconify icon={"carbon:add-alt"} />}
+                                    variant="contained"
+                                    size={"large"}
+                                    sx={{ width: "200px" }}
+                                    onClick={handleOrder}
+                                >
+                                    Đặt hàng
+                                </Button>
+                            </Stack>
                         </Stack>
                     )}
                 </Paper>

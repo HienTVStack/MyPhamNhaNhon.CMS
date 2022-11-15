@@ -6,7 +6,6 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from "@
 // components
 import MenuPopover from "../../components/MenuPopover";
 // mocks_
-import account from "../../_mock/account";
 import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
@@ -65,7 +64,7 @@ export default function AccountPopover() {
                     }),
                 }}
             >
-                <Avatar src={account.photoURL} alt="photoURL" />
+                <Avatar src={user.avatar || ""} alt="photoURL" />
             </IconButton>
             <MenuPopover
                 open={Boolean(open)}

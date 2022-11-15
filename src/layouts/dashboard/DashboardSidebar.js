@@ -4,8 +4,6 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 // material
 import { styled } from "@mui/material/styles";
 import { Box, Link, Drawer, Typography, Avatar } from "@mui/material";
-// mock
-import account from "../../_mock/account";
 // hooks
 import useResponsive from "../../hooks/useResponsive";
 // components
@@ -14,6 +12,7 @@ import Scrollbar from "../../components/Scrollbar";
 import NavSection from "../../components/NavSection";
 //
 import navConfig from "./NavConfig";
+import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
 
@@ -43,7 +42,7 @@ DashboardSidebar.propTypes = {
 
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
     const { pathname } = useLocation();
-
+    const user = useSelector((state) => state.data.user);
     const isDesktop = useResponsive("up", "lg");
 
     useEffect(() => {
@@ -71,19 +70,13 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             <Box sx={{ mb: 5, mx: 2.5 }}>
                 <Link underline="none" component={RouterLink} to="#">
                     <AccountStyle>
-                        <Avatar src={account.photoURL} alt="photoURL" />
+                        <Avatar src={user.avatar || ""} alt="photoURL" />
                         <Box sx={{ ml: 2 }}>
-                            <Typography
-                                variant="subtitle2"
-                                sx={{ color: "text.primary" }}
-                            >
-                                {account.displayName}
+                            <Typography variant="subtitle2" sx={{ color: "text.primary" }}>
+                                {user.fullName}
                             </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ color: "text.secondary" }}
-                            >
-                                {account.role}
+                            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                                {user.role || "Quản trị viên"}
                             </Typography>
                         </Box>
                     </AccountStyle>
