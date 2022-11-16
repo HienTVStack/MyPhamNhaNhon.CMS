@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from "@mui/material";
 // component
@@ -6,7 +7,7 @@ import Iconify from "src/components/Iconify";
 
 // ----------------------------------------------------------------------
 
-export default function OrderMoreMenu({ id, removeProductItem }) {
+export default function SaleOrderMoreMenu({ id, removeProductItem }) {
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -35,6 +36,9 @@ export default function OrderMoreMenu({ id, removeProductItem }) {
                         <Iconify icon="eva:trash-2-outline" width={24} height={24} />
                     </ListItemIcon>
                     <ListItemText primary="Delete" primaryTypographyProps={{ variant: "body2" }} />
+                </MenuItem>
+                <MenuItem sx={{ color: "text.secondary" }} component={RouterLink} to={`/dashboard/me/saleOrder/${id}`}>
+                    <ListItemText primary="Xem chi tiết" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
             </Menu>
         </>

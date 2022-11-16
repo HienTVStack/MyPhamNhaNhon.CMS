@@ -70,13 +70,13 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             <Box sx={{ mb: 5, mx: 2.5 }}>
                 <Link underline="none" component={RouterLink} to="#">
                     <AccountStyle>
-                        <Avatar src={user.avatar || ""} alt="photoURL" />
+                        <Avatar src={user?.avatar || ""} alt="photoURL" />
                         <Box sx={{ ml: 2 }}>
                             <Typography variant="subtitle2" sx={{ color: "text.primary" }}>
-                                {user.fullName}
+                                {user?.fullName}
                             </Typography>
                             <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                                {user.role || "Quản trị viên"}
+                                {user?.role || "Quản trị viên"}
                             </Typography>
                         </Box>
                     </AccountStyle>

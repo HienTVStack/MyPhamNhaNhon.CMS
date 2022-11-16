@@ -64,7 +64,7 @@ export default function AccountPopover() {
                     }),
                 }}
             >
-                <Avatar src={user.avatar || ""} alt="photoURL" />
+                <Avatar src={user?.avatar || ""} alt="photoURL" />
             </IconButton>
             <MenuPopover
                 open={Boolean(open)}
@@ -82,10 +82,10 @@ export default function AccountPopover() {
             >
                 <Box sx={{ my: 1.5, px: 2.5 }}>
                     <Typography variant="subtitle2" noWrap>
-                        {user.fullName || "Ẩn danh"}
+                        {user?.fullName || "Ẩn danh"}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
-                        {user.email}
+                        {user?.email}
                     </Typography>
                 </Box>
 

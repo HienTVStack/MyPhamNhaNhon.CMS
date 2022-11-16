@@ -16,6 +16,9 @@ import ProductEdit from "src/pages/Product/ProductEdit";
 import ProductTrash from "src/pages/Product/ProductTrash";
 import BlogCreate from "src/pages/Blog/BlogCreate";
 import Order from "src/pages/Order";
+import List from "src/pages/Order/List";
+import SaleOrderItem from "src/pages/Order/SaleOrderItem";
+import SaleOrderImport from "src/pages/Order/SaleOrderImport";
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +46,27 @@ export default function Router() {
                     children: [
                         { path: "list", element: <Blog /> },
                         { path: "create", element: <BlogCreate /> },
+                    ],
+                },
+                {
+                    path: "me",
+                    children: [
+                        {
+                            path: "saleOrder",
+                            element: <Order />,
+                        },
+                        {
+                            path: "list",
+                            element: <List />,
+                        },
+                        {
+                            path: "saleOrder/:id",
+                            element: <SaleOrderItem />,
+                        },
+                        {
+                            path: "import",
+                            element: <SaleOrderImport />,
+                        },
                     ],
                 },
             ],

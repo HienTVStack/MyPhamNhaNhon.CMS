@@ -12,6 +12,7 @@ import {
     InputLabel,
     Link,
     MenuItem,
+    Modal,
     Paper,
     Select,
     Snackbar,
@@ -37,11 +38,12 @@ import Iconify from "src/components/Iconify";
 import { useNavigate } from "react-router-dom";
 import { fNumber } from "src/utils/formatNumber";
 import Loading from "src/components/Loading";
-import OrderMoreMenu from "./OrderMoreMenu";
+import OrderMoreMenu from "./SaleOrderMoreMenu";
 import { jsPDF } from "jspdf";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
 import saleOrderApi from "src/api/saleOrderApi";
+import PopupInfo from "./PopupInfo";
 
 const preUrls = [
     {
@@ -64,6 +66,18 @@ const breadcrumbs = preUrls.map((pre, index) => (
     </Link>
 ));
 
+const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 445,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 2,
+    borderRadius: "20px",
+};
+
 function totalQuantityInvoice(invoice) {
     let quantity = 0;
     for (const item of invoice) {
@@ -80,10 +94,19 @@ function totalPriceInvoice(invoice) {
     return total;
 }
 
+const SUPPLIER_LIST = [
+    {
+        name: "Name",
+        address: "address",
+        phone: "PHONE",
+    },
+];
+
 function Order() {
     const navigate = useNavigate();
     const categories = useSelector((state) => state.data.categoryList);
     const user = useSelector((state) => state.data.user);
+    const [open, setOpen] = useState(false);
     const [dateCreate, setDateCreate] = useState(new Date());
     const [dateDue, setDateDue] = useState(null);
     const [code, setCode] = useState("");
@@ -97,6 +120,7 @@ function Order() {
     const [invoiceList, setInvoiceList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [description, setDescription] = useState("");
+    const [supplier, setSupplier] = useState({});
 
     const [toastMessage, setToastMessage] = useState({
         open: false,
@@ -201,6 +225,12 @@ function Order() {
         if (!dateDue) {
             err = true;
         }
+        if (!supplier) {
+            err = true;
+        }
+        if (invoiceList.length === 0) {
+            err = true;
+        }
         if (err) {
             setToastMessage({
                 open: true,
@@ -209,6 +239,7 @@ function Order() {
             });
             return;
         }
+
         const newSaleOrderProductArray = [];
         for (const item of invoiceList) {
             newSaleOrderProductArray.push({
@@ -216,6 +247,7 @@ function Order() {
                 quantity: item.quantity,
                 category: item.category,
                 type: item.type.nameType,
+                price: item.price,
                 total: item.total,
             });
         }
@@ -225,11 +257,7 @@ function Order() {
                 address: "Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam",
                 phone: "365-374-4961",
             },
-            toOrder: {
-                name: "Tiệm mỹ phẩm nhà Nhơn",
-                address: "Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam",
-                phone: "365-374-4961",
-            },
+            toOrder: supplier,
             status: status,
             createdDate: dateCreate,
             dueDate: dateDue,
@@ -256,6 +284,11 @@ function Order() {
         }
     };
 
+    const handleSelectSupplier = (value) => {
+        setSupplier(value);
+        setOpen(!open);
+    };
+
     return (
         <Fragment>
             <Box>
@@ -279,25 +312,36 @@ function Order() {
                         <Box sx={{ width: "50%" }} p={2}>
                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                                 <Typography component={"h6"}>Form:</Typography>
-                                <Button startIcon={<Iconify icon={"clarity:edit-solid"} />}>Change</Button>
+                                <Button
+                                    onClick={() => setToastMessage({ open: true, message: "Không có địa chỉ khác", type: "warning" })}
+                                    startIcon={<Iconify icon={"clarity:edit-solid"} />}
+                                >
+                                    Change
+                                </Button>
                             </Stack>
                             <Typography variant="body1" component={"h6"} fontWeight={600}>
                                 Tiệm mỹ phẩm nhà Nhơn
                             </Typography>
                             <p>Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam</p>
-                            <p>Phone: 365-374-4961</p>
+                            <p>Phone: 033 712 2712</p>
                         </Box>
                         <Divider orientation="vertical" flexItem />
                         <Box sx={{ width: "50%" }} p={2}>
                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                                 <Typography component={"h6"}>To:</Typography>
-                                <Button startIcon={<Iconify icon={"clarity:edit-solid"} />}>Change</Button>
+                                <Button onClick={() => setOpen(true)} startIcon={<Iconify icon={"clarity:edit-solid"} />}>
+                                    Change
+                                </Button>
                             </Stack>
-                            <Typography variant="body1" component={"h6"} fontWeight={600}>
-                                Tiệm mỹ phẩm nhà Nhơn
-                            </Typography>
-                            <p>Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam</p>
-                            <p>Phone: 365-374-4961</p>
+                            {!!supplier && (
+                                <>
+                                    <Typography variant="body1" component={"h6"} fontWeight={600}>
+                                        {supplier.name}
+                                    </Typography>
+                                    <p> {supplier.address}</p>
+                                    <p> {supplier.phone}</p>
+                                </>
+                            )}
                         </Box>
                     </Stack>
                     {/*  */}
@@ -583,6 +627,7 @@ function Order() {
                     )}
                 </Paper>
             )}
+            {/* Other */}
             <Snackbar
                 open={toastMessage.open}
                 anchorOrigin={{
@@ -592,10 +637,23 @@ function Order() {
                 autoHideDuration={2000}
                 onClose={() => setToastMessage({ open: false })}
             >
-                <Alert variant="filled" hidden={2000} severity={toastMessage.type} x={{ minWidth: "200px" }}>
+                <Alert variant="filled" hidden={2000} severity={toastMessage.type} sx={{ minWidth: "200px" }}>
                     {toastMessage.message}
                 </Alert>
             </Snackbar>
+            <Modal open={open} onClose={() => setOpen(!open)} disableAutoFocus disableRestoreFocus disableEnforceFocus disableEscapeKeyDown>
+                <Box sx={style}>
+                    <Typography variant="body1" component={"h1"}>
+                        Select address
+                    </Typography>
+
+                    {SUPPLIER_LIST.length > 0 &&
+                        SUPPLIER_LIST.map((item, index) => (
+                            <PopupInfo key={index} name={item.name} address={item.address} phone={item.phone} selectItem={handleSelectSupplier} />
+                        ))}
+                    {SUPPLIER_LIST.length < 0 && <Typography variant="h1">Không có dữ liệu</Typography>}
+                </Box>
+            </Modal>
         </Fragment>
     );
 }

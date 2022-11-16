@@ -85,12 +85,32 @@ const navConfig = [
             },
             {
                 title: "Cập nhật",
-                path: "/dashboard/invoice/edit",
+                path: "/dashboard/me/order",
                 icon: getIcon("eva:file-text-fill"),
             },
         ],
     },
-
+    {
+        title: "Quản lí",
+        icon: getIcon("eva:file-text-fill"),
+        children: [
+            {
+                title: "Tạo đơn",
+                path: "/dashboard/me/saleOrder",
+                icon: getIcon("eva:file-text-fill"),
+            },
+            {
+                title: "Danh sách",
+                path: "/dashboard/me/list",
+                icon: getIcon("eva:file-text-fill"),
+            },
+            {
+                title: "Nhập hàng",
+                path: "/dashboard/me/import",
+                icon: getIcon("eva:file-text-fill"),
+            },
+        ],
+    },
     {
         title: "Blog",
         path: "/dashboard/blog",
