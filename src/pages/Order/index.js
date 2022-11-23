@@ -96,9 +96,14 @@ function totalPriceInvoice(invoice) {
 
 const SUPPLIER_LIST = [
     {
-        name: "Name",
-        address: "address",
-        phone: "PHONE",
+        name: "Mỹ phẩm thiên nhiên Linh Hương",
+        address: "BT13 Dãy 16B5 Làng Việt Kiều Châu Âu, Mộ Lao, Hà Đông, Hà Nội",
+        phone: "02432989989",
+    },
+    {
+        name: "Tiệm mỹ phẩm nhà Nhơn chi nhánh 2",
+        address: "Phường Tân Thới Nhất, quận 12, thành phố Hồ Chí Minh",
+        phone: "0337122712",
     },
 ];
 
@@ -276,6 +281,7 @@ function Order() {
                     message: "Tạo đơn thành công",
                 });
                 setInvoiceList([]);
+                navigate("/dashboard/me/list");
             }
             setLoading(false);
         } catch (error) {
@@ -316,7 +322,7 @@ function Order() {
                                     onClick={() => setToastMessage({ open: true, message: "Không có địa chỉ khác", type: "warning" })}
                                     startIcon={<Iconify icon={"clarity:edit-solid"} />}
                                 >
-                                    Change
+                                    Thay đổi
                                 </Button>
                             </Stack>
                             <Typography variant="body1" component={"h6"} fontWeight={600}>
@@ -330,7 +336,7 @@ function Order() {
                             <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
                                 <Typography component={"h6"}>To:</Typography>
                                 <Button onClick={() => setOpen(true)} startIcon={<Iconify icon={"clarity:edit-solid"} />}>
-                                    Change
+                                    Thay đổi
                                 </Button>
                             </Stack>
                             {!!supplier && (
@@ -471,13 +477,12 @@ function Order() {
                                 options={typeProductList}
                                 getOptionLabel={(option) => option.nameType || ""}
                                 isOptionEqualToValue={(option, value) => option.nameType === value.nameType}
-                                onChange={(e, value) => setTypeProductList(value)}
+                                onChange={(e, value) => setTypeProductSelected(value)}
                                 sx={{ width: 300, margin: 0 }}
                                 renderInput={(params) => (
                                     <TextField
                                         fullWidth
                                         {...params}
-                                        required
                                         placeholder={"Type"}
                                         label={"Type"}
                                         error={nameProductErr !== ""}
@@ -643,8 +648,8 @@ function Order() {
             </Snackbar>
             <Modal open={open} onClose={() => setOpen(!open)} disableAutoFocus disableRestoreFocus disableEnforceFocus disableEscapeKeyDown>
                 <Box sx={style}>
-                    <Typography variant="body1" component={"h1"}>
-                        Select address
+                    <Typography variant="body1" component={"h1"} fontSize={"20px"} lineHeight={"30px"} fontWeight={600}>
+                        Nhà cung cấp
                     </Typography>
 
                     {SUPPLIER_LIST.length > 0 &&

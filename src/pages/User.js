@@ -1,6 +1,6 @@
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 // material
 import {
@@ -27,15 +27,18 @@ import SearchNotFound from "../components/SearchNotFound";
 import { UserListHead, UserListToolbar, UserMoreMenu } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
+import employeeApi from "src/api/employeeApi";
+import { fData } from "src/utils/formatNumber";
+import { fDate } from "src/utils/formatTime";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: "name", label: "Name", alignRight: false },
-    { id: "Ngày tạo", label: "Ngày tạo", alignRight: false },
-    { id: "Trạng thái", label: "Trạng thái", alignRight: false },
-    { id: "Giá", label: "Giá", alignRight: false },
-    { id: "status", label: "Status", alignRight: false },
+    { id: "name", label: "Tên", alignRight: false },
+    { id: "createdAt", label: "Ngày tạo", alignRight: false },
+    { id: "role", label: "Quyền", alignRight: false },
+    // { id: "Giá", label: "Giá", alignRight: false },
+    { id: "status", label: "Trạng thái", alignRight: false },
     { id: "" },
 ];
 
@@ -70,16 +73,27 @@ function applySortFilter(array, comparator, query) {
 
 export default function User() {
     const [page, setPage] = useState(0);
-
     const [order, setOrder] = useState("asc");
-
     const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState("name");
-
     const [filterName, setFilterName] = useState("");
-
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [userList, setUserList] = useState([]);
+
+    const EmployeeLoaded = async () => {
+        try {
+            const res = await employeeApi.getAll();
+            if (res.success) {
+                setUserList(res.users);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        EmployeeLoaded();
+    }, []);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === "asc";
@@ -89,7 +103,7 @@ export default function User() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
+            const newSelecteds = userList.map((n) => n.name);
             setSelected(newSelecteds);
             return;
         }
@@ -124,9 +138,9 @@ export default function User() {
         setFilterName(event.target.value);
     };
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList.length) : 0;
 
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(userList, getComparator(order, orderBy), filterName);
 
     const isUserNotFound = filteredUsers.length === 0;
 
@@ -152,15 +166,15 @@ export default function User() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={USERLIST.length}
+                                    rowCount={userList.length}
                                     numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
                                     onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                                        const isItemSelected = selected.indexOf(name) !== -1;
+                                        const { id, fullName, role, createdAt, status, avatar } = row;
+                                        const isItemSelected = selected.indexOf(fullName) !== -1;
 
                                         return (
                                             <TableRow
@@ -172,22 +186,23 @@ export default function User() {
                                                 aria-checked={isItemSelected}
                                             >
                                                 <TableCell padding="checkbox">
-                                                    <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
+                                                    <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, fullName)} />
                                                 </TableCell>
                                                 <TableCell component="th" scope="row" padding="none">
                                                     <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={name} src={avatarUrl} />
+                                                        <Avatar alt={fullName} src={avatar} />
                                                         <Typography variant="subtitle2" noWrap>
-                                                            {name}
+                                                            {fullName}
                                                         </Typography>
                                                     </Stack>
                                                 </TableCell>
-                                                <TableCell align="left">{company}</TableCell>
-                                                <TableCell align="left">{role}</TableCell>
-                                                <TableCell align="left">{isVerified ? "Yes" : "No"}</TableCell>
+                                                <TableCell align="left">{fDate(createdAt)}</TableCell>
+                                                <TableCell align="left">{role || "Không xác định"}</TableCell>
+                                                {/* <TableCell align="left">{isVerified ? "Yes" : "No"}</TableCell> */}
                                                 <TableCell align="left">
                                                     <Label variant="ghost" color={(status === "banned" && "error") || "success"}>
-                                                        {sentenceCase(status)}
+                                                        {/* {sentenceCase(status)} */}
+                                                        {status}
                                                     </Label>
                                                 </TableCell>
 
@@ -220,7 +235,7 @@ export default function User() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
+                        count={userList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

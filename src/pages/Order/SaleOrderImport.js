@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useEffect } from "react";
-import { Alert, Box, Breadcrumbs, Button, Divider, Link, Paper, Snackbar, Stack, Typography } from "@mui/material";
+import { Alert, Box, Breadcrumbs, Button, Divider, Link, Paper, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -39,6 +39,7 @@ function SaleOrderImport() {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [saleOrder, setSaleOrder] = useState({});
+    const [productList, setProductList] = useState([]);
     const [toastMessage, setToastMessage] = useState({
         open: false,
         type: "error",
@@ -52,6 +53,7 @@ function SaleOrderImport() {
             const res = await saleOrderApi.getById(id);
             if (res.success) {
                 setSaleOrder(res.saleOrder);
+                setProductList(res.saleOrder.products);
             }
             setLoading(false);
         } catch (error) {
@@ -60,7 +62,6 @@ function SaleOrderImport() {
             setLoading(false);
         }
     };
-    console.log(saleOrder.products);
     useMemo(() => {
         saleOrderLoaded(id);
 
@@ -73,6 +74,41 @@ function SaleOrderImport() {
         doc.text("Hello world!", 10, 10);
         // doc.table().data;
         doc.save("a4.pdf");
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const tmp = {
+            status: true,
+            products: productList,
+            deliveryReal: new Date(),
+        };
+
+        console.log(tmp);
+        try {
+            const res = await saleOrderApi.import(id, tmp);
+            if (res.success) {
+                console.log(res);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
+
+    const handleChangeQuantity = (e, id) => {
+        const value = e.target.value;
+        const newProductList = [];
+
+        for (const item of productList) {
+            if (item._id === id) {
+                item.quantity = value;
+            }
+            newProductList.push(item);
+        }
+        setProductList(newProductList);
     };
 
     // const handleExportXLSX = () => {
@@ -178,7 +214,7 @@ function SaleOrderImport() {
                         </Box>
                     </Stack>
 
-                    <Stack p={3}>
+                    <Stack p={3} component="form" noValidate onSubmit={handleSubmit}>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 700 }} aria-label="spanning table">
                                 <TableHead>
@@ -194,10 +230,10 @@ function SaleOrderImport() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {saleOrder.products &&
-                                        saleOrder.products.map((row, index) => (
+                                    {productList &&
+                                        productList.map((row, index) => (
                                             <TableRow key={index} hover tabIndex={-1}>
-                                                <TableCell sx={{ maxWidth: "300px" }}>{index}</TableCell>
+                                                <TableCell>{index}</TableCell>
                                                 <TableCell sx={{ maxWidth: "300px" }}>{row.name}</TableCell>
                                                 <TableCell align="right">
                                                     {row.category.map((item) => (
@@ -205,7 +241,16 @@ function SaleOrderImport() {
                                                     ))}
                                                 </TableCell>
                                                 <TableCell align="right">{row.type}</TableCell>
-                                                <TableCell align="right">{row.quantity}</TableCell>
+                                                <TableCell align="right">
+                                                    <TextField
+                                                        sx={{ maxWidth: "70px" }}
+                                                        name={`quantity${index}`}
+                                                        id={`quantity${index}`}
+                                                        value={row.quantity}
+                                                        required
+                                                        onChange={(e) => handleChangeQuantity(e, row._id)}
+                                                    />
+                                                </TableCell>
                                                 <TableCell align="right">{fNumber(row.price)}</TableCell>
                                                 <TableCell align="right">{`${fNumber(row.total)} VNĐ`}</TableCell>
                                             </TableRow>
@@ -231,6 +276,9 @@ function SaleOrderImport() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        <Button variant="contained" type="submit">
+                            Nhập kho
+                        </Button>
                     </Stack>
                 </Paper>
             )}

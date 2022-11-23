@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useEffect } from "react";
-import { Alert, Box, Breadcrumbs, Button, Divider, Link, Paper, Snackbar, Stack, Typography } from "@mui/material";
+import { Alert, Box, Breadcrumbs, Button, Divider, Link, Paper, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useState } from "react";
 import Iconify from "src/components/Iconify";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fNumber } from "src/utils/formatNumber";
 import Loading from "src/components/Loading";
 import { jsPDF } from "jspdf";
@@ -37,8 +37,10 @@ const breadcrumbs = preUrls.map((pre, index) => (
 ));
 function SaleOrderItem() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [saleOrder, setSaleOrder] = useState({});
+    const [productList, setProductList] = useState([]);
     const [toastMessage, setToastMessage] = useState({
         open: false,
         type: "error",
@@ -52,6 +54,7 @@ function SaleOrderItem() {
             const res = await saleOrderApi.getById(id);
             if (res.success) {
                 setSaleOrder(res.saleOrder);
+                setProductList(res.saleOrder.products);
             }
             setLoading(false);
         } catch (error) {
@@ -60,7 +63,6 @@ function SaleOrderItem() {
             setLoading(false);
         }
     };
-    console.log(saleOrder.products);
     useMemo(() => {
         saleOrderLoaded(id);
 
@@ -73,6 +75,17 @@ function SaleOrderItem() {
         doc.text("Hello world!", 10, 10);
         // doc.table().data;
         doc.save("a4.pdf");
+    };
+
+    const handleEditInvoiceItem = () => {
+        navigate(`/dashboard/me/import/${id}`);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const data = new FormData();
+
+        console.log(data.get("quantity"));
     };
 
     // const handleExportXLSX = () => {
@@ -179,6 +192,11 @@ function SaleOrderItem() {
                     </Stack>
 
                     <Stack p={3}>
+                        <Stack direction={"row"} justifyContent={"flex-end"}>
+                            <Button variant={"contained"} onClick={handleEditInvoiceItem} startIcon={<Iconify icon="tabler:database-import" width={24} height={24} />}>
+                                Nhập hàng
+                            </Button>
+                        </Stack>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 700 }} aria-label="spanning table">
                                 <TableHead>
@@ -194,10 +212,10 @@ function SaleOrderItem() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {saleOrder.products &&
-                                        saleOrder.products.map((row, index) => (
+                                    {productList &&
+                                        productList.map((row, index) => (
                                             <TableRow key={index} hover tabIndex={-1}>
-                                                <TableCell sx={{ maxWidth: "300px" }}>{index}</TableCell>
+                                                <TableCell>{index}</TableCell>
                                                 <TableCell sx={{ maxWidth: "300px" }}>{row.name}</TableCell>
                                                 <TableCell align="right">
                                                     {row.category.map((item) => (

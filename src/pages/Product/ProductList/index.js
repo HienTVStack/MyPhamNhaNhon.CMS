@@ -43,6 +43,7 @@ const TABLE_HEAD = [
     { id: "createdAt", label: "Ngày tạo", alignRight: false },
     { id: "status", label: "Trạng thái", alignRight: false },
     { id: "price", label: "Giá", alignRight: false },
+    { id: "quantityStock", label: "Tồn" },
     { id: "" },
 ];
 
@@ -74,6 +75,14 @@ function applySortFilter(array, comparator, query) {
     }
     return stabilizedThis.map((el) => el[0]);
 }
+
+const handleTotalQuantityStock = (list) => {
+    let total = 0;
+    for (const item of list) {
+        total += item.quantityStock;
+    }
+    return total;
+};
 
 export default function ProductList() {
     const [loading, setLoading] = useState(false);
@@ -232,7 +241,7 @@ export default function ProductList() {
                                         />
                                         <TableBody>
                                             {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                                const { id, name, createdAt, image, inStock, price, slug } = row;
+                                                const { id, name, createdAt, image, inStock, price, type, slug } = row;
                                                 const isItemSelected = selected.indexOf(id) !== -1;
 
                                                 return (
@@ -266,8 +275,8 @@ export default function ProductList() {
                                                             }).format(new Date(createdAt))}
                                                         </TableCell>
                                                         <TableCell align="left">
-                                                            <Label variant="ghost" color={inStock ? "success" : "error"}>
-                                                                {inStock ? "Còn hàng" : "Hết hàng"}
+                                                            <Label variant="ghost" color={handleTotalQuantityStock(type) > 0 ? "success" : "error"}>
+                                                                {handleTotalQuantityStock(type) > 0 ? "Còn hàng" : "Hết hàng"}
                                                             </Label>
                                                         </TableCell>
                                                         <TableCell align="left">
@@ -279,6 +288,7 @@ export default function ProductList() {
                                                                 renderText={(value, props) => <div {...props}>{value}</div>}
                                                             />
                                                         </TableCell>
+                                                        <TableCell align="center">{handleTotalQuantityStock(type)}</TableCell>
 
                                                         <TableCell align="right">
                                                             <MoreMenuProduct slug={slug} product={row} removeProductItem={handleRemoveProductItem} />

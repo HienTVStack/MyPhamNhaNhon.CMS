@@ -31,14 +31,24 @@ export default function SaleOrderMoreMenu({ id, removeProductItem }) {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-                <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleDeleteProductById(id)}>
+                {/* <MenuItem sx={{ color: "text.secondary" }} onClick={() => handleDeleteProductById(id)}>
                     <ListItemIcon>
                         <Iconify icon="eva:trash-2-outline" width={24} height={24} />
                     </ListItemIcon>
                     <ListItemText primary="Delete" primaryTypographyProps={{ variant: "body2" }} />
-                </MenuItem>
+                </MenuItem> */}
+
                 <MenuItem sx={{ color: "text.secondary" }} component={RouterLink} to={`/dashboard/me/saleOrder/${id}`}>
+                    <ListItemIcon>
+                    <Iconify icon="carbon:view" width={24} height={24} />
+                    </ListItemIcon>
                     <ListItemText primary="Xem chi tiết" primaryTypographyProps={{ variant: "body2" }} />
+                </MenuItem>
+                <MenuItem sx={{ color: "text.secondary" }} component={RouterLink} to={`/dashboard/me/import/${id}`}>
+                    <ListItemIcon>
+                    <Iconify icon="tabler:database-import" width={24} height={24} />
+                    </ListItemIcon>
+                    <ListItemText primary="Nhập hàng" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
             </Menu>
         </>

@@ -7,10 +7,28 @@ import Page from "../components/Page";
 import Iconify from "../components/Iconify";
 // sections
 import { AppTasks, AppNewsUpdate, AppOrderTimeline, AppWebsiteVisits, AppTrafficBySite, AppWidgetSummary } from "../sections/@dashboard/app";
+import { useEffect, useState } from "react";
+import authApi from "src/api/authApi";
 
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
+    const [totalAccess, setTotalAccess] = useState({});
+
+    const totalAccessLoaded = async () => {
+        try {
+            const res = await authApi.totalAccess();
+            if (res.success) {
+                setTotalAccess({ email: res.value[0], google: res.value[1], facebook: res.value[2] });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        totalAccessLoaded();
+    }, []);
+
     return (
         <Page title="Dashboard">
             <Container maxWidth="xl">
@@ -112,23 +130,23 @@ export default function DashboardApp() {
                             list={[
                                 {
                                     name: "FaceBook",
-                                    value: 323234,
+                                    value: totalAccess?.facebook,
                                     icon: <Iconify icon={"eva:facebook-fill"} color="#1877F2" width={32} height={32} />,
                                 },
                                 {
                                     name: "Google",
-                                    value: 341212,
+                                    value: totalAccess?.google,
                                     icon: <Iconify icon={"eva:google-fill"} color="#DF3E30" width={32} height={32} />,
                                 },
                                 {
-                                    name: "Linkedin",
-                                    value: 411213,
-                                    icon: <Iconify icon={"eva:linkedin-fill"} color="#006097" width={32} height={32} />,
+                                    name: "Tài khoản",
+                                    value: totalAccess?.email,
+                                    icon: <Iconify icon={"mdi:register"} color="#006097" width={32} height={32} />,
                                 },
                                 {
-                                    name: "Twitter",
-                                    value: 443232,
-                                    icon: <Iconify icon={"eva:twitter-fill"} color="#1C9CEA" width={32} height={32} />,
+                                    name: "Tổng cộng",
+                                    value: totalAccess?.facebook + totalAccess?.google + totalAccess?.email,
+                                    icon: <Iconify icon={"mdi:register"} color="#1C9CEA" width={32} height={32} />,
                                 },
                             ]}
                         />

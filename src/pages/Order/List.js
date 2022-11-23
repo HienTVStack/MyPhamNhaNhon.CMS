@@ -337,7 +337,7 @@ export default function SaleOrderList() {
                                                         {/* <TableCell padding="checkbox">
                                                             <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, row.id)} />
                                                         </TableCell> */}
-                                                        <TableCell component="th" scope="row" padding="none">
+                                                        <TableCell component="th" scope="row">
                                                             <Stack direction="row" alignItems="center" spacing={2}>
                                                                 {/* <Avatar alt={row.toOrder.name} src={image} /> */}
                                                                 <Typography variant="subtitle2" noWrap>

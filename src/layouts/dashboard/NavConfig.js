@@ -32,11 +32,11 @@ const navConfig = [
                 path: "products/:slug/edit",
                 icon: getIcon("eva:shopping-bag-fill"),
             },
-            {
-                title: "Đặt hàng",
-                path: "products/order",
-                icon: getIcon("eva:shopping-bag-fill"),
-            },
+            // {
+            //     title: "Đặt hàng",
+            //     path: "products/order",
+            //     icon: getIcon("eva:shopping-bag-fill"),
+            // },
             {
                 title: "Thùng rác",
                 path: "products/trash",
@@ -104,9 +104,20 @@ const navConfig = [
                 path: "/dashboard/me/list",
                 icon: getIcon("eva:file-text-fill"),
             },
+        ],
+    },
+    {
+        title: "Khuyến mãi",
+        icon: getIcon("eva:file-text-fill"),
+        children: [
             {
-                title: "Nhập hàng",
-                path: "/dashboard/me/import",
+                title: "Tạo mới",
+                path: "/dashboard/discount/create",
+                icon: getIcon("eva:file-text-fill"),
+            },
+            {
+                title: "Danh sách",
+                path: "/dashboard/discount/list",
                 icon: getIcon("eva:file-text-fill"),
             },
         ],

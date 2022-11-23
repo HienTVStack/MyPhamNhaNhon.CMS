@@ -19,6 +19,8 @@ import Order from "src/pages/Order";
 import List from "src/pages/Order/List";
 import SaleOrderItem from "src/pages/Order/SaleOrderItem";
 import SaleOrderImport from "src/pages/Order/SaleOrderImport";
+import DiscountCreate from "src/pages/Discount/Create";
+import DiscountList from "src/pages/Discount/List";
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +51,19 @@ export default function Router() {
                     ],
                 },
                 {
+                    path: "discount",
+                    children: [
+                        {
+                            path: "create",
+                            element: <DiscountCreate />,
+                        },
+                        {
+                            path: "list",
+                            element: <DiscountList />,
+                        },
+                    ],
+                },
+                {
                     path: "me",
                     children: [
                         {
@@ -64,7 +79,7 @@ export default function Router() {
                             element: <SaleOrderItem />,
                         },
                         {
-                            path: "import",
+                            path: "import/:id",
                             element: <SaleOrderImport />,
                         },
                     ],
