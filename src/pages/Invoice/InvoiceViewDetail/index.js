@@ -31,6 +31,18 @@ const preUrls = [
     },
 ];
 
+const COLOR_CREATE_INVOICE = "rgb(54, 179, 126)";
+const COLOR_DELIVERY_INVOICE = "rgb(255, 171, 0)";
+const COLOR_ERROR_INVOICE = "rgb(255, 86, 48)";
+
+const styleTagStatus = {
+    padding: "4px 8px",
+    borderRadius: "12px",
+    color: "#fff",
+    textAlign: "center",
+    maxWidth: "150px",
+};
+
 const breadcrumbs = preUrls.map((pre, index) => (
     <Link key={index} underline="hover" color="inherit" href={pre.preUrl}>
         {pre.title}
@@ -147,13 +159,34 @@ function InvoiceViewDetail() {
                             <img src="/static/media/logo.afa5c8a58f47d82a54b8.png" alt="logo" width={120} height={50} />
                         </Grid>
                         <Grid item xs={6} sm={6} md={6} lg={6} textAlign={"right"}>
-                            <Typography variant="body1" color="secondary">
-                                {invoiceItem?.status || ""}
-                            </Typography>
+                            <Stack alignItems={"flex-end"}>
+                                <Box>
+                                    {invoiceItem?.status === -1 && (
+                                        <Box sx={styleTagStatus} backgroundColor={COLOR_ERROR_INVOICE}>
+                                            Đã hủy
+                                        </Box>
+                                    )}
+                                    {invoiceItem?.status === 0 && (
+                                        <Box sx={styleTagStatus} backgroundColor={COLOR_CREATE_INVOICE}>
+                                            Tạo mới
+                                        </Box>
+                                    )}
+                                    {invoiceItem?.status === 1 && (
+                                        <Box sx={styleTagStatus} backgroundColor={COLOR_DELIVERY_INVOICE}>
+                                            Đang giao
+                                        </Box>
+                                    )}
+                                    {invoiceItem?.status === 2 && (
+                                        <Box sx={styleTagStatus} backgroundColor={"primary"}>
+                                            Hoàn thành
+                                        </Box>
+                                    )}
+                                </Box>
 
-                            <Typography variant="body1" fontWeight={700} fontSize={"14px"}>
-                                {invoiceItem?.id}
-                            </Typography>
+                                <Typography variant="body1" fontWeight={700} fontSize={"14px"}>
+                                    {invoiceItem?.id}
+                                </Typography>
+                            </Stack>
                         </Grid>
                     </Grid>
 

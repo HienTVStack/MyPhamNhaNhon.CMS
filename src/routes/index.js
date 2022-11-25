@@ -35,11 +35,11 @@ export default function Router() {
             element: <DashboardLayout />,
             children: [
                 { path: "app", element: <DashboardApp /> },
+                { path: "e-commerce", element: <EcommerceShop /> },
                 { path: "user", element: <User /> },
                 {
                     path: "products",
                     children: [
-                        { path: "ecommerceShop", element: <EcommerceShop /> },
                         { path: "create", element: <CreateProduct /> },
                         { path: "e-list", element: <Products /> },
                         { path: "list", element: <ProductList /> },

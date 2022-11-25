@@ -12,21 +12,27 @@ const navConfig = [
         icon: getIcon("eva:pie-chart-2-fill"),
     },
     {
+        title: "E-commerce",
+        path: "/dashboard/e-commerce",
+        icon: getIcon("iconoir:cart-alt"),
+    },
+    {
         title: "Hóa đơn",
         path: "/dashboard/invoice/list",
         icon: getIcon("fa-solid:file-invoice"),
     },
+
     {
         title: "Sản phẩm",
         path: "/dashboard/products",
         icon: getIcon("eva:shopping-bag-fill"),
         // icon: getIcon("eva:file-text-fill"),
         children: [
-            {
-                title: "EcommerceShop",
-                path: "products/ecommerceShop",
-                icon: getIcon("eva:shopping-bag-fill"),
-            },
+            // {
+            //     title: "EcommerceShop",
+            //     path: "products/ecommerceShop",
+            //     icon: getIcon("eva:shopping-bag-fill"),
+            // },
             {
                 title: "Danh sách",
                 path: "products/list",
