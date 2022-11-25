@@ -23,6 +23,11 @@ const navConfig = [
         // icon: getIcon("eva:file-text-fill"),
         children: [
             {
+                title: "EcommerceShop",
+                path: "products/ecommerceShop",
+                icon: getIcon("eva:shopping-bag-fill"),
+            },
+            {
                 title: "Danh sách",
                 path: "products/list",
                 icon: getIcon("eva:shopping-bag-fill"),

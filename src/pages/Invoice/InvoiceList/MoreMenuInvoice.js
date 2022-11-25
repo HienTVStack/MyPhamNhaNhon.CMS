@@ -8,6 +8,7 @@ import Iconify from "../../../components/Iconify";
 // ----------------------------------------------------------------------
 
 export default function MoreMenuInvoice(props) {
+    const { id } = props;
     const ref = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -27,20 +28,20 @@ export default function MoreMenuInvoice(props) {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-                <MenuItem sx={{ color: "text.secondary" }}>
+                <MenuItem component={RouterLink} to={`/dashboard/invoice/${id}/detail`} primary="Xem chi tiết" sx={{ color: "text.secondary" }}>
                     <ListItemIcon>
                         <Iconify icon="carbon:view" width={24} height={24} />
                     </ListItemIcon>
                     <ListItemText primary="Xem chi tiết" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
-                <MenuItem sx={{ color: "text.secondary" }}>
+                <MenuItem component={RouterLink} to={`/dashboard/invoice/${id}/edit`} sx={{ color: "text.secondary" }}>
                     <ListItemIcon>
                         <Iconify icon="eva:edit-outline" width={24} height={24} />
                     </ListItemIcon>
                     <ListItemText primary="Chỉnh sửa" primaryTypographyProps={{ variant: "body2" }} />
                 </MenuItem>
                 <Divider />
-                <MenuItem component={RouterLink} to={`/dashboard/products/edit`} sx={{ color: "red" }}>
+                <MenuItem sx={{ color: "red" }}>
                     <ListItemIcon>
                         <Iconify icon="clarity:trash-line" width={24} height={24} sx={{ color: "red" }} />
                     </ListItemIcon>

@@ -22,6 +22,9 @@ import SaleOrderImport from "src/pages/Order/SaleOrderImport";
 import DiscountCreate from "src/pages/Discount/Create";
 import DiscountList from "src/pages/Discount/List";
 import InvoiceList from "src/pages/Invoice/InvoiceList";
+import InvoiceViewDetail from "src/pages/Invoice/InvoiceViewDetail";
+import InvoiceEdit from "src/pages/Invoice/InvoiceEdit";
+import EcommerceShop from "../pages/Products";
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +39,7 @@ export default function Router() {
                 {
                     path: "products",
                     children: [
+                        { path: "ecommerceShop", element: <EcommerceShop /> },
                         { path: "create", element: <CreateProduct /> },
                         { path: "e-list", element: <Products /> },
                         { path: "list", element: <ProductList /> },
@@ -69,7 +73,11 @@ export default function Router() {
                 },
                 {
                     path: "invoice",
-                    children: [{ path: "list", element: <InvoiceList /> }],
+                    children: [
+                        { path: "list", element: <InvoiceList /> },
+                        { path: ":id/detail", element: <InvoiceViewDetail /> },
+                        { path: ":id/edit", element: <InvoiceEdit /> },
+                    ],
                 },
             ],
         },

@@ -1,17 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // material
 import { Container, Stack, Typography } from "@mui/material";
 // components
 import Page from "../components/Page";
 import { ProductSort, ProductList, ProductCartWidget, ProductFilterSidebar } from "../sections/@dashboard/products";
+import productApi from "src/api/productApi";
+import Loading from "src/components/Loading";
 // mock
-import PRODUCTS from "../_mock/products";
 
 // ----------------------------------------------------------------------
 
 export default function EcommerceShop() {
+    const [loading, setLoading] = useState(false);
     const [openFilter, setOpenFilter] = useState(false);
+    const [productList, setProductList] = useState([]);
 
+    const fetchProductList = async () => {
+        setLoading(true);
+        try {
+            const res = await productApi.getAll();
+
+            if (res.success) {
+                setProductList(res.products);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchProductList();
+    }, []);
     const handleOpenFilter = () => {
         setOpenFilter(true);
     };
@@ -33,8 +53,7 @@ export default function EcommerceShop() {
                         <ProductSort />
                     </Stack>
                 </Stack>
-
-                <ProductList products={PRODUCTS} />
+                {loading ? <Loading /> : <ProductList products={productList} />}
                 <ProductCartWidget />
             </Container>
         </Page>

@@ -44,7 +44,7 @@ import { useEffect } from "react";
 import { Fragment } from "react";
 import invoiceApi from "src/api/invoiceApi";
 import { fNumber } from "src/utils/formatNumber";
-import MoreMenuInvoice from "./MoreMenuProduct";
+import MoreMenuInvoice from "./MoreMenuInvoice";
 
 // ----------------------------------------------------------------------
 
@@ -74,6 +74,14 @@ const preUrls = [
         title: "Tạo mới",
     },
 ];
+
+const total = (list) => {
+    let tmp = 0;
+    for (const item of list) {
+        tmp += item.total;
+    }
+    return tmp;
+};
 
 const breadcrumbs = preUrls.map((pre, index) => (
     <Link key={index} underline="hover" color="inherit" href={pre.preUrl}>
@@ -248,10 +256,10 @@ export default function InvoiceList() {
                                         Tổng cộng
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        20 hóa đơn
+                                        {`${invoiceList?.length} hóa đơn`}
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        $1,205.75
+                                        {`${fNumber(total(invoiceList))} đ`}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -263,10 +271,10 @@ export default function InvoiceList() {
                                         Tạo mới
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        20 hóa đơn
+                                        {`${invoiceList?.filter((item) => item.status === 0).length} hóa đơn`}
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        $1,205.75
+                                        {`${fNumber(total(invoiceList?.filter((item) => item.status === 0)))} đ`}
                                     </Typography>
                                 </Box>
                             </Box>{" "}
@@ -278,10 +286,10 @@ export default function InvoiceList() {
                                         Đang giao
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        20 invoice
+                                        {`${invoiceList?.filter((item) => item.status === 1).length} hóa đơn`}
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        $1,205.75
+                                        {`${fNumber(total(invoiceList?.filter((item) => item.status === 1)))} đ`}
                                     </Typography>
                                 </Box>
                             </Box>{" "}
@@ -293,10 +301,10 @@ export default function InvoiceList() {
                                         Đã hủy
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        20 invoice
+                                        {`${invoiceList?.filter((item) => item.status === -1).length} hóa đơn`}
                                     </Typography>
                                     <Typography variant="body1" fontSize={"14px"}>
-                                        $1,205.75
+                                        {`${fNumber(total(invoiceList?.filter((item) => item.status === -1)))} đ`}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -375,6 +383,11 @@ export default function InvoiceList() {
                                                         <TableCell>{deliveryAt || "Không xác định"}</TableCell>
                                                         <TableCell>{`${fNumber(total)} đ`}</TableCell>
                                                         <TableCell>
+                                                            {status === -1 && (
+                                                                <Box sx={styleTagStatus} backgroundColor={COLOR_ERROR_INVOICE}>
+                                                                    Đã hủy
+                                                                </Box>
+                                                            )}
                                                             {status === 0 && (
                                                                 <Box sx={styleTagStatus} backgroundColor={COLOR_CREATE_INVOICE}>
                                                                     Tạo mới
@@ -386,14 +399,14 @@ export default function InvoiceList() {
                                                                 </Box>
                                                             )}
                                                             {status === 2 && (
-                                                                <Box sx={styleTagStatus} backgroundColor={COLOR_ERROR_INVOICE}>
-                                                                    Bị hủy
+                                                                <Box sx={styleTagStatus} backgroundColor={"primary"}>
+                                                                    Hoàn thành
                                                                 </Box>
                                                             )}
                                                         </TableCell>
                                                         <TableCell>{products?.length}</TableCell>
                                                         <TableCell align="right">
-                                                            <MoreMenuInvoice />
+                                                            <MoreMenuInvoice id={id} />
                                                         </TableCell>
                                                     </TableRow>
                                                 );

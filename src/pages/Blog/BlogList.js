@@ -6,7 +6,6 @@ import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from "../../sections/@dashboard/blog";
 // mock
-import POSTS from "../../_mock/blog";
 import { useState } from "react";
 import blogApi from "src/api/blogApi";
 import { useEffect } from "react";
