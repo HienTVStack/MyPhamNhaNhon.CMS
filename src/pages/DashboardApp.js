@@ -1,32 +1,65 @@
 import { faker } from "@faker-js/faker";
 // @mui
-import { useTheme } from "@mui/material/styles";
 import { Grid, Container, Typography } from "@mui/material";
 // components
 import Page from "../components/Page";
 import Iconify from "../components/Iconify";
 // sections
-import { AppTasks, AppNewsUpdate, AppOrderTimeline, AppWebsiteVisits, AppTrafficBySite, AppWidgetSummary } from "../sections/@dashboard/app";
+import { AppNewsUpdate, AppOrderTimeline, AppWebsiteVisits, AppTrafficBySite, AppWidgetSummary } from "../sections/@dashboard/app";
 import { useEffect, useState } from "react";
 import authApi from "src/api/authApi";
+import invoiceApi from "src/api/invoiceApi";
+import Loading from "src/components/Loading";
+import { fDate } from "src/utils/formatTime";
+import productApi from "src/api/productApi";
 
 // ----------------------------------------------------------------------
+const totalPrice = (list) => {
+    let tmp = 0;
+    for (const item of list) {
+        tmp += Number(item.total);
+    }
+    return tmp;
+};
 
 export default function DashboardApp() {
+    const [loading, setLoading] = useState(false);
     const [totalAccess, setTotalAccess] = useState({});
-
-    const totalAccessLoaded = async () => {
+    const [invoiceList, setInvoiceList] = useState([]);
+    const [authList, setAuthList] = useState([]);
+    const [productList, setProductList] = useState([]);
+    console.log(totalPrice(invoiceList));
+    const fetch = async () => {
         try {
-            const res = await authApi.totalAccess();
-            if (res.success) {
-                setTotalAccess({ email: res.value[0], google: res.value[1], facebook: res.value[2] });
-            }
+            setLoading(true);
+            const countConnect = authApi.totalAccess();
+            const fetchInvoice = invoiceApi.getAll();
+            const fetchAuth = authApi.getAll();
+            const fetchProduct = productApi.getAll();
+            await Promise.all([countConnect, fetchInvoice, fetchAuth, fetchProduct])
+                .then((data) => {
+                    console.log(data[0]);
+                    if (data[0].success) {
+                        setTotalAccess({ email: data[0].value[0], google: data[0].value[1], facebook: data[0].value[2] });
+                    }
+                    if (data[1].success) {
+                        setInvoiceList(data[1].invoices);
+                    }
+                    if (data[2]) {
+                        setAuthList(data[2].userList);
+                    }
+                    if (data[3]) {
+                        setProductList(data[3].products);
+                    }
+                })
+                .catch((err) => console.log(err));
         } catch (error) {
             console.log(error);
         }
+        setLoading(false);
     };
     useEffect(() => {
-        totalAccessLoaded();
+        fetch();
     }, []);
 
     return (
@@ -35,139 +68,140 @@ export default function DashboardApp() {
                 <Typography variant="h4" sx={{ mb: 5 }}>
                     Hi, Welcome back
                 </Typography>
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <AppWidgetSummary title="Sản phẩm" total={productList?.length} icon={"fluent-mdl2:product-list"} />
+                        </Grid>
 
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Lượng truy cập" total={714000} icon={"ant-design:android-filled"} />
-                    </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <AppWidgetSummary title="Người dùng" total={authList?.length} color="info" icon={"ph:user-list"} />
+                        </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Người dùng với" total={1352831} color="info" icon={"ant-design:apple-filled"} />
-                    </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <AppWidgetSummary title="Đơn đặt hàng" total={invoiceList?.length} color="warning" icon={"la:file-invoice-dollar"} />
+                        </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Đơn đặt hàng" total={100000} color="warning" icon={"ant-design:windows-filled"} />
-                    </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <AppWidgetSummary title="Tổng thu" total={totalPrice(invoiceList)} color="success" icon={"arcticons:priceconverter"} />
+                        </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Hủy đơn" total={234} color="error" icon={"ant-design:bug-filled"} />
-                    </Grid>
+                        <Grid item xs={12} md={12} lg={12}>
+                            <AppWebsiteVisits
+                                title="Dòng thời gian đặt hàng"
+                                subheader=""
+                                chartLabels={invoiceList.map((item) => {
+                                    return fDate(item?.createdAt);
+                                })}
+                                chartData={[
+                                    {
+                                        name: "Tạo mới",
+                                        type: "column",
+                                        fill: "solid",
+                                        data: invoiceList
+                                            .filter((item) => {
+                                                return item?.status === 0;
+                                            })
+                                            .map((item) => {
+                                                return item.total;
+                                            }),
+                                    },
+                                    {
+                                        name: "Đang giao",
+                                        type: "area",
+                                        fill: "gradient",
+                                        data: invoiceList
+                                            .filter((item) => {
+                                                return item?.status === 1;
+                                            })
+                                            .map((item) => {
+                                                return item.total;
+                                            }),
+                                    },
+                                    {
+                                        name: "Tất cả",
+                                        type: "line",
+                                        fill: "solid",
+                                        data: invoiceList.map((item) => {
+                                            return item.total;
+                                        }),
+                                    },
+                                ]}
+                            />
+                        </Grid>
 
-                    <Grid item xs={12} md={12} lg={12}>
-                        <AppWebsiteVisits
-                            title="Lượng truy cập website"
-                            subheader="(+43%) than last year"
-                            chartLabels={[
-                                "01/01/2003",
-                                "02/01/2003",
-                                "03/01/2003",
-                                "04/01/2003",
-                                "05/01/2003",
-                                "06/01/2003",
-                                "07/01/2003",
-                                "08/01/2003",
-                                "09/01/2003",
-                                "10/01/2003",
-                                "11/01/2003",
-                            ]}
-                            chartData={[
-                                {
-                                    name: "Team A",
-                                    type: "column",
-                                    fill: "solid",
-                                    data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                                },
-                                {
-                                    name: "Team B",
-                                    type: "area",
-                                    fill: "gradient",
-                                    data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                                },
-                                {
-                                    name: "Team C",
-                                    type: "line",
-                                    fill: "solid",
-                                    data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                                },
-                            ]}
-                        />
-                    </Grid>
+                        <Grid item xs={12} md={6} lg={8}>
+                            <AppNewsUpdate
+                                title="Đơn hàng chưa được giao"
+                                list={invoiceList.slice(0, 6).map((item, index) => ({
+                                    id: item.id,
+                                    sumProduct: item?.products.length,
+                                    total: item.total,
+                                    status: item.status,
+                                    createdAt: item.createdAt,
+                                }))}
+                            />
+                        </Grid>
 
-                    <Grid item xs={12} md={6} lg={8}>
-                        <AppNewsUpdate
-                            title="Bài viết mới"
-                            list={[...Array(5)].map((_, index) => ({
-                                id: faker.datatype.uuid(),
-                                title: faker.name.jobTitle(),
-                                description: faker.name.jobTitle(),
-                                image: `/static/mock-images/covers/cover_${index + 1}.jpg`,
-                                postedAt: faker.date.recent(),
-                            }))}
-                        />
-                    </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <AppOrderTimeline
+                                title="Người dùng mới"
+                                list={authList.slice(0, 6).map((item, index) => ({
+                                    id: item._id,
+                                    title: item.fullName,
+                                    type: item.status,
+                                    time: item.createdAt,
+                                }))}
+                            />
+                        </Grid>
 
-                    <Grid item xs={12} md={6} lg={4}>
-                        <AppOrderTimeline
-                            title="Dòng thời gian đặt hàng"
-                            list={[...Array(5)].map((_, index) => ({
-                                id: faker.datatype.uuid(),
-                                title: [
-                                    "1983, orders, $4220",
-                                    "12 Invoices have been paid",
-                                    "Order #37745 from September",
-                                    "New order placed #XF-2356",
-                                    "New order placed #XF-2346",
-                                ][index],
-                                type: `order${index + 1}`,
-                                time: faker.date.past(),
-                            }))}
-                        />
-                    </Grid>
+                        <Grid item xs={12} md={12} lg={12}>
+                            <AppTrafficBySite
+                                title="Truy cập theo trang web"
+                                list={[
+                                    {
+                                        name: "FaceBook",
+                                        value: totalAccess?.facebook,
+                                        icon: <Iconify icon={"eva:facebook-fill"} color="#1877F2" width={32} height={32} />,
+                                    },
+                                    {
+                                        name: "Google",
+                                        value: totalAccess?.google,
+                                        icon: <Iconify icon={"eva:google-fill"} color="#DF3E30" width={32} height={32} />,
+                                    },
+                                    {
+                                        name: "Tài khoản",
+                                        value: totalAccess?.email,
+                                        icon: <Iconify icon={"mdi:register"} color="#006097" width={32} height={32} />,
+                                    },
+                                    {
+                                        name: "Tổng cộng",
+                                        value: totalAccess?.facebook + totalAccess?.google + totalAccess?.email,
+                                        icon: <Iconify icon={"mdi:register"} color="#1C9CEA" width={32} height={32} />,
+                                    },
+                                ]}
+                            />
+                        </Grid>
 
-                    <Grid item xs={12} md={6} lg={4}>
-                        <AppTrafficBySite
-                            title="Truy cập theo trang web"
-                            list={[
-                                {
-                                    name: "FaceBook",
-                                    value: totalAccess?.facebook,
-                                    icon: <Iconify icon={"eva:facebook-fill"} color="#1877F2" width={32} height={32} />,
-                                },
-                                {
-                                    name: "Google",
-                                    value: totalAccess?.google,
-                                    icon: <Iconify icon={"eva:google-fill"} color="#DF3E30" width={32} height={32} />,
-                                },
-                                {
-                                    name: "Tài khoản",
-                                    value: totalAccess?.email,
-                                    icon: <Iconify icon={"mdi:register"} color="#006097" width={32} height={32} />,
-                                },
-                                {
-                                    name: "Tổng cộng",
-                                    value: totalAccess?.facebook + totalAccess?.google + totalAccess?.email,
-                                    icon: <Iconify icon={"mdi:register"} color="#1C9CEA" width={32} height={32} />,
-                                },
-                            ]}
-                        />
+                        {/* <Grid item xs={12} md={6} lg={8}>
+                            <AppTasks
+                                title="Công việc"
+                                list={[
+                                    { id: "1", label: "Create FireStone Logo" },
+                                    {
+                                        id: "2",
+                                        label: "Add SCSS and JS files if required",
+                                    },
+                                    { id: "3", label: "Stakeholder Meeting" },
+                                    { id: "4", label: "Scoping & Estimations" },
+                                    { id: "5", label: "Sprint Showcase" },
+                                ]}
+                            />
+                        </Grid> */}
                     </Grid>
-
-                    <Grid item xs={12} md={6} lg={8}>
-                        <AppTasks
-                            title="Công việc"
-                            list={[
-                                { id: "1", label: "Create FireStone Logo" },
-                                {
-                                    id: "2",
-                                    label: "Add SCSS and JS files if required",
-                                },
-                                { id: "3", label: "Stakeholder Meeting" },
-                                { id: "4", label: "Scoping & Estimations" },
-                                { id: "5", label: "Sprint Showcase" },
-                            ]}
-                        />
-                    </Grid>
-                </Grid>
+                )}
             </Container>
         </Page>
     );

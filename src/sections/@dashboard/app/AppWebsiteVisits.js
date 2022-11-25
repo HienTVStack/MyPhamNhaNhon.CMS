@@ -5,6 +5,7 @@ import ReactApexChart from "react-apexcharts";
 import { Card, CardHeader, Box } from "@mui/material";
 // components
 import { BaseOptionChart } from "../../../components/chart";
+import { fNumber } from "src/utils/formatNumber";
 
 // ----------------------------------------------------------------------
 
@@ -20,14 +21,14 @@ export default function AppWebsiteVisits({ title, subheader, chartLabels, chartD
         plotOptions: { bar: { columnWidth: "16%" } },
         fill: { type: chartData.map((i) => i.fill) },
         labels: chartLabels,
-        xaxis: { type: "datetime" },
+        xaxis: { type: "date" },
         tooltip: {
             shared: true,
             intersect: false,
             y: {
                 formatter: (y) => {
                     if (typeof y !== "undefined") {
-                        return `${y.toFixed(0)} visits`;
+                        return `${fNumber(y)} đ`;
                     }
                     return y;
                 },

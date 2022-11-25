@@ -12,6 +12,11 @@ const navConfig = [
         icon: getIcon("eva:pie-chart-2-fill"),
     },
     {
+        title: "Hóa đơn",
+        path: "/dashboard/invoice/list",
+        icon: getIcon("fa-solid:file-invoice"),
+    },
+    {
         title: "Sản phẩm",
         path: "/dashboard/products",
         icon: getIcon("eva:shopping-bag-fill"),
@@ -63,33 +68,33 @@ const navConfig = [
             },
         ],
     },
-    {
-        title: "Hóa đơn",
-        path: "/dashboard/invoice",
-        icon: getIcon("fa-solid:file-invoice"),
-        children: [
-            {
-                title: "Danh sách",
-                path: "/dashboard/invoice/list",
-                icon: getIcon("eva:file-text-fill"),
-            },
-            {
-                title: "Chi tiết",
-                path: "/dashboard/invoice/details",
-                icon: getIcon("eva:file-text-fill"),
-            },
-            {
-                title: "Tạo mới",
-                path: "/dashboard/invoice/create",
-                icon: getIcon("eva:file-text-fill"),
-            },
-            {
-                title: "Cập nhật",
-                path: "/dashboard/me/order",
-                icon: getIcon("eva:file-text-fill"),
-            },
-        ],
-    },
+    // {
+    //     title: "Hóa đơn",
+    //     path: "/dashboard/invoice",
+    //     icon: getIcon("fa-solid:file-invoice"),
+    //     children: [
+    //         {
+    //             title: "Danh sách",
+    //             path: "/dashboard/invoice/list",
+    //             icon: getIcon("eva:file-text-fill"),
+    //         },
+    //         {
+    //             title: "Chi tiết",
+    //             path: "/dashboard/invoice/details",
+    //             icon: getIcon("eva:file-text-fill"),
+    //         },
+    //         {
+    //             title: "Tạo mới",
+    //             path: "/dashboard/invoice/create",
+    //             icon: getIcon("eva:file-text-fill"),
+    //         },
+    //         {
+    //             title: "Cập nhật",
+    //             path: "/dashboard/me/order",
+    //             icon: getIcon("eva:file-text-fill"),
+    //         },
+    //     ],
+    // },
     {
         title: "Quản lí",
         icon: getIcon("eva:file-text-fill"),

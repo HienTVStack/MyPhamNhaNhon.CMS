@@ -149,21 +149,6 @@ export default function SaleOrderList() {
         setSelected([]);
     };
 
-    const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
-    };
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -173,10 +158,6 @@ export default function SaleOrderList() {
         setPage(0);
     };
 
-    const handleFilterByName = (event) => {
-        setFilterName(event.target.value);
-    };
-
     const handleRemoveProductItem = async (id) => {
         setLoading(true);
         try {
@@ -184,22 +165,6 @@ export default function SaleOrderList() {
             if (res.message === "OK") {
                 SetSaleOrderList(saleOrderList.filter((product) => product.id !== id));
                 setLoading(false);
-            }
-            setToastMessage({ open: true, type: "success", message: "Xóa thành công" });
-        } catch (error) {
-            console.log(error);
-            setLoading(false);
-            setToastMessage({ open: true, type: "error", message: "Có lỗi khi xóa sản phẩm" });
-        }
-    };
-
-    const handleDestroyMultipleProduct = async (idList) => {
-        setLoading(true);
-        try {
-            const res = await productApi.destroyMultiple({ idList });
-
-            if (res.message === "OK") {
-                fetchSaleOrderList();
             }
             setToastMessage({ open: true, type: "success", message: "Xóa thành công" });
         } catch (error) {
@@ -238,73 +203,7 @@ export default function SaleOrderList() {
                         </Button>
                     </Stack>
 
-                    {/* <Stack direction={"row"} alignItems="center" justifyContent={"space-evenly"} mb={2}>
-                        <Paper elevation={0} sx={{ display: "flex", alignItems: "center", miWidth: "230px", padding: "18px 30px" }}>
-                            <Iconify icon={"mdi:invoice"} sx={{ width: "56px", height: "56px" }} />
-                            <Box ml={2}>
-                                <Typography variant="body1" fontWeight={700} fontSize={"18px"}>
-                                    Tổng cộng
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    20 hóa đơn
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    $1,205.75
-                                </Typography>
-                            </Box>
-                        </Paper>
-                        <Paper elevation={0} sx={{ display: "flex", alignItems: "center", miWidth: "230px", padding: "18px 30px" }}>
-                            <Iconify icon={"mdi:invoice"} sx={{ width: "56px", height: "56px" }} />
-                            <Box ml={2}>
-                                <Typography variant="body1" fontWeight={700} fontSize={"18px"}>
-                                    Đã đặt
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    20 hóa đơn
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    $1,205.75
-                                </Typography>
-                            </Box>
-                        </Paper>
-                        <Paper elevation={0} sx={{ display: "flex", alignItems: "center", miWidth: "230px", padding: "18px 30px" }}>
-                            <Iconify icon={"mdi:invoice"} sx={{ width: "56px", height: "56px" }} />
-                            <Box ml={2}>
-                                <Typography variant="body1" fontWeight={700} fontSize={"18px"}>
-                                    Đợi xử lí
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    20 invoice
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    $1,205.75
-                                </Typography>
-                            </Box>
-                        </Paper>
-                        <Paper elevation={0} sx={{ display: "flex", alignItems: "center", miWidth: "230px", padding: "18px 30px" }}>
-                            <Iconify icon={"mdi:invoice"} sx={{ width: "56px", height: "56px" }} />
-                            <Box ml={2}>
-                                <Typography variant="body1" fontWeight={700} fontSize={"18px"}>
-                                    Đợi xử lí
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    20 invoice
-                                </Typography>
-                                <Typography variant="body1" fontSize={"14px"}>
-                                    $1,205.75
-                                </Typography>
-                            </Box>
-                        </Paper>
-                    </Stack> */}
-
                     <Card sx={{ mt: 2 }}>
-                        {/* <ProductListToolbar
-                            numSelected={selected.length}
-                            filterName={filterName}
-                            onFilterName={handleFilterByName}
-                            productsSelected={selected}
-                            destroyMultipleProduct={handleDestroyMultipleProduct}
-                        /> */}
                         {loading ? (
                             <Loading />
                         ) : (

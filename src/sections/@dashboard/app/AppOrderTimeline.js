@@ -27,7 +27,7 @@ export default function AppOrderTimeline({ title, subheader, list, ...other }) {
             >
                 <Timeline>
                     {list.map((item, index) => (
-                        <OrderItem key={item.id} item={item} isLast={index === list.length - 1} />
+                        <OrderItem key={index} item={item} isLast={index === list.length - 1} />
                     ))}
                 </Timeline>
             </CardContent>
@@ -39,26 +39,21 @@ export default function AppOrderTimeline({ title, subheader, list, ...other }) {
 
 OrderItem.propTypes = {
     isLast: PropTypes.bool,
-    item: PropTypes.shape({
-        time: PropTypes.instanceOf(Date),
-        title: PropTypes.string,
-        type: PropTypes.string,
-    }),
+    // item: PropTypes.shape({
+    //     time: PropTypes.instanceOf(Date),
+    //     title: PropTypes.string,
+    //     type: PropTypes.string,
+    // }),
 };
 
 function OrderItem({ item, isLast }) {
     const { type, title, time } = item;
+    console.log(item);
     return (
         <TimelineItem>
             <TimelineSeparator>
                 <TimelineDot
-                    color={
-                        (type === "order1" && "primary") ||
-                        (type === "order2" && "success") ||
-                        (type === "order3" && "info") ||
-                        (type === "order4" && "warning") ||
-                        "error"
-                    }
+                    color={(type === 0 && "primary") || (type === 1 && "success") || (type === 2 && "info") || (type === 3 && "warning") || "error"}
                 />
                 {isLast ? null : <TimelineConnector />}
             </TimelineSeparator>

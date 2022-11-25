@@ -21,6 +21,7 @@ import SaleOrderItem from "src/pages/Order/SaleOrderItem";
 import SaleOrderImport from "src/pages/Order/SaleOrderImport";
 import DiscountCreate from "src/pages/Discount/Create";
 import DiscountList from "src/pages/Discount/List";
+import InvoiceList from "src/pages/Invoice/InvoiceList";
 
 // ----------------------------------------------------------------------
 
@@ -53,36 +54,22 @@ export default function Router() {
                 {
                     path: "discount",
                     children: [
-                        {
-                            path: "create",
-                            element: <DiscountCreate />,
-                        },
-                        {
-                            path: "list",
-                            element: <DiscountList />,
-                        },
+                        { path: "create", element: <DiscountCreate /> },
+                        { path: "list", element: <DiscountList /> },
                     ],
                 },
                 {
                     path: "me",
                     children: [
-                        {
-                            path: "saleOrder",
-                            element: <Order />,
-                        },
-                        {
-                            path: "list",
-                            element: <List />,
-                        },
-                        {
-                            path: "saleOrder/:id",
-                            element: <SaleOrderItem />,
-                        },
-                        {
-                            path: "import/:id",
-                            element: <SaleOrderImport />,
-                        },
+                        { path: "saleOrder", element: <Order /> },
+                        { path: "list", element: <List /> },
+                        { path: "saleOrder/:id", element: <SaleOrderItem /> },
+                        { path: "import/:id", element: <SaleOrderImport /> },
                     ],
+                },
+                {
+                    path: "invoice",
+                    children: [{ path: "list", element: <InvoiceList /> }],
                 },
             ],
         },

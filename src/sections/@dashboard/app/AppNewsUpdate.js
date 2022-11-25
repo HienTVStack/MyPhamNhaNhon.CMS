@@ -1,11 +1,14 @@
 // @mui
 import PropTypes from "prop-types";
-import { Box, Stack, Link, Card, Button, Divider, Typography, CardHeader } from "@mui/material";
+import { Box, Link, Card, Button, Divider, CardHeader, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 // utils
-import { fToNow } from "../../../utils/formatTime";
+import { fDateTime } from "../../../utils/formatTime";
 // components
 import Iconify from "../../../components/Iconify";
 import Scrollbar from "../../../components/Scrollbar";
+import { fNumber } from "src/utils/formatNumber";
+import Label from "src/components/Label";
+import { Link as RouteLink } from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
@@ -19,20 +22,44 @@ export default function AppNewsUpdate({ title, subheader, list, ...other }) {
     return (
         <Card {...other}>
             <CardHeader title={title} subheader={subheader} />
-
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Thời gian đặt hàng</TableCell>
+                            <TableCell>Số lượng SP</TableCell>
+                            <TableCell>Tổng tiền</TableCell>
+                            <TableCell>Trạng thái</TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {list.map((item, index) => (
+                            <NewsItem key={index} item={item} />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
             <Scrollbar>
-                <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
+                {/* <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
                     {list.map((news) => (
                         <NewsItem key={news.id} news={news} />
                     ))}
-                </Stack>
+                </Stack> */}
             </Scrollbar>
 
             <Divider />
 
             <Box sx={{ p: 2, textAlign: "right" }}>
-                <Button size="small" color="inherit" endIcon={<Iconify icon={"eva:arrow-ios-forward-fill"} />}>
-                    View all
+                <Button
+                    size="small"
+                    component={RouteLink}
+                    to={"/dashboard/invoice/list"}
+                    color="inherit"
+                    endIcon={<Iconify icon={"eva:arrow-ios-forward-fill"} />}
+                >
+                    Xem tất cả
                 </Button>
             </Box>
         </Card>
@@ -50,26 +77,19 @@ NewsItem.propTypes = {
     }),
 };
 
-function NewsItem({ news }) {
-    const { image, title, description, postedAt } = news;
+function NewsItem({ item }) {
+    const { id, sumProduct, total, status, createdAt } = item;
 
     return (
-        <Stack direction="row" alignItems="center" spacing={2}>
-            <Box component="img" alt={title} src={image} sx={{ width: 48, height: 48, borderRadius: 1.5, flexShrink: 0 }} />
-
-            <Box sx={{ minWidth: 240, flexGrow: 1 }}>
-                <Link color="inherit" variant="subtitle2" underline="hover" noWrap>
-                    {title}
-                </Link>
-
-                <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
-                    {description}
-                </Typography>
-            </Box>
-
-            <Typography variant="caption" sx={{ pr: 3, flexShrink: 0, color: "text.secondary" }}>
-                {fToNow(postedAt)}
-            </Typography>
-        </Stack>
+        <TableRow>
+            <TableCell>{id}</TableCell>
+            <TableCell>{fDateTime(createdAt)}</TableCell>
+            <TableCell>{sumProduct}</TableCell>
+            <TableCell>{fNumber(total)}</TableCell>
+            <TableCell>
+                <Label color={"success"}>{status === 0 && "New"}</Label>
+            </TableCell>
+            <TableCell>More</TableCell>
+        </TableRow>
     );
 }
