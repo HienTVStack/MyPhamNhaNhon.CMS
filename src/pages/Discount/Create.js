@@ -19,6 +19,7 @@ import {
 
 import { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import authApi from "src/api/authApi";
 import discountApi from "src/api/discountApi";
 import Iconify from "src/components/Iconify";
@@ -40,6 +41,7 @@ const style = {
 };
 
 function DiscountCreate() {
+    const navigate = useNavigate();
     const employee = useSelector((state) => state.data.user);
     const [loading, setLoading] = useState(false);
     const [isSelected, setIsSelected] = useState(false);
@@ -49,7 +51,7 @@ function DiscountCreate() {
     const [code, setCode] = useState("");
     const [discountValue, setDiscountValue] = useState(0);
     const [discountValueErr, setDiscountValueErr] = useState("");
-
+    const [typeDiscount, setTypeDiscount] = useState(1);
     const [customerList, setCustomerList] = useState([]);
     const [searchCustomerResult, setSearchCustomerResult] = useState([]);
     const [customerSelected, setCustomerSelected] = useState([]);
@@ -108,6 +110,10 @@ function DiscountCreate() {
         }
     };
 
+    const handleChangeTypeDiscount = (e) => {
+        setTypeDiscount(e.target.value);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -140,7 +146,11 @@ function DiscountCreate() {
             const res = await discountApi.create(voucher);
 
             if (res.success) {
-                console.log(res);
+                setCustomerSelected([]);
+                setNameDiscount("");
+                setCode("");
+                setDiscountValue(0);
+                navigate("/dashboard/discount/list");
             }
         } catch (error) {
             console.log(error);
@@ -151,6 +161,7 @@ function DiscountCreate() {
         }
         setLoading(false);
     };
+
     return (
         <Fragment>
             <TypeHeading>Thêm mới khuyến mãi</TypeHeading>
@@ -177,6 +188,7 @@ function DiscountCreate() {
                                     <Stack spacing={2} flex={1}>
                                         <Typography variant="body1">Mã khuyến mãi</Typography>
                                         <TextField
+                                            disabled={typeDiscount === 2}
                                             name="code"
                                             id="code"
                                             onChange={(e) => setCode(e.target.value)}
@@ -197,7 +209,7 @@ function DiscountCreate() {
                                         <Typography variant="body1" mb={1}>
                                             Loại khuyến mãi
                                         </Typography>
-                                        <Select name="typeDiscount" required fullWidth defaultValue={1}>
+                                        <Select name="typeDiscount" onChange={handleChangeTypeDiscount} required fullWidth defaultValue={1}>
                                             <MenuItem value={1}>Khuyến mãi voucher</MenuItem>
                                             <MenuItem value={2}>Giảm giá sản phẩm</MenuItem>
                                         </Select>
@@ -212,6 +224,8 @@ function DiscountCreate() {
                                             margin="normal"
                                             fullWidth
                                             placeholder="0%"
+                                            error={discountValueErr !== ""}
+                                            helperText={discountValueErr}
                                         />
                                     </Box>
                                 </Stack>

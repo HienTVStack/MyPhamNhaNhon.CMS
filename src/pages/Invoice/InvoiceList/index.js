@@ -189,7 +189,7 @@ export default function InvoiceList() {
                 setInvoiceListSearch(invoiceList.filter((item) => item.status === 1));
                 break;
             case "error":
-                setInvoiceListSearch(invoiceList.filter((item) => item.status === 2));
+                setInvoiceListSearch(invoiceList.filter((item) => item.status === -1));
                 break;
 
             default:

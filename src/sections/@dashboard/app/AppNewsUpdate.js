@@ -1,6 +1,6 @@
 // @mui
 import PropTypes from "prop-types";
-import { Box, Link, Card, Button, Divider, CardHeader, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Box, Link, Card, Button, Divider, CardHeader, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Stack } from "@mui/material";
 // utils
 import { fDateTime } from "../../../utils/formatTime";
 // components
@@ -11,6 +11,17 @@ import Label from "src/components/Label";
 import { Link as RouteLink } from "react-router-dom";
 
 // ----------------------------------------------------------------------
+
+const COLOR_CREATE_INVOICE = "rgb(54, 179, 126)";
+const COLOR_DELIVERY_INVOICE = "rgb(255, 171, 0)";
+const COLOR_ERROR_INVOICE = "rgb(255, 86, 48)";
+
+const styleTagStatus = {
+    padding: "4px 8px",
+    borderRadius: "12px",
+    color: "#fff",
+    textAlign: "center",
+};
 
 AppNewsUpdate.propTypes = {
     title: PropTypes.string,
@@ -41,13 +52,6 @@ export default function AppNewsUpdate({ title, subheader, list, ...other }) {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Scrollbar>
-                {/* <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
-                    {list.map((news) => (
-                        <NewsItem key={news.id} news={news} />
-                    ))}
-                </Stack> */}
-            </Scrollbar>
 
             <Divider />
 
@@ -87,7 +91,26 @@ function NewsItem({ item }) {
             <TableCell>{sumProduct}</TableCell>
             <TableCell>{fNumber(total)}</TableCell>
             <TableCell>
-                <Label color={"success"}>{status === 0 && "New"}</Label>
+                {status === -1 && (
+                    <Box sx={styleTagStatus} backgroundColor={COLOR_ERROR_INVOICE}>
+                        Đã hủy
+                    </Box>
+                )}
+                {status === 0 && (
+                    <Box sx={styleTagStatus} backgroundColor={COLOR_CREATE_INVOICE}>
+                        Tạo mới
+                    </Box>
+                )}
+                {status === 1 && (
+                    <Box sx={styleTagStatus} backgroundColor={COLOR_DELIVERY_INVOICE}>
+                        Đang giao
+                    </Box>
+                )}
+                {status === 2 && (
+                    <Box sx={styleTagStatus} backgroundColor={"primary"}>
+                        Hoàn thành
+                    </Box>
+                )}
             </TableCell>
             <TableCell>More</TableCell>
         </TableRow>

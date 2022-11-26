@@ -61,6 +61,23 @@ const navConfig = [
         ],
     },
     {
+        title: "Bài viết",
+        path: "/dashboard/blog",
+        icon: getIcon("eva:file-text-fill"),
+        children: [
+            {
+                title: "Danh sách bài viết",
+                path: "/dashboard/blog/list",
+                icon: getIcon("eva:file-text-fill"),
+            },
+            {
+                title: "Tạo mới",
+                path: "/dashboard/blog/create",
+                icon: getIcon("eva:file-text-fill"),
+            },
+        ],
+    },
+    {
         title: "Tài khoản",
         path: "/dashboard/user",
         icon: getIcon("eva:people-fill"),
@@ -107,7 +124,7 @@ const navConfig = [
     //     ],
     // },
     {
-        title: "Quản lí",
+        title: "Đặt hàng",
         icon: getIcon("eva:file-text-fill"),
         children: [
             {
@@ -138,23 +155,7 @@ const navConfig = [
             },
         ],
     },
-    {
-        title: "Blog",
-        path: "/dashboard/blog",
-        icon: getIcon("eva:file-text-fill"),
-        children: [
-            {
-                title: "Danh sách bài viết",
-                path: "/dashboard/blog/list",
-                icon: getIcon("eva:file-text-fill"),
-            },
-            {
-                title: "Tạo mới",
-                path: "/dashboard/blog/create",
-                icon: getIcon("eva:file-text-fill"),
-            },
-        ],
-    },
+
     // {
     //     title: "login",
     //     path: "/login",

@@ -6,7 +6,7 @@ import discountApi from "src/api/discountApi";
 import Loading from "src/components/Loading";
 import { fDate } from "src/utils/formatTime";
 import { fNumber } from "src/utils/formatNumber";
-
+import { Link } from "react-router-dom";
 function DiscountList() {
     const [loading, setLoading] = useState(false);
     const [discounts, setDiscounts] = useState([]);
@@ -36,7 +36,7 @@ function DiscountList() {
                 <TypeHeading variant="body1" fontSize={"24px"}>
                     Chương trình khuyến mãi
                 </TypeHeading>
-                <Button variant="contained" startIcon={<Iconify icon="material-symbols:add" />}>
+                <Button component={Link} to="/dashboard/discount/create" variant="contained" startIcon={<Iconify icon="material-symbols:add" />}>
                     Tạo khuyến mãi
                 </Button>
             </Stack>
@@ -52,7 +52,7 @@ function DiscountList() {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell />
+                                    <TableCell>#</TableCell>
                                     <TableCell align="left">Tên chương trình</TableCell>
                                     <TableCell>Mã giảm giá</TableCell>
                                     <TableCell>Ngày bắt đầu</TableCell>

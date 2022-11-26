@@ -250,7 +250,7 @@ function InvoiceViewDetail() {
                                             </TableRow>
                                         ))}
                                     <TableRow>
-                                        <TableCell colSpan={6} sx={{ height: "100px" }} />
+                                        <TableCell colSpan={5} sx={{ height: "100px" }} />
                                     </TableRow>
                                     <>
                                         <TableRow>
@@ -260,18 +260,18 @@ function InvoiceViewDetail() {
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Giảm giá</TableCell>
-                                            <TableCell colSpan={2}>{`${fNumber(invoiceItem?.discount?.discountValue)}`}</TableCell>
+                                            <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDiscount)}`}</TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={2}>Phí giao hàng</TableCell>
                                             <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDelivery)}`}</TableCell>
                                         </TableRow>
-                                        <TableRow>
+                                        {/* <TableRow>
                                             <TableCell colSpan={2}>Thanh toán</TableCell>
                                             <TableCell colSpan={2}>{`${fNumber(
                                                 invoiceItem.total + invoiceItem?.priceDelivery - invoiceItem?.discount?.discountValue
                                             )} VNĐ`}</TableCell>
-                                        </TableRow>
+                                        </TableRow> */}
                                     </>
                                 </TableBody>
                             </Table>

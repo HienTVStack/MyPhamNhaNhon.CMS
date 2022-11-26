@@ -1,4 +1,3 @@
-import { faker } from "@faker-js/faker";
 // @mui
 import { Grid, Container, Typography } from "@mui/material";
 // components
@@ -66,7 +65,7 @@ export default function DashboardApp() {
         <Page title="Dashboard">
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{ mb: 5 }}>
-                    Hi, Welcome back
+                    Tiệm mỹ phẩm nhà Nhơn uy tín
                 </Typography>
                 {loading ? (
                     <Loading />
@@ -121,6 +120,18 @@ export default function DashboardApp() {
                                             }),
                                     },
                                     {
+                                        name: "Đã hủy",
+                                        type: "area",
+                                        fill: "gradient",
+                                        data: invoiceList
+                                            .filter((item) => {
+                                                return item?.status === -1;
+                                            })
+                                            .map((item) => {
+                                                return item.total;
+                                            }),
+                                    },
+                                    {
                                         name: "Tất cả",
                                         type: "line",
                                         fill: "solid",
@@ -135,13 +146,16 @@ export default function DashboardApp() {
                         <Grid item xs={12} md={6} lg={8}>
                             <AppNewsUpdate
                                 title="Đơn hàng chưa được giao"
-                                list={invoiceList.slice(0, 6).map((item, index) => ({
-                                    id: item.id,
-                                    sumProduct: item?.products.length,
-                                    total: item.total,
-                                    status: item.status,
-                                    createdAt: item.createdAt,
-                                }))}
+                                list={invoiceList
+                                    .filter((item) => item.status === 0)
+                                    .slice(0, 6)
+                                    .map((item, index) => ({
+                                        id: item.id,
+                                        sumProduct: item?.products.length,
+                                        total: item.total,
+                                        status: item.status,
+                                        createdAt: item.createdAt,
+                                    }))}
                             />
                         </Grid>
 
