@@ -115,7 +115,7 @@ function Order() {
     const [dateCreate, setDateCreate] = useState(new Date());
     const [dateDue, setDateDue] = useState(null);
     const [code, setCode] = useState("");
-    const [status, setStatus] = useState("Draft");
+    const [status, setStatus] = useState(0);
     const [productList, setProductList] = useState([]);
     const [productSelected, setProductSelected] = useState({});
     const [quantityProductItem, setQuantityProductItem] = useState(1);
@@ -263,7 +263,7 @@ function Order() {
                 phone: "365-374-4961",
             },
             toOrder: supplier,
-            status: status,
+            status: Number(status),
             createdDate: dateCreate,
             dueDate: dateDue,
             products: newSaleOrderProductArray,
@@ -371,11 +371,11 @@ function Order() {
                             disabled
                         />
                         <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">Status</InputLabel>
-                            <Select value={status} label="Status" onChange={(e) => setStatus(e.target.value)} displayEmpty>
-                                <MenuItem value={"Draft"}>Draft</MenuItem>
-                                <MenuItem value={"Save"}>Save</MenuItem>
-                                <MenuItem value={"Order"}>Order</MenuItem>
+                            <InputLabel id="select-label">Status</InputLabel>
+                            <Select value={status} label="Trạng thái" onChange={(e) => setStatus(e.target.value)} displayEmpty>
+                                <MenuItem value={0}>Tạo mới</MenuItem>
+                                <MenuItem value={1}>Tạo và gửi</MenuItem>
+                                <MenuItem value={3}>Nháp</MenuItem>
                             </Select>
                         </FormControl>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>

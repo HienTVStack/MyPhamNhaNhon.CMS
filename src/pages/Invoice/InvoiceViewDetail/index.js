@@ -15,7 +15,7 @@ import { jsPDF } from "jspdf";
 import { fDateTime } from "src/utils/formatTime";
 import invoiceApi from "src/api/invoiceApi";
 import html2canvas from "html2canvas";
-import { findLastKey } from "lodash";
+import images from "src/assets/images";
 
 const preUrls = [
     {
@@ -156,7 +156,7 @@ function InvoiceViewDetail() {
                 <Paper id={"invoice"} elevation={0} sx={{ m: 2 }}>
                     <Grid container spacing={2} p={2}>
                         <Grid item xs={6} sm={6} md={6} lg={6}>
-                            <img src="/static/media/logo.afa5c8a58f47d82a54b8.png" alt="logo" width={120} height={50} />
+                            <img src={images.logo} alt="logo" width={120} height={50} />
                         </Grid>
                         <Grid item xs={6} sm={6} md={6} lg={6} textAlign={"right"}>
                             <Stack alignItems={"flex-end"}>

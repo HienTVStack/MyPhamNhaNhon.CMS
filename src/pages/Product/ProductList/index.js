@@ -19,6 +19,9 @@ import {
     TablePagination,
     Snackbar,
     Alert,
+    Link,
+    Breadcrumbs,
+    Box,
 } from "@mui/material";
 // components
 import Page from "src/components/Page";
@@ -47,6 +50,26 @@ const TABLE_HEAD = [
     { id: "" },
 ];
 
+const preUrls = [
+    {
+        preUrl: "/",
+        title: "Dashboard",
+    },
+    {
+        preUrl: "/products",
+        title: "Sản phẩm",
+    },
+    {
+        preUrl: "#",
+        title: "Chỉnh sửa",
+    },
+];
+
+const breadcrumbs = preUrls.map((pre, index) => (
+    <Link key={index} underline="hover" color="inherit" href={pre.preUrl}>
+        {pre.title}
+    </Link>
+));
 // ----------------------------------------------------------------------
 
 function descendingComparator(a, b, orderBy) {
@@ -192,6 +215,10 @@ export default function ProductList() {
         }
     };
 
+    const handleSearchByInStock = () => {
+        // setProductList(productLi)
+    };
+
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - productList.length) : 0;
 
     const filteredUsers = applySortFilter(productList, getComparator(order, orderBy), filterName);
@@ -203,9 +230,16 @@ export default function ProductList() {
             <Page title="Product">
                 <Container>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                        <Typography variant="h4" gutterBottom>
-                            Danh sách sản phẩm
-                        </Typography>
+                        <Box>
+                            <Typography variant="h4" gutterBottom>
+                                Danh sách sản phẩm
+                            </Typography>
+                            <Stack spacing={2}>
+                                <Breadcrumbs separator=">" aria-label="breadcrumb">
+                                    {breadcrumbs}
+                                </Breadcrumbs>
+                            </Stack>
+                        </Box>
                         <Button
                             variant="contained"
                             component={RouterLink}
@@ -223,6 +257,7 @@ export default function ProductList() {
                             onFilterName={handleFilterByName}
                             productsSelected={selected}
                             destroyMultipleProduct={handleDestroyMultipleProduct}
+                            selectInStock={handleSearchByInStock}
                         />
                         {loading ? (
                             <Loading />
@@ -275,8 +310,11 @@ export default function ProductList() {
                                                             }).format(new Date(createdAt))}
                                                         </TableCell>
                                                         <TableCell align="left">
-                                                            <Label variant="ghost" color={handleTotalQuantityStock(type) > 0 ? "success" : "error"}>
-                                                                {handleTotalQuantityStock(type) > 0 ? "Còn hàng" : "Hết hàng"}
+                                                            <Label
+                                                                variant="ghost"
+                                                                color={handleTotalQuantityStock(type) > 0 && inStock === true ? "success" : "error"}
+                                                            >
+                                                                {handleTotalQuantityStock(type) > 0 && inStock === true ? "Còn hàng" : "Hết hàng"}
                                                             </Label>
                                                         </TableCell>
                                                         <TableCell align="left">

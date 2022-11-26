@@ -1,10 +1,9 @@
 import PropTypes from "prop-types";
 // material
 import { styled } from "@mui/material/styles";
-import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment } from "@mui/material";
+import { Toolbar, Tooltip, IconButton, Typography, OutlinedInput, InputAdornment, Stack, Select, MenuItem } from "@mui/material";
 // component
 import Iconify from "../../../components/Iconify";
-import productApi from "src/api/productApi";
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +15,8 @@ const RootStyle = styled(Toolbar)(({ theme }) => ({
 }));
 
 const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
-    width: 240,
+    // width: 240,
+    flex: 1,
     transition: theme.transitions.create(["box-shadow", "width"], {
         easing: theme.transitions.easing.easeInOut,
         duration: theme.transitions.duration.shorter,
@@ -38,10 +38,14 @@ ProductListToolbar.propTypes = {
     destroyMultipleProduct: PropTypes.func,
 };
 
-export default function ProductListToolbar({ numSelected, filterName, onFilterName, productsSelected, destroyMultipleProduct }) {
+export default function ProductListToolbar({ numSelected, filterName, onFilterName, productsSelected, destroyMultipleProduct, selectInStock }) {
     const handleDeleteMultipleProduct = (idList) => {
-        console.log(idList);
         destroyMultipleProduct(idList);
+    };
+
+    const handleSelectInStock = (e) => {
+        const value = e.target.value;
+        selectInStock(value);
     };
 
     return (
@@ -58,23 +62,30 @@ export default function ProductListToolbar({ numSelected, filterName, onFilterNa
                     {numSelected} selected
                 </Typography>
             ) : (
-                <SearchStyle
-                    value={filterName}
-                    onChange={onFilterName}
-                    placeholder="Search..."
-                    startAdornment={
-                        <InputAdornment position="start">
-                            <Iconify
-                                icon="eva:search-fill"
-                                sx={{
-                                    color: "text.disabled",
-                                    width: 20,
-                                    height: 20,
-                                }}
-                            />
-                        </InputAdornment>
-                    }
-                />
+                <Stack flex={1} direction={"row"} alignItems={"center"} justifyContent={"space-between"} spacing={2}>
+                    <Select defaultValue={0} onChange={handleSelectInStock} sx={{ minWidth: 250 }}>
+                        <MenuItem value={0}>Tất cả</MenuItem>
+                        <MenuItem value={1}>Còn hàng</MenuItem>
+                        <MenuItem value={2}>Hết hàng</MenuItem>
+                    </Select>
+                    <SearchStyle
+                        value={filterName}
+                        onChange={onFilterName}
+                        placeholder="Search..."
+                        startAdornment={
+                            <InputAdornment position="start">
+                                <Iconify
+                                    icon="eva:search-fill"
+                                    sx={{
+                                        color: "text.disabled",
+                                        width: 20,
+                                        height: 20,
+                                    }}
+                                />
+                            </InputAdornment>
+                        }
+                    />
+                </Stack>
             )}
 
             {numSelected > 0 ? (

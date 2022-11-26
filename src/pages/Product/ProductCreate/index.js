@@ -232,7 +232,6 @@ function CreateProduct() {
                 type: inputTypeList.sort((a, b) => a.price - b.price),
             });
             if (res.message === "OK") {
-                // dispatch(addProduct(res.product));
                 navigate("/dashboard/products/list");
             }
             setLoading(false);
@@ -382,7 +381,7 @@ function CreateProduct() {
 
                                 <FormControl fullWidth>
                                     <FormLabel htmlFor="images">+ Add image</FormLabel>
-                                    <Box fullWidth aria-label="upload picture" component="label" sx={{ cursor: "pointer" }}>
+                                    <Box aria-label="upload picture" component="label" sx={{ cursor: "pointer" }}>
                                         <input hidden accept="image/*" type="file" multiple onChange={handleSelectImage} />
                                         <Box
                                             display="flex"

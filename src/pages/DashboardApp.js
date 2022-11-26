@@ -131,14 +131,14 @@ export default function DashboardApp() {
                                                 return item.total;
                                             }),
                                     },
-                                    {
-                                        name: "Tất cả",
-                                        type: "line",
-                                        fill: "solid",
-                                        data: invoiceList.map((item) => {
-                                            return item.total;
-                                        }),
-                                    },
+                                    // {
+                                    //     name: "Tất cả",
+                                    //     type: "line",
+                                    //     fill: "solid",
+                                    //     data: invoiceList.map((item) => {
+                                    //         return item.total;
+                                    //     }),
+                                    // },
                                 ]}
                             />
                         </Grid>

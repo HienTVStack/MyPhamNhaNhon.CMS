@@ -95,7 +95,7 @@ function ProductEdit() {
     const [productName, setProductName] = useState("");
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
-    const [productPrice, setProductPrice] = useState(0);
+    // const [productPrice, setProductPrice] = useState(0);
     const [categorySelected, setCategorySelected] = useState([]);
     const [tagSelected, setTagSelected] = useState([]);
     const [tagAddErr, setTagAddErr] = useState("");
@@ -103,11 +103,13 @@ function ProductEdit() {
     const [selectedImages, setSelectedImages] = useState([{ url: "", id: "" }]);
     const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
+    const [discountValue, setDiscountValue] = useState(0);
+    const [inStock, setInStock] = useState(false);
     // err
     const [detailContentErr, setDetailContentErr] = useState("");
     const [descriptionContentErr, setDescriptionContentErr] = useState("");
     const [nameErr, setNameErr] = useState("");
-    const [codeErr, setCodeErr] = useState("");
+    const [discountValueErr, setDiscountValueErr] = useState("");
     const [priceErr, setPriceErr] = useState("");
     const [categoryErr, setCategoryErr] = useState("");
     const [textNotify, setTextNotify] = useState({});
@@ -130,10 +132,11 @@ function ProductEdit() {
 
             if (res.message === "OK") {
                 const productItem = res.product;
+
                 setProductName(productItem.name);
                 setDescriptionContent(productItem.descriptionContent);
                 setDetailContent(productItem.detailContent);
-                setProductPrice(productItem.price);
+                setInStock(productItem.inStock);
                 setCategorySelected(productItem.category);
                 setTagSelected(productItem.tags);
                 setSelectedImages(productItem.imageList);
@@ -172,11 +175,10 @@ function ProductEdit() {
     };
 
     const handleSubmit = async (e) => {
-        console.log(`submit`);
         e.preventDefault();
         setLoading(true);
         setNameErr("");
-        setCodeErr("");
+        setDiscountValue("");
         setDescriptionContentErr("");
         setPriceErr("");
         setCategoryErr("");
@@ -184,7 +186,7 @@ function ProductEdit() {
 
         const name = data.get("name");
         // const inStock = data.get("inStock");
-        const code = data.get("code");
+        const discountValue = data.get("code");
         const price = data.get("price");
 
         let err = false;
@@ -192,10 +194,10 @@ function ProductEdit() {
             err = true;
             setNameErr(`Hãy nhập tên sản phẩm`);
         }
-        if (code === "") {
-            err = true;
-            setCodeErr(`Hãy nhập mã sản phẩm`);
-        }
+        // if (code === "") {
+        //     err = true;
+        //     setDiscountValue(`Phầ`);
+        // }
         if (price === "") {
             err = true;
             setPriceErr(`Nhập giá của sản phẩm`);
@@ -231,11 +233,13 @@ function ProductEdit() {
             name: productName,
             descriptionContent: descriptionContent,
             detailContent: detailContent,
-            price: productPrice,
+            inStock: inStock,
+            discountValue: discountValue,
             imageList: selectedImages,
             category: categorySelected,
             tags: tagSelected,
             slug: slug,
+            type: inputTypeList.sort((a, b) => a.price - b.price),
         };
 
         try {
@@ -295,7 +299,6 @@ function ProductEdit() {
     };
 
     const handleImageRemoveAll = async () => {
-        console.log(`handleImageRemoveAll`);
         setSelectedImages([]);
         setLoading(true);
         try {
@@ -321,7 +324,6 @@ function ProductEdit() {
     };
 
     const handleInsertImage = async () => {
-        console.log(`handleInsertImage`);
         imageUploadUrl.map((img) => selectedImages.push(img.imageUrl));
         setLoading(true);
         try {
@@ -337,7 +339,6 @@ function ProductEdit() {
                 }
                 setSelectedImages(imageListRequest);
                 console.log(selectedImages);
-                // setSelectedImages()
                 setImageUploadUrl([]);
             }
         } catch (error) {
@@ -532,33 +533,27 @@ function ProductEdit() {
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
-                                <FormControlLabel control={<Switch defaultChecked />} label="Hiển thị" name="inStock" id={"inStock"} />
-                                <TextField
-                                    placeholder="Code"
-                                    label="Code"
-                                    name={"code"}
-                                    id={"code"}
-                                    required
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={loading}
-                                    helperText={codeErr}
-                                    error={codeErr !== ""}
+                                <FormControlLabel
+                                    control={<Switch value={inStock} onChange={(e) => setInStock(e.target.checked)} />}
+                                    label="Hiển thị"
+                                    name="inStock"
+                                    id={"inStock"}
                                 />
-                                {/* <TextField
-                                    placeholder="Giá sản phẩm"
-                                    label="Giá sản phẩm"
-                                    name={"price"}
-                                    id={"price"}
-                                    value={productPrice}
-                                    onChange={(e) => setProductPrice(e.target.value)}
+                                <TextField
+                                    placeholder="Giảm giá %"
+                                    label="Giảm giá %"
+                                    name={"discountValue"}
+                                    id={"discountValue"}
+                                    value={discountValue}
+                                    onChange={(e) => setDiscountValue(e.target.value)}
                                     required
                                     fullWidth
                                     margin="normal"
                                     disabled={loading}
-                                    error={priceErr !== ""}
-                                    helperText={priceErr}
-                                /> */}
+                                    helperText={discountValueErr}
+                                    error={discountValueErr !== ""}
+                                />
+
                                 <Paper sx={{ backgroundColor: "rgb(244, 246, 248)", padding: "20px" }}>
                                     <Typography>Loại sản phẩm</Typography>
                                     {inputTypeList.map((x, i) => {
@@ -576,6 +571,7 @@ function ProductEdit() {
                                                         error={priceErr !== ""}
                                                         helperText={priceErr}
                                                         sx={{ flex: 2 }}
+                                                        value={x.nameType}
                                                         onChange={(e) => handleInputTypeProductChange(e, i)}
                                                     />
                                                     <TextField
@@ -589,6 +585,7 @@ function ProductEdit() {
                                                         error={priceErr !== ""}
                                                         helperText={priceErr}
                                                         sx={{ flex: 1 }}
+                                                        value={x.price}
                                                         onChange={(e) => handleInputTypeProductChange(e, i)}
                                                     />
                                                 </Stack>
@@ -700,19 +697,7 @@ function ProductEdit() {
                     </Grid>
                 </Grid>
             </Stack>
-            {/* Backdrop */}
-            {/* <Backdrop
-                sx={{
-                    color: "#fff",
-                    // zIndex: (theme) => theme.zIndex.drawer + 1,
-                    zIndex: 9999,
-                }}
-                open={loading}
-                onClick={() => setLoading(false)}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop> */}
-            {/* Snackbar */}
+
             <Snackbar
                 open={isUpload}
                 anchorOrigin={{
@@ -724,51 +709,72 @@ function ProductEdit() {
             >
                 <Alert sx={{ backgroundColor: textNotify.backgroundColor }}>{textNotify.text}</Alert>
             </Snackbar>
-            <Modal
-                open={isShowModal}
-                disableAutoFocus
-                disableEnforceFocus
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                onClose={() => setIsShowModal(false)}
-            >
-                {loading ? (
-                    <Loading />
-                ) : (
-                    <Box sx={{ ...style }}>
-                        <Typography variant="body2" component="h2" fontSize={"30px"} fontWeight={700}>
-                            Insert Media
-                        </Typography>
-                        <Box sx={{ width: "100%" }}>
-                            <TabContext value={tabValue}>
-                                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                    <TabList onChange={handleChangeTabModal} aria-label="lab API tabs example">
-                                        <Tab label="Tải ảnh lên" value="1" />
-                                        <Tab label="Thư viện ảnh" value="2" />
-                                        <Tab label="Item Three" value="3" />
-                                    </TabList>
-                                </Box>
-                                <TabPanel value="1">
-                                    <Box display={"flex"} alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
-                                        <Typography variant="h3" fontSize={"20px"}>
-                                            Thả tệp để tải lên
-                                        </Typography>
-                                        <Typography fontSize={"14px"} color={"#ccc"}>
-                                            hoặc
-                                        </Typography>
-                                        <Box component="label" mt={2}>
-                                            <input hidden multiple type="file" accept="image/*" onChange={handleSelectImage} />
-                                            <Button variant="outlined" component={"p"} size="large">
-                                                Chọn tệp
-                                            </Button>
-                                        </Box>
+            <Modal open={isShowModal} disableAutoFocus disableEnforceFocus onClose={() => setIsShowModal(false)}>
+                <Box sx={{ ...style }}>
+                    <Typography variant="body2" component="h2" fontSize={"30px"} fontWeight={700}>
+                        Insert Media
+                    </Typography>
+                    <Box sx={{ width: "100%" }}>
+                        <TabContext value={tabValue}>
+                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                <TabList onChange={handleChangeTabModal} aria-label="lab API tabs example">
+                                    <Tab label="Tải ảnh lên" value="1" />
+                                    <Tab label="Thư viện ảnh" value="2" />
+                                    <Tab label="Item Three" value="3" />
+                                </TabList>
+                            </Box>
+                            <TabPanel value="1">
+                                <Box display={"flex"} alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
+                                    <Typography variant="h3" fontSize={"20px"}>
+                                        Thả tệp để tải lên
+                                    </Typography>
+                                    <Typography fontSize={"14px"} color={"#ccc"}>
+                                        hoặc
+                                    </Typography>
+                                    <Box component="label" mt={2}>
+                                        <input hidden multiple type="file" accept="image/*" onChange={handleSelectImage} />
+                                        <Button variant="outlined" component={"p"} size="large">
+                                            Chọn tệp
+                                        </Button>
                                     </Box>
-                                </TabPanel>
-                                <TabPanel value="2">
-                                    <Grid container>
-                                        <Grid item sm={12} md={12} lg={9} xs={9}>
-                                            <ImageList cols={5}>
-                                                {selectedImages.map((image, index) => (
+                                </Box>
+                            </TabPanel>
+                            <TabPanel value="2">
+                                <Grid container>
+                                    <Grid item sm={12} md={12} lg={9} xs={9}>
+                                        <ImageList cols={5}>
+                                            {selectedImages.map((image, index) => (
+                                                <Box key={index}>
+                                                    <ImageListItem
+                                                        sx={{
+                                                            position: "relative",
+                                                            margin: "12px",
+                                                            border: "1px solid #ccc",
+                                                            borderRadius: "12px",
+                                                        }}
+                                                    >
+                                                        <Checkbox
+                                                            defaultChecked
+                                                            disabled
+                                                            id={`checkboxImageSelect${index}`}
+                                                            sx={{
+                                                                ...styleChecked,
+                                                            }}
+                                                        />
+                                                        <label htmlFor={`checkboxImageSelect${index}`}>
+                                                            <img
+                                                                src={image}
+                                                                alt={""}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                }}
+                                                            />
+                                                        </label>
+                                                    </ImageListItem>
+                                                </Box>
+                                            ))}
+                                            {!!imageList &&
+                                                imageList.map((image, index) => (
                                                     <Box key={index}>
                                                         <ImageListItem
                                                             sx={{
@@ -779,17 +785,19 @@ function ProductEdit() {
                                                             }}
                                                         >
                                                             <Checkbox
-                                                                defaultChecked
-                                                                disabled
-                                                                id={`checkboxImageSelect${index}`}
+                                                                onChange={(e) => {
+                                                                    const checked = e.target.checked;
+                                                                    handleSelectImageModal(checked, index, image.fileUrl);
+                                                                }}
+                                                                id={`checkboxImage${index}`}
                                                                 sx={{
                                                                     ...styleChecked,
                                                                 }}
                                                             />
-                                                            <label htmlFor={`checkboxImageSelect${index}`}>
+                                                            <label htmlFor={`checkboxImage${index}`}>
                                                                 <img
-                                                                    src={image}
-                                                                    alt={""}
+                                                                    src={image.fileUrl}
+                                                                    alt={image.caption}
                                                                     style={{
                                                                         cursor: "pointer",
                                                                     }}
@@ -798,51 +806,17 @@ function ProductEdit() {
                                                         </ImageListItem>
                                                     </Box>
                                                 ))}
-                                                {!!imageList &&
-                                                    imageList.map((image, index) => (
-                                                        <Box key={index}>
-                                                            <ImageListItem
-                                                                sx={{
-                                                                    position: "relative",
-                                                                    margin: "12px",
-                                                                    border: "1px solid #ccc",
-                                                                    borderRadius: "12px",
-                                                                }}
-                                                            >
-                                                                <Checkbox
-                                                                    onChange={(e) => {
-                                                                        const checked = e.target.checked;
-                                                                        handleSelectImageModal(checked, index, image.fileUrl);
-                                                                    }}
-                                                                    id={`checkboxImage${index}`}
-                                                                    sx={{
-                                                                        ...styleChecked,
-                                                                    }}
-                                                                />
-                                                                <label htmlFor={`checkboxImage${index}`}>
-                                                                    <img
-                                                                        src={image.fileUrl}
-                                                                        alt={image.caption}
-                                                                        style={{
-                                                                            cursor: "pointer",
-                                                                        }}
-                                                                    />
-                                                                </label>
-                                                            </ImageListItem>
-                                                        </Box>
-                                                    ))}
-                                            </ImageList>
-                                        </Grid>
-                                        <Grid item sm={12} md={12} lg={3} xs={3}>
-                                            <Button onClick={handleInsertImage}>Insert Media</Button>
-                                        </Grid>
+                                        </ImageList>
                                     </Grid>
-                                </TabPanel>
-                                <TabPanel value="3">Item Three</TabPanel>
-                            </TabContext>
-                        </Box>
+                                    <Grid item sm={12} md={12} lg={3} xs={3}>
+                                        <Button onClick={handleInsertImage}>Insert Media</Button>
+                                    </Grid>
+                                </Grid>
+                            </TabPanel>
+                            <TabPanel value="3">Item Three</TabPanel>
+                        </TabContext>
                     </Box>
-                )}
+                </Box>
             </Modal>
         </Fragment>
     );

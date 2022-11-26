@@ -14,6 +14,7 @@ import Loading from "src/components/Loading";
 import { jsPDF } from "jspdf";
 import saleOrderApi from "src/api/saleOrderApi";
 import { fDateTime } from "src/utils/formatTime";
+import Label from "src/components/Label";
 
 const preUrls = [
     {
@@ -171,7 +172,31 @@ function SaleOrderImport() {
                         <img src="/static/media/logo.afa5c8a58f47d82a54b8.png" alt="logo" width={120} height={50} />
                         <Box>
                             <Typography variant="body1" color="secondary">
-                                {saleOrder?.status || ""}
+                                {saleOrder?.status === -1 && (
+                                    <Label variant="ghost" color="error">
+                                        Đã hủy
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 0 && (
+                                    <Label variant="ghost" color="success">
+                                        Tạo mới
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 1 && (
+                                    <Label variant="ghost" color="secondary">
+                                        Đang giao
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 2 && (
+                                    <Label variant="ghost" color="warning">
+                                        Hoàn thành
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 3 && (
+                                    <Label variant="ghost" color="warning">
+                                        Nháp
+                                    </Label>
+                                )}
                             </Typography>
 
                             <Typography variant="body1" fontWeight={700} fontSize={"18px"}>

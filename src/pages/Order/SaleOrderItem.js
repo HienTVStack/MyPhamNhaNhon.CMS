@@ -14,6 +14,8 @@ import Loading from "src/components/Loading";
 import { jsPDF } from "jspdf";
 import saleOrderApi from "src/api/saleOrderApi";
 import { fDateTime } from "src/utils/formatTime";
+import Label from "src/components/Label";
+import images from "src/assets/images";
 
 const preUrls = [
     {
@@ -81,13 +83,6 @@ function SaleOrderItem() {
         navigate(`/dashboard/me/import/${id}`);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const data = new FormData();
-
-        console.log(data.get("quantity"));
-    };
-
     // const handleExportXLSX = () => {
     //     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     //     const invoiceExport = [];
@@ -124,18 +119,27 @@ function SaleOrderItem() {
                         {breadcrumbs}
                     </Breadcrumbs>
                 </Stack>
-                <Stack direction={"row"} mt={2}>
-                    <Button onClick={handleExportPDF}>
-                        <Iconify height={"25px"} width={"25px"} icon={"carbon:add-alt"} />
-                    </Button>
-                    <Button>
-                        <Iconify height={"25px"} width={"25px"} icon={"fluent:print-20-filled"} />
-                    </Button>
-                    <Button>
-                        <Iconify height={"25px"} width={"25px"} icon={"ant-design:download-outlined"} />
-                    </Button>
-                    <Button>
-                        <Iconify height={"25px"} width={"25px"} icon={"bxs:share-alt"} />
+                <Stack direction={"row"} mt={2} justifyContent={"space-between"}>
+                    <Stack direction={"row"}>
+                        <Button onClick={handleExportPDF}>
+                            <Iconify height={"25px"} width={"25px"} icon={"carbon:add-alt"} />
+                        </Button>
+                        <Button>
+                            <Iconify height={"25px"} width={"25px"} icon={"fluent:print-20-filled"} />
+                        </Button>
+                        <Button>
+                            <Iconify height={"25px"} width={"25px"} icon={"ant-design:download-outlined"} />
+                        </Button>
+                        <Button>
+                            <Iconify height={"25px"} width={"25px"} icon={"bxs:share-alt"} />
+                        </Button>
+                    </Stack>
+                    <Button
+                        variant={"contained"}
+                        onClick={handleEditInvoiceItem}
+                        startIcon={<Iconify icon="tabler:database-import" width={24} height={24} />}
+                    >
+                        Nhập hàng
                     </Button>
                 </Stack>
             </Box>
@@ -145,10 +149,34 @@ function SaleOrderItem() {
             ) : (
                 <Paper elevation={0} sx={{ m: 2 }}>
                     <Stack direction={"row"} justifyContent="space-between" p={2}>
-                        <img src="/static/media/logo.afa5c8a58f47d82a54b8.png" alt="logo" width={120} height={50} />
+                        <img src={images.logo} alt="logo" width={120} height={50} />
                         <Box>
                             <Typography variant="body1" color="secondary">
-                                {saleOrder?.status || ""}
+                                {saleOrder?.status === -1 && (
+                                    <Label variant="ghost" color="error">
+                                        Đã hủy
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 0 && (
+                                    <Label variant="ghost" color="success">
+                                        Tạo mới
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 1 && (
+                                    <Label variant="ghost" color="secondary">
+                                        Đang giao
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 2 && (
+                                    <Label variant="ghost" color="warning">
+                                        Hoàn thành
+                                    </Label>
+                                )}
+                                {saleOrder?.status === 3 && (
+                                    <Label variant="ghost" color="warning">
+                                        Nháp
+                                    </Label>
+                                )}
                             </Typography>
 
                             <Typography variant="body1" fontWeight={700} fontSize={"18px"}>
@@ -192,11 +220,6 @@ function SaleOrderItem() {
                     </Stack>
 
                     <Stack p={3}>
-                        <Stack direction={"row"} justifyContent={"flex-end"}>
-                            <Button variant={"contained"} onClick={handleEditInvoiceItem} startIcon={<Iconify icon="tabler:database-import" width={24} height={24} />}>
-                                Nhập hàng
-                            </Button>
-                        </Stack>
                         <TableContainer component={Paper}>
                             <Table sx={{ minWidth: 700 }} aria-label="spanning table">
                                 <TableHead>

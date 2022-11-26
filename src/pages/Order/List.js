@@ -38,16 +38,18 @@ import { useEffect } from "react";
 import { Fragment } from "react";
 import saleOrderApi from "src/api/saleOrderApi";
 import SaleOrderMoreMenu from "./SaleOrderMoreMenu";
+import { fDate } from "src/utils/formatTime";
+import { fNumber } from "src/utils/formatNumber";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: "supplierName", label: "Supplier", alignRight: false },
-    { id: "createdAt", label: "Create", alignRight: false },
-    { id: "dueDate", label: "Due", alignRight: false },
-    { id: "amount", label: "Amount", alignRight: false },
-    { id: "total", label: "Total", alignRight: false },
-    { id: "status", label: "Status", alignRight: false },
+    { id: "supplierName", label: "Nhà cung cấp", alignRight: false },
+    { id: "createdAt", label: "Ngày tạo", alignRight: false },
+    { id: "dueDate", label: "Ngày hẹn giao", alignRight: false },
+    { id: "amount", label: "Số lượng", alignRight: false },
+    { id: "total", label: "Tổng tiền", alignRight: false },
+    { id: "status", label: "Trạng thái", alignRight: false },
     { id: "" },
 ];
 
@@ -233,15 +235,12 @@ export default function SaleOrderList() {
                                                         selected={isItemSelected}
                                                         aria-checked={isItemSelected}
                                                     >
-                                                        {/* <TableCell padding="checkbox">
-                                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, row.id)} />
-                                                        </TableCell> */}
                                                         <TableCell component="th" scope="row">
-                                                            <Stack direction="row" alignItems="center" spacing={2}>
-                                                                {/* <Avatar alt={row.toOrder.name} src={image} /> */}
+                                                            <Stack spacing={1}>
                                                                 <Typography variant="subtitle2" noWrap>
-                                                                    {row.toOrder.name}
+                                                                    {row?.toOrder.name}
                                                                 </Typography>
+                                                                <Typography variant="body2">{row.id}</Typography>
                                                             </Stack>
                                                         </TableCell>
                                                         <TableCell align="left">
@@ -254,45 +253,36 @@ export default function SaleOrderList() {
                                                                 second: "2-digit",
                                                             }).format(new Date(row.createdAt))}
                                                         </TableCell>
-                                                        <TableCell align="left">
-                                                            {new Intl.DateTimeFormat("en-US", {
-                                                                year: "numeric",
-                                                                month: "2-digit",
-                                                                day: "2-digit",
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                                second: "2-digit",
-                                                            }).format(new Date(row.dueDate))}
-                                                        </TableCell>
-                                                        <TableCell component="th" scope="row" padding="none">
-                                                            <Typography variant="body2" noWrap>
-                                                                {row.amount}
-                                                            </Typography>
+                                                        <TableCell align="left">{fDate(row?.dueDate) || new Date()}</TableCell>
+                                                        <TableCell align="center" component="th" scope="row" padding="none">
+                                                            {row.amount}
                                                         </TableCell>
 
+                                                        <TableCell align="left">{`${fNumber(row?.total)} đ`}</TableCell>
                                                         <TableCell align="left">
-                                                            <NumericFormat
-                                                                value={row.total}
-                                                                displayType={"text"}
-                                                                thousandSeparator={true}
-                                                                suffix={" đ"}
-                                                                renderText={(value, props) => <div {...props}>{value}</div>}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell align="left">
-                                                            {row.status === "Order" && (
+                                                            {row.status === -1 && (
+                                                                <Label variant="ghost" color="error">
+                                                                    Đã hủy
+                                                                </Label>
+                                                            )}
+                                                            {row.status === 0 && (
                                                                 <Label variant="ghost" color="success">
-                                                                    {row.status}
+                                                                    Tạo mới
                                                                 </Label>
                                                             )}
-                                                            {row.status === "Draft" && (
+                                                            {row.status === 1 && (
                                                                 <Label variant="ghost" color="secondary">
-                                                                    {row.status}
+                                                                    Đang giao
                                                                 </Label>
                                                             )}
-                                                            {row.status === "Save" && (
+                                                            {row.status === 2 && (
                                                                 <Label variant="ghost" color="warning">
-                                                                    {row.status}
+                                                                    Hoàn thành
+                                                                </Label>
+                                                            )}
+                                                            {row.status === 3 && (
+                                                                <Label variant="ghost" color="warning">
+                                                                    Nháp
                                                                 </Label>
                                                             )}
                                                         </TableCell>
