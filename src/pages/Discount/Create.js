@@ -15,6 +15,8 @@ import {
     InputBase,
     Checkbox,
     Divider,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 
 import { Fragment, useEffect, useState } from "react";
@@ -55,7 +57,11 @@ function DiscountCreate() {
     const [customerList, setCustomerList] = useState([]);
     const [searchCustomerResult, setSearchCustomerResult] = useState([]);
     const [customerSelected, setCustomerSelected] = useState([]);
-
+    const [toastMessage, setToastMessage] = useState({
+        open: false,
+        type: "error",
+        message: "ERR_001",
+    });
     const customerLoaded = async () => {
         try {
             const res = await authApi.getAll();
@@ -144,7 +150,7 @@ function DiscountCreate() {
         setLoading(true);
         try {
             const res = await discountApi.create(voucher);
-
+            console.log(res);
             if (res.success) {
                 setCustomerSelected([]);
                 setNameDiscount("");
@@ -154,10 +160,8 @@ function DiscountCreate() {
             }
         } catch (error) {
             console.log(error);
-            setNameDiscount("");
-            setDiscountValue(0);
             setCode("");
-            setCustomerSelected([]);
+            setToastMessage({ open: true, message: "Hãy thử mã khuyến mãi khác", type: "error" });
         }
         setLoading(false);
     };
@@ -211,7 +215,7 @@ function DiscountCreate() {
                                         </Typography>
                                         <Select name="typeDiscount" onChange={handleChangeTypeDiscount} required fullWidth defaultValue={1}>
                                             <MenuItem value={1}>Khuyến mãi voucher</MenuItem>
-                                            <MenuItem value={2}>Giảm giá sản phẩm</MenuItem>
+                                            <MenuItem value={2}>Giảm giá tổng hóa đơn</MenuItem>
                                         </Select>
                                     </Box>
                                     <Box flex={1}>
@@ -329,6 +333,19 @@ function DiscountCreate() {
                     </Grid>
                 </Grid>
             )}
+            <Snackbar
+                open={toastMessage.open}
+                anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                }}
+                autoHideDuration={3000}
+                onClose={() => setToastMessage({ open: false })}
+            >
+                <Alert variant="filled" hidden={3000} severity={toastMessage.type} x={{ minWidth: "200px" }}>
+                    {toastMessage.message}
+                </Alert>
+            </Snackbar>
 
             <Modal open={open} onClose={handleClose} disableEnforceFocus disableAutoFocus disableEscapeKeyDown disablePortal>
                 <Box sx={style}>
@@ -343,7 +360,7 @@ function DiscountCreate() {
                         <InputBase sx={{ flex: 1 }} placeholder={"Tìm tên khách hàng"} onChange={handleSearchCustomer} name="search" id="search" />
                         <Iconify icon="ic:round-search" sx={{ height: 25, width: 25 }} />
                     </Stack>
-                    {searchCustomerResult?.length > 0 &&
+                    {searchCustomerResult?.length > 0 ? (
                         searchCustomerResult?.map((item, index) => (
                             <Stack key={index} direction={"row"} alignItems={"center"} sx={{ margin: "10px 0", borderBottom: "1px solid #ccc" }}>
                                 <Checkbox name={item.id} id={item.id} onChange={(event) => handleSelectedCustomer(event, item)} />
@@ -352,7 +369,13 @@ function DiscountCreate() {
                                     <Typography variant="body2">{item?.email || item?.emailGoogle || item?.emailFacebook}</Typography>
                                 </Box>
                             </Stack>
-                        ))}
+                        ))
+                    ) : (
+                        <>
+                            <Typography variant="body1">Bạn muốn giảm giá cho ai?</Typography>
+                            <Typography variant="body2">Hãy nhập chính xác tên của khách hàng để tìm kiếm</Typography>
+                        </>
+                    )}
                 </Box>
             </Modal>
         </Fragment>
