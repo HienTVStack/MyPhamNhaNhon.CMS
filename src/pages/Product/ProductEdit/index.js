@@ -255,8 +255,6 @@ function ProductEdit() {
     };
 
     const handleCreateTag = async () => {
-        console.log(`handleCreateTag`);
-
         setLoading(true);
         setTagAddErr("");
         try {
@@ -338,7 +336,6 @@ function ProductEdit() {
                     imageListRequest.push(res.product.imageList[i]);
                 }
                 setSelectedImages(imageListRequest);
-                console.log(selectedImages);
                 setImageUploadUrl([]);
             }
         } catch (error) {
@@ -351,7 +348,6 @@ function ProductEdit() {
     const handleSelectImage = async (e) => {
         const selectedFiles = e.target.files;
         const selectedFilesArray = Array.from(selectedFiles);
-        console.log(`handleSelectImage`);
         setLoading(true);
         const data = new FormData();
 
@@ -398,7 +394,6 @@ function ProductEdit() {
     };
 
     const handleRemoveInputType = (index) => {
-        console.log(index);
         const list = [...inputTypeList];
         list.splice(index, 1);
         setInputTypeList(list);

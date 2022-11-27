@@ -1,7 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 
 function PopupInfo({ name, address, phone, selectItem }) {
-    console.log(typeof selectItem);
     const handleSelectItem = (value) => {
         selectItem(value);
     };

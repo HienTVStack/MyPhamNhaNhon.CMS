@@ -169,7 +169,6 @@ export default function ProductTrash() {
     };
 
     const handleDeleteProductItem = async (id) => {
-        console.log(id);
         setLoading(true);
         try {
             if (id) {

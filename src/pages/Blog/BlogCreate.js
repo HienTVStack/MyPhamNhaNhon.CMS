@@ -205,7 +205,6 @@ function BlogCreate() {
                 // dispatch(addProduct(res.product));
                 navigate("/dashboard/blog/list");
             }
-            console.log(res.blog);
             setLoading(false);
         } catch (error) {
             console.log(error);

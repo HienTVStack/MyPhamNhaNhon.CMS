@@ -8,13 +8,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useState } from "react";
 import Iconify from "src/components/Iconify";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fNumber } from "src/utils/formatNumber";
 import Loading from "src/components/Loading";
 import { jsPDF } from "jspdf";
 import saleOrderApi from "src/api/saleOrderApi";
 import { fDateTime } from "src/utils/formatTime";
 import Label from "src/components/Label";
+import images from "src/assets/images";
 
 const preUrls = [
     {
@@ -38,6 +39,7 @@ const breadcrumbs = preUrls.map((pre, index) => (
 ));
 function SaleOrderImport() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [saleOrder, setSaleOrder] = useState({});
     const [productList, setProductList] = useState([]);
@@ -81,16 +83,14 @@ function SaleOrderImport() {
         e.preventDefault();
         setLoading(true);
         const tmp = {
-            status: true,
+            status: 0,
             products: productList,
             deliveryReal: new Date(),
         };
-
-        console.log(tmp);
         try {
             const res = await saleOrderApi.import(id, tmp);
             if (res.success) {
-                console.log(res);
+                navigate("/dashboard/me/list");
             }
             setLoading(false);
         } catch (error) {
@@ -169,7 +169,7 @@ function SaleOrderImport() {
             ) : (
                 <Paper elevation={0} sx={{ m: 2 }}>
                     <Stack direction={"row"} justifyContent="space-between" p={2}>
-                        <img src="/static/media/logo.afa5c8a58f47d82a54b8.png" alt="logo" width={120} height={50} />
+                        <img src={images.logo} alt="logo" width={120} height={50} />
                         <Box>
                             <Typography variant="body1" color="secondary">
                                 {saleOrder?.status === -1 && (

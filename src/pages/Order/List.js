@@ -195,12 +195,7 @@ export default function SaleOrderList() {
                         </Breadcrumbs>
                     </Stack>
                     <Stack direction={"row"} justifyContent={"flex-end"}>
-                        <Button
-                            variant="contained"
-                            component={RouterLink}
-                            to="/dashboard/dashboard/me/saleOrder"
-                            startIcon={<Iconify icon="eva:plus-fill" />}
-                        >
+                        <Button variant="contained" component={RouterLink} to="/dashboard/me/saleOrder" startIcon={<Iconify icon="eva:plus-fill" />}>
                             Thêm mới
                         </Button>
                     </Stack>

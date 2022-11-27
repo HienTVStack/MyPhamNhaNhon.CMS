@@ -27,7 +27,6 @@ export default function DashboardApp() {
     const [invoiceList, setInvoiceList] = useState([]);
     const [authList, setAuthList] = useState([]);
     const [productList, setProductList] = useState([]);
-    console.log(totalPrice(invoiceList));
     const fetch = async () => {
         try {
             setLoading(true);
@@ -98,11 +97,15 @@ export default function DashboardApp() {
                                     {
                                         name: "Tạo mới",
                                         type: "column",
+                                        // type: "area",
                                         fill: "solid",
+                                        // type: "line",
+                                        // fill: "solid",
                                         data: invoiceList
                                             .filter((item) => {
                                                 return item?.status === 0;
                                             })
+                                            .slice(0, 20)
                                             .map((item) => {
                                                 return item.total;
                                             }),
@@ -115,6 +118,7 @@ export default function DashboardApp() {
                                             .filter((item) => {
                                                 return item?.status === 1;
                                             })
+                                            .slice(0, 20)
                                             .map((item) => {
                                                 return item.total;
                                             }),
@@ -127,6 +131,7 @@ export default function DashboardApp() {
                                             .filter((item) => {
                                                 return item?.status === -1;
                                             })
+                                            .slice(0, 20)
                                             .map((item) => {
                                                 return item.total;
                                             }),
