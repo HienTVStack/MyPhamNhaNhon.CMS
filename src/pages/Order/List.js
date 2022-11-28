@@ -233,7 +233,7 @@ export default function SaleOrderList() {
                                                         <TableCell component="th" scope="row">
                                                             <Stack spacing={1}>
                                                                 <Typography variant="subtitle2" noWrap>
-                                                                    {row?.toOrder.name}
+                                                                    {row?.toOrder?.name || ""}
                                                                 </Typography>
                                                                 <Typography variant="body2">{row.id}</Typography>
                                                             </Stack>

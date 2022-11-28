@@ -63,7 +63,7 @@ const navConfig = [
     {
         title: "Bài viết",
         path: "/dashboard/blog",
-        icon: getIcon("eva:file-text-fill"),
+        icon: getIcon("ion:newspaper-outline"),
         children: [
             {
                 title: "Danh sách bài viết",
@@ -77,25 +77,25 @@ const navConfig = [
             },
         ],
     },
-    {
-        title: "Tài khoản",
-        path: "/dashboard/user",
-        icon: getIcon("eva:people-fill"),
-        children: [
-            {
-                title: "Danh sách",
-                path: "/dashboard/user",
-            },
-            {
-                title: "Tạo mới",
-                path: "/dashboard/user",
-            },
-            {
-                title: "Cập nhật",
-                path: "/dashboard/user",
-            },
-        ],
-    },
+    // {
+    //     title: "Tài khoản",
+    //     path: "/dashboard/user",
+    //     icon: getIcon("eva:people-fill"),
+    //     children: [
+    //         {
+    //             title: "Danh sách",
+    //             path: "/dashboard/user",
+    //         },
+    //         {
+    //             title: "Tạo mới",
+    //             path: "/dashboard/user",
+    //         },
+    //         {
+    //             title: "Cập nhật",
+    //             path: "/dashboard/user",
+    //         },
+    //     ],
+    // },
     // {
     //     title: "Hóa đơn",
     //     path: "/dashboard/invoice",
@@ -125,7 +125,7 @@ const navConfig = [
     // },
     {
         title: "Đặt hàng",
-        icon: getIcon("eva:file-text-fill"),
+        icon: getIcon("icon-park-outline:transaction-order"),
         children: [
             {
                 title: "Tạo đơn",
@@ -141,7 +141,7 @@ const navConfig = [
     },
     {
         title: "Khuyến mãi",
-        icon: getIcon("eva:file-text-fill"),
+        icon: getIcon("mdi:voucher-outline"),
         children: [
             {
                 title: "Tạo mới",
@@ -154,6 +154,11 @@ const navConfig = [
                 icon: getIcon("eva:file-text-fill"),
             },
         ],
+    },
+    {
+        title: "Cài đặt",
+        path: "/dashboard/setting",
+        icon: getIcon("ant-design:setting-outlined"),
     },
 
     // {

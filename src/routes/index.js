@@ -25,6 +25,7 @@ import InvoiceList from "src/pages/Invoice/InvoiceList";
 import InvoiceViewDetail from "src/pages/Invoice/InvoiceViewDetail";
 import InvoiceEdit from "src/pages/Invoice/InvoiceEdit";
 import EcommerceShop from "../pages/Products";
+import Setting from "src/pages/Setting";
 
 // ----------------------------------------------------------------------
 
@@ -79,6 +80,10 @@ export default function Router() {
                         { path: ":id/edit", element: <InvoiceEdit /> },
                     ],
                 },
+                {
+                    path: "setting",
+                    element: <Setting />,
+                },
             ],
         },
         {
@@ -89,6 +94,7 @@ export default function Router() {
             path: "register",
             element: <Register />,
         },
+
         {
             path: "/",
             element: <LogoOnlyLayout />,

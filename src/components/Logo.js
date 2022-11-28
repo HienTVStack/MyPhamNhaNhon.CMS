@@ -13,7 +13,7 @@ Logo.propTypes = {
 
 export default function Logo({ disabledLink = false, sx }) {
     // OR
-    const logo = <Box component="img" src={images.logo} style={{ objectFit: "contain" }} sx={{ width: 150, height: 150, ...sx }} />;
+    const logo = <Box component="img" src={images.logo} style={{ objectFit: "contain" }} sx={{ width: 150, height: 75, ...sx }} />;
 
     if (disabledLink) {
         return <>{logo}</>;

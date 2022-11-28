@@ -167,12 +167,15 @@ export default function DashboardApp() {
                         <Grid item xs={12} md={6} lg={4}>
                             <AppOrderTimeline
                                 title="Người dùng mới"
-                                list={authList.slice(0, 6).map((item, index) => ({
-                                    id: item._id,
-                                    title: item.fullName,
-                                    type: item.status,
-                                    time: item.createdAt,
-                                }))}
+                                list={authList
+                                    .filter((item) => item.status === true)
+                                    .slice(0, 6)
+                                    .map((item, index) => ({
+                                        id: item._id,
+                                        title: item.fullName,
+                                        type: item.status,
+                                        time: item.createdAt,
+                                    }))}
                             />
                         </Grid>
 
