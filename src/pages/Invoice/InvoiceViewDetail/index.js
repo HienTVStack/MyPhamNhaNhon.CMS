@@ -101,7 +101,7 @@ function InvoiceViewDetail() {
         const invoiceElement = document.querySelector("#invoice");
         html2canvas(invoiceElement).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "mm", [1140, 1131]);
+            const pdf = new jsPDF("p", "px", [1140, 1131]);
             pdf.addImage(imgData, "PNG", 0, 0);
             pdf.save("invoice.pdf");
         });
@@ -160,7 +160,7 @@ function InvoiceViewDetail() {
                         </Grid>
                         <Grid item xs={6} sm={6} md={6} lg={6} textAlign={"right"}>
                             <Stack alignItems={"flex-end"}>
-                                <Box>
+                                {/* <Box>
                                     {invoiceItem?.status === -1 && (
                                         <Box sx={styleTagStatus} backgroundColor={COLOR_ERROR_INVOICE}>
                                             Đã hủy
@@ -181,6 +181,11 @@ function InvoiceViewDetail() {
                                             Hoàn thành
                                         </Box>
                                     )}
+                                </Box> */}
+                                <Box>
+                                    <Box sx={styleTagStatus} backgroundColor={invoiceItem?.isPayment ? COLOR_CREATE_INVOICE : COLOR_DELIVERY_INVOICE}>
+                                        {invoiceItem?.isPayment ? "Đã thanh toán" : "Chưa thanh toán"}
+                                    </Box>
                                 </Box>
 
                                 <Typography variant="body1" fontWeight={700} fontSize={"14px"}>
@@ -212,6 +217,7 @@ function InvoiceViewDetail() {
                                 <Typography variant={"subtitle1"}>Tiệm mỹ phẩm nhà Nhơn</Typography>
                                 <Typography variant={"body2"}>Địa chỉ: Thôn Khương Mỹ, xã Tam Xuân 1, huyện Núi Thành, tỉnh Quảng Nam</Typography>
                                 <Typography variant={"body2"}>Điện thoại: 033.712.2712</Typography>
+                                <Typography variant={"body2"}>email: admin@nhanhon.com</Typography>
                                 <Typography variant={"body2"}>Uy tín - chất lượng</Typography>
                             </Stack>
                         </Grid>

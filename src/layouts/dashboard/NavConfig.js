@@ -66,7 +66,7 @@ const navConfig = [
         icon: getIcon("ion:newspaper-outline"),
         children: [
             {
-                title: "Danh sách bài viết",
+                title: "Danh sách",
                 path: "/dashboard/blog/list",
                 icon: getIcon("eva:file-text-fill"),
             },

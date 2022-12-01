@@ -96,9 +96,9 @@ export default function DashboardApp() {
                                 chartData={[
                                     {
                                         name: "Tạo mới",
-                                        type: "column",
-                                        // type: "area",
-                                        fill: "solid",
+                                        // type: "column",
+                                        type: "line",
+                                        // fill: "solid",
                                         // type: "line",
                                         // fill: "solid",
                                         data: invoiceList
@@ -110,32 +110,32 @@ export default function DashboardApp() {
                                                 return item.total;
                                             }),
                                     },
-                                    {
-                                        name: "Đang giao",
-                                        type: "area",
-                                        fill: "gradient",
-                                        data: invoiceList
-                                            .filter((item) => {
-                                                return item?.status === 1;
-                                            })
-                                            .slice(0, 20)
-                                            .map((item) => {
-                                                return item.total;
-                                            }),
-                                    },
-                                    {
-                                        name: "Đã hủy",
-                                        type: "area",
-                                        fill: "gradient",
-                                        data: invoiceList
-                                            .filter((item) => {
-                                                return item?.status === -1;
-                                            })
-                                            .slice(0, 20)
-                                            .map((item) => {
-                                                return item.total;
-                                            }),
-                                    },
+                                    // {
+                                    //     name: "Đang giao",
+                                    //     type: "area",
+                                    //     fill: "gradient",
+                                    //     data: invoiceList
+                                    //         .filter((item) => {
+                                    //             return item?.status === 1;
+                                    //         })
+                                    //         .slice(0, 20)
+                                    //         .map((item) => {
+                                    //             return item.total;
+                                    //         }),
+                                    // },
+                                    // {
+                                    //     name: "Đã hủy",
+                                    //     type: "area",
+                                    //     fill: "gradient",
+                                    //     data: invoiceList
+                                    //         .filter((item) => {
+                                    //             return item?.status === -1;
+                                    //         })
+                                    //         .slice(0, 20)
+                                    //         .map((item) => {
+                                    //             return item.total;
+                                    //         }),
+                                    // },
                                     // {
                                     //     name: "Tất cả",
                                     //     type: "line",
