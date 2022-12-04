@@ -34,6 +34,7 @@ export default function MoreMenuProduct({ product, removeProductItem }) {
                 <MenuItem
                     component={Link}
                     href={`https://myphamnhanhon-ui.vercel.app/san-pham/${product.slug}/chi-tiet`}
+                    target="_blank"
                     sx={{ color: "text.secondary" }}
                 >
                     <ListItemIcon>

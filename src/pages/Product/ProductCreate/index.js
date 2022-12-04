@@ -79,14 +79,13 @@ function CreateProduct() {
     const [tagAddErr, setTagAddErr] = useState("");
     const [selectedImages, setSelectedImages] = useState([]);
     const [uploadImages, setUploadImages] = useState([]);
-    // const [isUpload, setIsUpload] = useState(false);
     const [imageUploadUrl, setImageUploadUrl] = useState([]);
-    const [inputTypeList, setInputTypeList] = useState([{ nameType: "", price: "" }]);
+    const [inputTypeList, setInputTypeList] = useState([{ nameType: "", price: 0 }]);
     // err
     const [detailContentErr, setDetailContentErr] = useState("");
     const [descriptionContentErr, setDescriptionContentErr] = useState("");
     const [nameErr, setNameErr] = useState("");
-    const [codeErr, setCodeErr] = useState("");
+    // const [codeErr, setCodeErr] = useState("");
     const [priceErr, setPriceErr] = useState("");
     const [categoryErr, setCategoryErr] = useState("");
 
@@ -151,7 +150,7 @@ function CreateProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setNameErr("");
-        setCodeErr("");
+        // setCodeErr("");
         setDescriptionContentErr("");
         setPriceErr("");
         setCategoryErr("");
@@ -160,7 +159,7 @@ function CreateProduct() {
 
         const name = data.get("name");
         const inStock = data.get("inStock");
-        const code = data.get("code");
+        // const code = data.get("code");
         const price = data.get("price");
 
         let err = false;
@@ -168,10 +167,10 @@ function CreateProduct() {
             err = true;
             setNameErr(`Hãy nhập tên sản phẩm`);
         }
-        if (code === "") {
-            err = true;
-            setCodeErr(`Hãy nhập mã sản phẩm`);
-        }
+        // if (code === "") {
+        //     err = true;
+        //     setCodeErr(`Hãy nhập mã sản phẩm`);
+        // }
         if (price === "") {
             err = true;
             setPriceErr(`Nhập giá của sản phẩm`);
@@ -218,6 +217,7 @@ function CreateProduct() {
         }
 
         setLoading(true);
+
         try {
             const res = await productApi.create({
                 name,
@@ -259,7 +259,6 @@ function CreateProduct() {
             if (res.message === "OK") {
                 tagList.push(res.tag);
                 tags.push(res.tag);
-                // dispatch(addTag(res.tag));
             }
             setTagAdd("");
             setLoading(false);
@@ -452,7 +451,7 @@ function CreateProduct() {
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
                                 <FormControlLabel control={<Switch defaultChecked />} label="Hiển thị" name="inStock" id={"inStock"} />
-                                <TextField
+                                {/* <TextField
                                     placeholder="Code"
                                     label="Code"
                                     name={"code"}
@@ -463,7 +462,7 @@ function CreateProduct() {
                                     disabled={loading}
                                     helperText={codeErr}
                                     error={codeErr !== ""}
-                                />
+                                /> */}
                                 {/* <TextField
                                     placeholder="Giá sản phẩm"
                                     label="Giá sản phẩm"

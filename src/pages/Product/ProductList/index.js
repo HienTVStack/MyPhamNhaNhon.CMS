@@ -33,7 +33,7 @@ import { UserListHead } from "src/sections/@dashboard/user";
 import { ProductListToolbar } from "src/sections/@dashboard/products";
 // mock
 import productApi from "src/api/productApi";
-import { NumericFormat } from "react-number-format";
+// import { NumericFormat } from "react-number-format";
 import Loading from "src/components/Loading";
 import MoreMenuProduct from "./MoreMenuProduct";
 import { useEffect } from "react";
@@ -45,8 +45,8 @@ const TABLE_HEAD = [
     { id: "name", label: "Name", alignRight: false },
     { id: "createdAt", label: "Ngày tạo", alignRight: false },
     { id: "status", label: "Trạng thái", alignRight: false },
-    { id: "price", label: "Giá", alignRight: false },
-    { id: "quantityStock", label: "Tồn" },
+    { id: "numSold", label: "Đã bán", alignRight: false },
+    { id: "quantityStock", label: "Hàng tồn", alignRight: false },
     { id: "" },
 ];
 
@@ -276,7 +276,7 @@ export default function ProductList() {
                                         />
                                         <TableBody>
                                             {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                                const { id, name, createdAt, image, inStock, price, type, slug } = row;
+                                                const { id, name, createdAt, image, inStock, numSold, type, slug } = row;
                                                 const isItemSelected = selected.indexOf(id) !== -1;
 
                                                 return (
@@ -317,15 +317,7 @@ export default function ProductList() {
                                                                 {handleTotalQuantityStock(type) > 0 && inStock === true ? "Còn hàng" : "Hết hàng"}
                                                             </Label>
                                                         </TableCell>
-                                                        <TableCell align="left">
-                                                            <NumericFormat
-                                                                value={price}
-                                                                displayType={"text"}
-                                                                thousandSeparator={true}
-                                                                suffix={" đ"}
-                                                                renderText={(value, props) => <div {...props}>{value}</div>}
-                                                            />
-                                                        </TableCell>
+                                                        <TableCell align="center">{numSold}</TableCell>
                                                         <TableCell align="center">{handleTotalQuantityStock(type)}</TableCell>
 
                                                         <TableCell align="right">

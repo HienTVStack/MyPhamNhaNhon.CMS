@@ -113,7 +113,7 @@ function ProductEdit() {
     const [priceErr, setPriceErr] = useState("");
     const [categoryErr, setCategoryErr] = useState("");
     const [textNotify, setTextNotify] = useState({});
-    const [inputTypeList, setInputTypeList] = useState([{ nameType: "", price: "" }]);
+    const [inputTypeList, setInputTypeList] = useState([{ nameType: "", price: 0, salePrice: 0 }]);
 
     const { slug } = useParams();
 
@@ -194,10 +194,7 @@ function ProductEdit() {
             err = true;
             setNameErr(`Hãy nhập tên sản phẩm`);
         }
-        // if (code === "") {
-        //     err = true;
-        //     setDiscountValue(`Phầ`);
-        // }
+
         if (price === "") {
             err = true;
             setPriceErr(`Nhập giá của sản phẩm`);
@@ -415,7 +412,7 @@ function ProductEdit() {
 
             <Stack mt={3}>
                 <Grid container spacing={3} component={"form"} noValidate onSubmit={handleSubmit}>
-                    <Grid item xs={12} md={8}>
+                    <Grid item xs={12} md={7} lg={7}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4} mb={4}>
                                 <TextField
@@ -525,7 +522,7 @@ function ProductEdit() {
                             </Box>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={5} lg={5}>
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
                                 <FormControlLabel
@@ -570,8 +567,8 @@ function ProductEdit() {
                                                         onChange={(e) => handleInputTypeProductChange(e, i)}
                                                     />
                                                     <TextField
-                                                        placeholder="Giá"
-                                                        label="Giá"
+                                                        placeholder="Giá nhập"
+                                                        label="Giá nhập"
                                                         name={"price"}
                                                         id={"price"}
                                                         required
@@ -581,6 +578,20 @@ function ProductEdit() {
                                                         helperText={priceErr}
                                                         sx={{ flex: 1 }}
                                                         value={x.price}
+                                                        onChange={(e) => handleInputTypeProductChange(e, i)}
+                                                    />
+                                                    <TextField
+                                                        placeholder="Giá bán"
+                                                        label="Giá bán"
+                                                        name={"salePrice"}
+                                                        id={"salePrice"}
+                                                        required
+                                                        fullWidth
+                                                        disabled={loading}
+                                                        error={priceErr !== ""}
+                                                        helperText={priceErr}
+                                                        sx={{ flex: 1 }}
+                                                        value={x.salePrice}
                                                         onChange={(e) => handleInputTypeProductChange(e, i)}
                                                     />
                                                 </Stack>
