@@ -101,8 +101,11 @@ function InvoiceViewDetail() {
         const invoiceElement = document.querySelector("#invoice");
         html2canvas(invoiceElement).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "px", [1140, 1131]);
-            pdf.addImage(imgData, "PNG", 0, 0);
+            const pdf = new jsPDF("p", "mm", [1140, 1131]);
+            const pageHeight = pdf.internal.pageSize.height;
+            const pageWidth = pdf.internal.pageSize.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
             pdf.save("invoice.pdf");
         });
     };

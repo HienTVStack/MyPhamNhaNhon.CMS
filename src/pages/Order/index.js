@@ -363,8 +363,8 @@ function Order() {
                             fullWidth
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
-                            placeholder={"Code"}
-                            label={"Code"}
+                            placeholder={"Mã nhà cung cấp"}
+                            label={"Mã nhà cung cấp"}
                             name={"code"}
                             id={"code"}
                             required

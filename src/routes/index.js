@@ -26,6 +26,7 @@ import InvoiceViewDetail from "src/pages/Invoice/InvoiceViewDetail";
 import InvoiceEdit from "src/pages/Invoice/InvoiceEdit";
 import EcommerceShop from "../pages/Products";
 import Setting from "src/pages/Setting";
+import Category from "src/pages/Category";
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ export default function Router() {
                 { path: "app", element: <DashboardApp /> },
                 { path: "e-commerce", element: <EcommerceShop /> },
                 { path: "user", element: <User /> },
+                { path: "categories", element: <Category /> },
                 {
                     path: "products",
                     children: [

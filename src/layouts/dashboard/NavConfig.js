@@ -21,7 +21,11 @@ const navConfig = [
         path: "/dashboard/invoice/list",
         icon: getIcon("fa-solid:file-invoice"),
     },
-
+    {
+        title: "Danh mục",
+        path: "/dashboard/categories",
+        icon: getIcon("ic:outline-list"),
+    },
     {
         title: "Sản phẩm",
         path: "/dashboard/products",

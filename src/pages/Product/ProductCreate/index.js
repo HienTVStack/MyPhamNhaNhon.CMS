@@ -527,6 +527,7 @@ function CreateProduct() {
                                         Add item
                                     </Button>
                                 </Paper>
+
                                 <FormControl fullWidth sx={{ margin: "16px 0" }}>
                                     <Autocomplete
                                         autoComplete
