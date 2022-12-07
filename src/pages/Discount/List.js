@@ -166,8 +166,12 @@ function DiscountList() {
                                         <TableCell>{fDate(item.createdAt)}</TableCell>
                                         <TableCell>{fDate(item.finishedAt)}</TableCell>
                                         <TableCell>{`${item.discountValue} %`}</TableCell>
-                                        <TableCell sx={{ color: item.status ? "#A2D9AF" : "warning" }}>
-                                            {item.status ? "Đang hoạt động" : "Hết hạn"}
+                                        <TableCell
+                                            sx={{
+                                                color: item.status && new Date(item.finishedAt).getTime() > new Date().getTime() ? "#A2D9AF" : "red",
+                                            }}
+                                        >
+                                            {item.status && new Date(item.finishedAt).getTime() > new Date().getTime() ? "Đang hoạt động" : "Hết hạn"}
                                         </TableCell>
                                         <TableCell onClick={() => handleOpen(item)}>
                                             <Button variant="text">Xem chi tiết</Button>

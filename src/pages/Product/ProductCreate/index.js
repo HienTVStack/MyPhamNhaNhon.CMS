@@ -21,6 +21,8 @@ import {
     Snackbar,
     Alert,
     IconButton,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icon } from "@iconify/react";
@@ -62,6 +64,7 @@ function CreateProduct() {
     const user = useSelector((state) => state.data.user);
     const categoryList = useSelector((state) => state.data.categoryList);
     const tagList = useSelector((state) => state.data.tagList);
+    const supplierList = useSelector((state) => state.data.supplierList);
     const [loading, setLoading] = useState(false);
     const [toastMessage, setToastMessage] = useState({
         open: false,
@@ -73,7 +76,6 @@ function CreateProduct() {
     const [descriptionContent, setDescriptionContent] = useState("");
     const [detailContent, setDetailContent] = useState("");
     const [categorySelected, setCategorySelected] = useState([]);
-
     const [tags, setTags] = useState([]);
     const [tagAdd, setTagAdd] = useState("");
     const [tagAddErr, setTagAddErr] = useState("");
@@ -85,7 +87,6 @@ function CreateProduct() {
     const [detailContentErr, setDetailContentErr] = useState("");
     const [descriptionContentErr, setDescriptionContentErr] = useState("");
     const [nameErr, setNameErr] = useState("");
-    // const [codeErr, setCodeErr] = useState("");
     const [priceErr, setPriceErr] = useState("");
     const [categoryErr, setCategoryErr] = useState("");
 
@@ -150,7 +151,6 @@ function CreateProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setNameErr("");
-        // setCodeErr("");
         setDescriptionContentErr("");
         setPriceErr("");
         setCategoryErr("");
@@ -159,18 +159,17 @@ function CreateProduct() {
 
         const name = data.get("name");
         const inStock = data.get("inStock");
-        // const code = data.get("code");
         const price = data.get("price");
+        const idSupplier = data.get("idSupplier");
+
+        console.log(idSupplier);
 
         let err = false;
         if (name === "") {
             err = true;
             setNameErr(`Hãy nhập tên sản phẩm`);
         }
-        // if (code === "") {
-        //     err = true;
-        //     setCodeErr(`Hãy nhập mã sản phẩm`);
-        // }
+
         if (price === "") {
             err = true;
             setPriceErr(`Nhập giá của sản phẩm`);
@@ -205,6 +204,10 @@ function CreateProduct() {
             });
         }
 
+        if (idSupplier === "0") {
+            err = true;
+        }
+
         setLoading(false);
 
         if (err) {
@@ -228,6 +231,7 @@ function CreateProduct() {
                 tags,
                 imageUploadUrl,
                 price,
+                idSupplier,
                 author: user,
                 type: inputTypeList.sort((a, b) => a.price - b.price),
             });
@@ -451,30 +455,18 @@ function CreateProduct() {
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
                                 <FormControlLabel control={<Switch defaultChecked />} label="Hiển thị" name="inStock" id={"inStock"} />
-                                {/* <TextField
-                                    placeholder="Code"
-                                    label="Code"
-                                    name={"code"}
-                                    id={"code"}
-                                    required
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={loading}
-                                    helperText={codeErr}
-                                    error={codeErr !== ""}
-                                /> */}
-                                {/* <TextField
-                                    placeholder="Giá sản phẩm"
-                                    label="Giá sản phẩm"
-                                    name={"price"}
-                                    id={"price"}
-                                    required
-                                    fullWidth
-                                    margin="normal"
-                                    disabled={loading}
-                                    error={priceErr !== ""}
-                                    helperText={priceErr}
-                                /> */}
+
+                                <Box mt={2} mb={2}>
+                                    <Select name="idSupplier" defaultValue={0} fullWidth>
+                                        <MenuItem value={0}>Nhà cung cấp</MenuItem>
+                                        {supplierList.map((item, index) => (
+                                            <MenuItem key={index} value={item._id}>
+                                                {item.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </Box>
+
                                 <Paper sx={{ backgroundColor: "rgb(244, 246, 248)", padding: "20px" }}>
                                     <Typography>Loại sản phẩm</Typography>
                                     {inputTypeList.map((x, i) => {

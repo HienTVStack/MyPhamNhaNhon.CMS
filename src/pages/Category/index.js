@@ -121,7 +121,9 @@ function Category() {
 
     return (
         <>
-            <Typography variant={"subtitle1"}>Danh mục</Typography>
+            <Typography variant={"subtitle1"} fontSize={24} lineHeight={"39px"}>
+                Danh mục
+            </Typography>
             <Paper elevation={2}>
                 <Stack spacing={2}>
                     <Button onClick={() => setVisibleCreate(true)} variant={"outlined"} startIcon={<Iconify icon={"material-symbols:add"} />}>

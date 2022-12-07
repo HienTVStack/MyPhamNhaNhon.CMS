@@ -94,23 +94,12 @@ function totalPriceInvoice(invoice) {
     return total;
 }
 
-const SUPPLIER_LIST = [
-    {
-        name: "Mỹ phẩm thiên nhiên Linh Hương",
-        address: "BT13 Dãy 16B5 Làng Việt Kiều Châu Âu, Mộ Lao, Hà Đông, Hà Nội",
-        phone: "02432989989",
-    },
-    {
-        name: "Tiệm mỹ phẩm nhà Nhơn chi nhánh 2",
-        address: "Phường Tân Thới Nhất, quận 12, thành phố Hồ Chí Minh",
-        phone: "0337122712",
-    },
-];
-
 function Order() {
     const navigate = useNavigate();
     const categories = useSelector((state) => state.data.categoryList);
     const user = useSelector((state) => state.data.user);
+    const supplierList = useSelector((state) => state.data.supplierList);
+    const _productList = useSelector((state) => state.data.productList);
     const [open, setOpen] = useState(false);
     const [dateCreate, setDateCreate] = useState(new Date());
     const [dateDue, setDateDue] = useState(null);
@@ -140,11 +129,11 @@ function Order() {
         try {
             const res = await productApi.getAll();
             if (res.message === "OK") {
-                setProductList(res.products);
-                setProductSelected(res.products[0]);
-                setCategoryProductSelected(res.products[0].category);
-                setTypeProductList(res.products[0].type || []);
-                setTypeProductSelected(res.products[0].type[0]);
+                // setProductList(res.products);
+                // setProductSelected(res.products[0]);
+                // setCategoryProductSelected(res.products[0].category);
+                // setTypeProductList(res.products[0].type || []);
+                // setTypeProductSelected(res.products[0].type[0]);
             }
             setLoading(false);
         } catch (error) {
@@ -153,9 +142,19 @@ function Order() {
         }
     };
 
-    useEffect(() => {
-        productLoaded();
-    }, [navigate]);
+    const setData = () => {
+        setProductList(_productList);
+        setProductSelected(_productList[0]);
+
+        setCategoryProductSelected(_productList[0]?.category || []);
+        setTypeProductList(_productList[0]?.type || []);
+        setTypeProductSelected(_productList[0]?.type[0]);
+    };
+
+    // useEffect(() => {
+    //     // productLoaded();
+    //     // setData();
+    // }, [navigate]);
 
     const handleAddProductToInvoice = (e) => {
         let err = false;
@@ -171,8 +170,8 @@ function Order() {
             quantity: quantityProductItem,
             category: categoryProductSelected,
             type: typeProductSelected,
-            price: productSelected.price,
-            total: productSelected.price * quantityProductItem,
+            price: typeProductSelected.price,
+            total: typeProductSelected.price * quantityProductItem,
         };
 
         setInvoiceList([...invoiceList, productItem]);
@@ -183,6 +182,7 @@ function Order() {
     const handleSelectedProduct = (value) => {
         setNameProductErr("");
         setProductSelected(value);
+
         setTypeProductList(value.type);
         setTypeProductSelected(value.type[0]);
         setCategoryProductSelected(value.category);
@@ -196,7 +196,6 @@ function Order() {
         const doc = new jsPDF();
 
         doc.text("Hello world!", 10, 10);
-        // doc.table().data;
         doc.save("a4.pdf");
     };
 
@@ -206,8 +205,6 @@ function Order() {
         invoiceList.map((item) => {
             return invoiceExport.push({
                 name: item.name,
-                // category: item.category.map(c => reut),
-                // category: item.category.map((c) => c.name),
                 type: item.type.nameType,
                 price: `${fNumber(item.price)} VNĐ`,
                 quantity: item.quantity,
@@ -260,7 +257,7 @@ function Order() {
             fromOrder: {
                 name: "Tiệm mỹ phẩm nhà Nhơn",
                 address: "Thôn Khương Mỹ, xã Tam Xuân 1, h.Núi Thành, t.Quảng Nam",
-                phone: "365-374-4961",
+                phone: "033.712.2712",
             },
             toOrder: supplier,
             status: Number(status),
@@ -292,6 +289,8 @@ function Order() {
 
     const handleSelectSupplier = (value) => {
         setSupplier(value);
+        setCode(value.id);
+        setProductList([..._productList.filter((item) => item.idSupplier === value.id)]);
         setOpen(!open);
     };
 
@@ -307,9 +306,7 @@ function Order() {
                     </Breadcrumbs>
                 </Stack>
             </Box>
-            {/* Content */}
-            {/* Form  */}
-            {/* Address */}
+
             {loading ? (
                 <Loading />
             ) : (
@@ -350,7 +347,6 @@ function Order() {
                             )}
                         </Box>
                     </Stack>
-                    {/*  */}
                     <Stack
                         direction={"row"}
                         alignItems={"center"}
@@ -399,7 +395,6 @@ function Order() {
                             />
                         </LocalizationProvider>
                     </Stack>
-                    {/*  */}
                     <Stack direction={"row"} mt={2}>
                         <Button onClick={handleExportPDF}>
                             <Iconify height={"25px"} width={"25px"} icon={"carbon:add-alt"} />
@@ -426,23 +421,22 @@ function Order() {
                                 value={productSelected}
                                 options={productList}
                                 getOptionLabel={(option) => option.name || ""}
-                                isOptionEqualToValue={(option, value) => option.name === value.name}
+                                isOptionEqualToValue={(option, value) => option?.name === value?.name}
                                 onChange={(e, value) => handleSelectedProduct(value)}
                                 sx={{ width: 500, margin: 0 }}
                                 renderInput={(params) => (
                                     <TextField
                                         fullWidth
-                                        {...params}
                                         required
                                         placeholder={"Tên sản phẩm"}
                                         label={"Tên sản phẩm"}
                                         error={nameProductErr !== ""}
                                         helperText={nameProductErr}
                                         sx={{ margin: 0 }}
+                                        {...params}
                                     />
                                 )}
                             />
-
                             <Autocomplete
                                 fullWidth
                                 multiple
@@ -468,7 +462,6 @@ function Order() {
                                 )}
                                 renderInput={(params) => <TextField {...params} label="Danh mục sản phẩm" disabled />}
                             />
-
                             <Autocomplete
                                 autoComplete
                                 fullWidth
@@ -490,7 +483,6 @@ function Order() {
                                     />
                                 )}
                             />
-
                             <TextField
                                 placeholder="Num"
                                 label={"Num"}
@@ -509,7 +501,7 @@ function Order() {
                             <TextField
                                 placeholder="Price"
                                 label={"Price"}
-                                value={fNumber(productSelected ? productSelected.price : 0)}
+                                value={fNumber(typeProductSelected ? typeProductSelected.price : 0)}
                                 required
                                 disabled
                                 InputProps={{
@@ -519,7 +511,7 @@ function Order() {
                             <TextField
                                 placeholder="Total"
                                 label={"Total"}
-                                value={fNumber(productSelected ? (productSelected.price || 0) * quantityProductItem : 0)}
+                                value={fNumber(typeProductSelected ? (typeProductSelected.price || 0) * quantityProductItem : 0)}
                                 required
                                 disabled
                                 InputProps={{
@@ -551,7 +543,6 @@ function Order() {
                             </Button>
                         </Stack>
                     </Stack>
-                    {/*  */}
                     {invoiceList.length > 0 && (
                         <Stack p={3}>
                             <Typography variant={"body1"} component={"h3"} fontSize={"25px"} lineHeight={"37px"} fontWeight={"600"}>
@@ -652,11 +643,18 @@ function Order() {
                         Nhà cung cấp
                     </Typography>
 
-                    {SUPPLIER_LIST.length > 0 &&
-                        SUPPLIER_LIST.map((item, index) => (
-                            <PopupInfo key={index} name={item.name} address={item.address} phone={item.phone} selectItem={handleSelectSupplier} />
+                    {supplierList.length > 0 &&
+                        supplierList.map((item, index) => (
+                            <PopupInfo
+                                key={index}
+                                id={item._id}
+                                name={item.name}
+                                address={item.address}
+                                phone={item.phone}
+                                selectItem={handleSelectSupplier}
+                            />
                         ))}
-                    {SUPPLIER_LIST.length < 0 && <Typography variant="h1">Không có dữ liệu</Typography>}
+                    {supplierList.length < 0 && <Typography variant="h1">Không có dữ liệu</Typography>}
                 </Box>
             </Modal>
         </Fragment>

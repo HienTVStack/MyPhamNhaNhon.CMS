@@ -118,6 +118,7 @@ function DiscountCreate() {
 
     const handleChangeTypeDiscount = (e) => {
         setTypeDiscount(e.target.value);
+        setCode("");
     };
 
     const handleSubmit = async (e) => {
@@ -126,13 +127,18 @@ function DiscountCreate() {
         const data = new FormData(e.target);
 
         const name = data.get("name");
-        const code = data.get("code");
+        let code = data.get("code");
         const type = data.get("typeDiscount");
         const discountValue = data.get("discountValue");
         const invoiceMin = data.get("invoiceMin");
         const discountValueMax = data.get("discountValueMax");
         const startedAt = data.get("startedAt");
         const finishedAt = data.get("finishedAt");
+
+        if (type === "2") {
+            const today = new Date();
+            code = today.getTime();
+        }
 
         const voucher = {
             employee,
@@ -161,6 +167,8 @@ function DiscountCreate() {
         } catch (error) {
             console.log(error);
             setCode("");
+            setNameDiscount("");
+            setDiscountValue(0);
             setToastMessage({ open: true, message: "Hãy thử mã khuyến mãi khác", type: "error" });
         }
         setLoading(false);
@@ -236,14 +244,7 @@ function DiscountCreate() {
                                 <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} spacing={2}>
                                     <Box flex={1}>
                                         <Typography variant="body1">Giá trị hóa đơn tối thiểu</Typography>
-                                        <TextField
-                                            name="invoiceMin"
-                                            id={"invoiceMin"}
-                                            defaultValue={0}
-                                            margin="normal"
-                                            fullWidth
-                                            placeholder={"0 đ"}
-                                        />
+                                        <TextField name="invoiceMin" id={"invoiceMin"} margin="normal" fullWidth placeholder={"0 đ"} />
                                     </Box>
                                     <Box flex={1}>
                                         <Typography variant="body1">Giảm tối đa</Typography>

@@ -526,7 +526,7 @@ function ProductEdit() {
                         <Paper elevation={3} sx={{ padding: "20px" }}>
                             <Box mt={4}>
                                 <FormControlLabel
-                                    control={<Switch value={inStock} onChange={(e) => setInStock(e.target.checked)} />}
+                                    control={<Switch value={inStock} defaultChecked={inStock} onChange={(e) => setInStock(e.target.checked)} />}
                                     label="Hiển thị"
                                     name="inStock"
                                     id={"inStock"}
