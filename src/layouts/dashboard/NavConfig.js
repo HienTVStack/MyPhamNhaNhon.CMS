@@ -164,7 +164,11 @@ const navConfig = [
         path: "/dashboard/setting",
         icon: getIcon("ant-design:setting-outlined"),
     },
-
+    {
+        title: "Cài đặt ngôn ngữ",
+        path: "/dashboard/language",
+        icon: getIcon("material-symbols:language")
+    }
     // {
     //     title: "login",
     //     path: "/login",

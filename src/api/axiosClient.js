@@ -7,35 +7,35 @@ const baseUrl = "https://myphamnhanhon-server.vercel.app/api/";
 const getToken = () => localStorage.getItem("token");
 
 const axiosClient = axios.create({
-    baseURL: baseUrl,
-    // paramsSerializer: (params) => queryString.stringify({ params }),
-    paramsSerializer: {
-        encode: parse,
-        serialize: stringify,
-    },
+  baseURL: baseUrl,
+  // paramsSerializer: (params) => queryString.stringify({ params }),
+  paramsSerializer: {
+    encode: parse,
+    serialize: stringify,
+  },
 });
 
 axiosClient.interceptors.request.use(async (config) => {
-    return {
-        ...config,
-        headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${getToken()}`,
-        },
-    };
+  return {
+    ...config,
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${getToken()}`,
+    },
+  };
 });
 
 axiosClient.interceptors.response.use(
-    (response) => {
-        if (response && response.data) return response.data;
-        return response;
-    },
-    (err) => {
-        if (!err.response) {
-            return alert(err);
-        }
-        throw err.response;
+  (response) => {
+    if (response && response.data) return response.data;
+    return response;
+  },
+  (err) => {
+    if (!err.response) {
+      return alert(err);
     }
+    throw err.response;
+  }
 );
 
 export default axiosClient;

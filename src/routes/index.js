@@ -27,84 +27,90 @@ import InvoiceEdit from "src/pages/Invoice/InvoiceEdit";
 import EcommerceShop from "../pages/Products";
 import Setting from "src/pages/Setting";
 import Category from "src/pages/Category";
+import Language from "src/pages/Language";
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
-    return useRoutes([
+  return useRoutes([
+    {
+      path: "/dashboard",
+      element: <DashboardLayout />,
+      children: [
+        { path: "app", element: <DashboardApp /> },
+        { path: "e-commerce", element: <EcommerceShop /> },
+        { path: "user", element: <User /> },
+        { path: "categories", element: <Category /> },
         {
-            path: "/dashboard",
-            element: <DashboardLayout />,
-            children: [
-                { path: "app", element: <DashboardApp /> },
-                { path: "e-commerce", element: <EcommerceShop /> },
-                { path: "user", element: <User /> },
-                { path: "categories", element: <Category /> },
-                {
-                    path: "products",
-                    children: [
-                        { path: "create", element: <CreateProduct /> },
-                        { path: "e-list", element: <Products /> },
-                        { path: "list", element: <ProductList /> },
-                        { path: ":slug/edit", element: <ProductEdit /> },
-                        { path: "order", element: <Order /> },
-                        { path: "trash", element: <ProductTrash /> },
-                    ],
-                },
-                {
-                    path: "blog",
-                    children: [
-                        { path: "list", element: <Blog /> },
-                        { path: "create", element: <BlogCreate /> },
-                    ],
-                },
-                {
-                    path: "discount",
-                    children: [
-                        { path: "create", element: <DiscountCreate /> },
-                        { path: "list", element: <DiscountList /> },
-                    ],
-                },
-                {
-                    path: "me",
-                    children: [
-                        { path: "saleOrder", element: <Order /> },
-                        { path: "list", element: <List /> },
-                        { path: "saleOrder/:id", element: <SaleOrderItem /> },
-                        { path: "import/:id", element: <SaleOrderImport /> },
-                    ],
-                },
-                {
-                    path: "invoice",
-                    children: [
-                        { path: "list", element: <InvoiceList /> },
-                        { path: ":id/detail", element: <InvoiceViewDetail /> },
-                        { path: ":id/edit", element: <InvoiceEdit /> },
-                    ],
-                },
-                {
-                    path: "setting",
-                    element: <Setting />,
-                },
-            ],
+          path: "products",
+          children: [
+            { path: "create", element: <CreateProduct /> },
+            { path: "e-list", element: <Products /> },
+            { path: "list", element: <ProductList /> },
+            { path: ":slug/edit", element: <ProductEdit /> },
+            { path: "order", element: <Order /> },
+            { path: "trash", element: <ProductTrash /> },
+          ],
         },
         {
-            path: "login",
-            element: <Login />,
+          path: "blog",
+          children: [
+            { path: "list", element: <Blog /> },
+            { path: "create", element: <BlogCreate /> },
+          ],
         },
         {
-            path: "register",
-            element: <Register />,
+          path: "discount",
+          children: [
+            { path: "create", element: <DiscountCreate /> },
+            { path: "list", element: <DiscountList /> },
+          ],
+        },
+        {
+          path: "me",
+          children: [
+            { path: "saleOrder", element: <Order /> },
+            { path: "list", element: <List /> },
+            { path: "saleOrder/:id", element: <SaleOrderItem /> },
+            { path: "import/:id", element: <SaleOrderImport /> },
+          ],
+        },
+        {
+          path: "invoice",
+          children: [
+            { path: "list", element: <InvoiceList /> },
+            { path: ":id/detail", element: <InvoiceViewDetail /> },
+            { path: ":id/edit", element: <InvoiceEdit /> },
+          ],
+        },
+        {
+          path: "setting",
+          element: <Setting />,
         },
 
         {
-            path: "/",
-            element: <LogoOnlyLayout />,
-            children: [
-                { path: "/", element: <Navigate to="/dashboard/app" /> },
-                { path: "404", element: <NotFound /> },
-                { path: "*", element: <Navigate to="/404" /> },
-            ],
+          path: "language",
+          element: <Language />,
         },
-    ]);
+      ],
+    },
+    {
+      path: "login",
+      element: <Login />,
+    },
+    {
+      path: "register",
+      element: <Register />,
+    },
+
+    {
+      path: "/",
+      element: <LogoOnlyLayout />,
+      children: [
+        { path: "/", element: <Navigate to="/dashboard/app" /> },
+        { path: "404", element: <NotFound /> },
+        { path: "*", element: <Navigate to="/404" /> },
+      ],
+    },
+  ]);
 }
