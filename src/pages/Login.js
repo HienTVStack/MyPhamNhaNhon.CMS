@@ -20,6 +20,7 @@ const RootStyle = styled("div")(({ theme }) => ({
     [theme.breakpoints.up("md")]: {
         display: "flex",
     },
+    backgroundColor: '#e9b5668c',
 }));
 
 const HeaderStyle = styled("header")(({ theme }) => ({

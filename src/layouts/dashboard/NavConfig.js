@@ -30,36 +30,26 @@ const navConfig = [
         title: "Sản phẩm",
         path: "/dashboard/products",
         icon: getIcon("eva:shopping-bag-fill"),
-        // icon: getIcon("eva:file-text-fill"),
         children: [
-            // {
-            //     title: "EcommerceShop",
-            //     path: "products/ecommerceShop",
-            //     icon: getIcon("eva:shopping-bag-fill"),
-            // },
             {
                 title: "Danh sách",
-                path: "products/list",
-                icon: getIcon("eva:shopping-bag-fill"),
+                path: "/dashboard/products/list",
+                // icon: getIcon("eva:shopping-bag-fill"),
+                icon: getIcon("eva:file-text-fill"),
             },
             {
                 title: "Tạo mới",
-                path: "products/create",
+                path: "/dashboard/products/create",
                 icon: getIcon("eva:shopping-bag-fill"),
             },
             {
                 title: "Chỉnh sửa",
-                path: "products/:slug/edit",
+                path: "/dashboard/products/:slug/edit",
                 icon: getIcon("eva:shopping-bag-fill"),
             },
-            // {
-            //     title: "Đặt hàng",
-            //     path: "products/order",
-            //     icon: getIcon("eva:shopping-bag-fill"),
-            // },
             {
                 title: "Thùng rác",
-                path: "products/trash",
+                path: "/dashboard/products/trash",
                 icon: getIcon("eva:shopping-bag-fill"),
             },
         ],
@@ -129,6 +119,7 @@ const navConfig = [
     // },
     {
         title: "Đặt hàng",
+        path: '/dashboard/me/',
         icon: getIcon("icon-park-outline:transaction-order"),
         children: [
             {
@@ -145,6 +136,7 @@ const navConfig = [
     },
     {
         title: "Khuyến mãi",
+        path: '/dashboard/discount/',
         icon: getIcon("mdi:voucher-outline"),
         children: [
             {
@@ -169,16 +161,6 @@ const navConfig = [
         path: "/dashboard/language",
         icon: getIcon("material-symbols:language")
     }
-    // {
-    //     title: "login",
-    //     path: "/login",
-    //     icon: getIcon("eva:lock-fill"),
-    // },
-    // {
-    //     title: "register",
-    //     path: "/register",
-    //     icon: getIcon("eva:person-add-fill"),
-    // },
     // {
     //     title: "Not found",
     //     path: "/404",

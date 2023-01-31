@@ -31,6 +31,7 @@ export default function MoreMenuProduct({ product, removeProductItem }) {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
+        
         <MenuItem
           component={Link}
           href={`https://myphamnhanhon-ui.vercel.app/san-pham/${product.slug}/chi-tiet`}
