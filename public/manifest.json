@@ -1,7 +1,13 @@
 {
-  "short_name": "Mỹ phẩm Nhà Nhơn",
-  "name": "Tiệm mỹ phẩm uy tín nhất",
- 
+  "short_name": "Tiệm mỹ phẩm nhà Nhơn",
+  "name": "Tiệm mỹ phẩm nhà Nhơn",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "1024x1024 ",
+      "type": "image/png"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
