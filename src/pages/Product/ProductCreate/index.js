@@ -304,7 +304,6 @@ function CreateProduct() {
     };
 
     const handleRemoveInputType = (index) => {
-        console.log(index);
         const list = [...inputTypeList];
         list.splice(index, 1);
         setInputTypeList(list);

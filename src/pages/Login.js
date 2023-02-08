@@ -21,6 +21,7 @@ const RootStyle = styled("div")(({ theme }) => ({
         display: "flex",
     },
     backgroundColor: '#e9b5668c',
+
 }));
 
 const HeaderStyle = styled("header")(({ theme }) => ({

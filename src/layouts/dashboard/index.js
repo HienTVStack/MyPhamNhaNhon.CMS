@@ -54,48 +54,52 @@ export default function DashboardLayout() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            await Promise.all([categoryApi.getAll(), tagApi.getAll(), supplierApi.getAll(), productApi.getAll()]).then(
-                ([categoryList, tagList, supplierList, productList]) => {
-                    if (categoryList.success) {
-                        dispatch(_loadCategory(categoryList.categories));
-                    }
-                    if (tagList.success) {
-                        dispatch(_loadTag(tagList.tags));
-                    }
-                    if (supplierList.success) {
-                        console.log(supplierList);
-                        dispatch(setSupplier(supplierList.suppliers));
-                    }
-                    if (productList.success) {
-                        dispatch(setProduct(productList.products));
-                    }
-                }
-            );
-            setLoading(false);
+          const [categoryList, tagList, supplierList, productList] = await Promise.all([
+            categoryApi.getAll(),
+            tagApi.getAll(),
+            supplierApi.getAll(),
+            productApi.getAll()
+          ]);
+      
+          if (categoryList.success) {
+            dispatch(_loadCategory(categoryList.categories));
+          }
+          if (tagList.success) {
+            dispatch(_loadTag(tagList.tags));
+          }
+          if (supplierList.success) {
+            console.log(supplierList);
+            dispatch(setSupplier(supplierList.suppliers));
+          }
+          if (productList.success) {
+            dispatch(setProduct(productList.products));
+          }
         } catch (error) {
-            console.log(error);
-            setLoading(false);
+          console.error(error);
+        } finally {
+          setLoading(false);
         }
-    };
+      };
+      
 
-    useEffect(() => {
+      useEffect(() => {
         const checkAuth = async () => {
-            const user = await authUtil.isAuthenticated();
-
-            if (!user) {
-                navigate("/login");
-            } else {
-                dispatch(setUser(user));
-                setLoading(false);
-            }
+          const user = await authUtil.isAuthenticated();
+          if (!user) {
+            navigate("/login");
+          } else {
+            setLoading(false);
+            dispatch(setUser(user));
+          }
         };
         checkAuth();
+      
         if (categoryList.length === 0 || tagList.length === 0 || productList.length === 0) {
-            fetchData();
+          fetchData();
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigate]);
+      }, [navigate]);
+      
 
     return (
         <RootStyle>

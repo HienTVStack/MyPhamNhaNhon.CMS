@@ -51,7 +51,7 @@ import MoreMenuInvoice from "./MoreMenuInvoice";
 const TABLE_HEAD = [
   { id: "name", label: "Khách hàng", alignRight: false },
   { id: "createdAt", label: "Ngày đặt", alignRight: false },
-  { id: "createdAt", label: "Ngày giao hàng", alignRight: false },
+  // { id: "createdAt", label: "Ngày giao hàng", alignRight: false },
   { id: "total", label: "Tổng tiền", alignRight: false },
   { id: "status", label: "Trạng thái", alignRight: false },
   { id: "quantityStock", label: "Sản phẩm" },
@@ -361,7 +361,7 @@ export default function InvoiceList() {
                     </TableHead>
                     <TableBody>
                       {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                        const { id, auth, createdAt, deliveryAt, status, products, total } = row;
+                        const { id, auth, deliveryAt, status, products, total, createdAt } = row;
                         const isItemSelected = selected.indexOf(id) !== -1;
                         return (
                           <TableRow hover key={id} tabIndex={-1} selected={isItemSelected} aria-checked={isItemSelected}>
@@ -380,7 +380,7 @@ export default function InvoiceList() {
                                 second: "2-digit",
                               }).format(new Date(createdAt))}
                             </TableCell>
-                            <TableCell>{deliveryAt || "Không xác định"}</TableCell>
+                            {/* <TableCell>{deliveryAt || ""}</TableCell> */}
                             <TableCell>{`${fNumber(total)} đ`}</TableCell>
                             <TableCell>
                               {status === -1 && (

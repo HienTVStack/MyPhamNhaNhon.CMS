@@ -269,11 +269,11 @@ function InvoiceViewDetail() {
                     </TableRow>
                     <TableRow>
                       <TableCell colSpan={2}>Giảm giá</TableCell>
-                      <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDiscount)}`}</TableCell>
+                      <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDiscount)} VNĐ`}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell colSpan={2}>Phí giao hàng</TableCell>
-                      <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDelivery)}`}</TableCell>
+                      <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDelivery)} VNĐ`}</TableCell>
                     </TableRow>
                     {/* <TableRow>
                                             <TableCell colSpan={2}>Thanh toán</TableCell>

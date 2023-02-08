@@ -27,35 +27,38 @@ export default function DashboardApp() {
   const [invoiceList, setInvoiceList] = useState([]);
   const [authList, setAuthList] = useState([]);
   const [productList, setProductList] = useState([]);
+
   const fetch = async () => {
     try {
       setLoading(true);
-      const countConnect = authApi.totalAccess();
-      const fetchInvoice = invoiceApi.getAll();
-      const fetchAuth = authApi.getAll();
-      const fetchProduct = productApi.getAll();
-      await Promise.all([countConnect, fetchInvoice, fetchAuth, fetchProduct])
-        .then((data) => {
-          console.log(data[0]);
-          if (data[0].success) {
-            setTotalAccess({ email: data[0].value[0], google: data[0].value[1], facebook: data[0].value[2] });
-          }
-          if (data[1].success) {
-            setInvoiceList(data[1].invoices);
-          }
-          if (data[2]) {
-            setAuthList(data[2].userList);
-          }
-          if (data[3]) {
-            setProductList(data[3].products);
-          }
-        })
-        .catch((err) => console.log(err));
+  
+      const [countConnect, fetchInvoice, fetchAuth, fetchProduct] = await Promise.all([
+        authApi.totalAccess(),
+        invoiceApi.getAll(),
+        authApi.getAll(),
+        productApi.getAll()
+      ]);
+  
+      if (countConnect.success) {
+        setTotalAccess({ email: countConnect.value[0], google: countConnect.value[1], facebook: countConnect.value[2] });
+      }
+      if (fetchInvoice.success) {
+        setInvoiceList(fetchInvoice.invoices);
+      }
+      if (fetchAuth) {
+        setAuthList(fetchAuth.userList);
+      }
+      if (fetchProduct) {
+        setProductList(fetchProduct.products);
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+  
+
   useEffect(() => {
     fetch();
   }, []);

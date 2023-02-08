@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 // @mui
 import { alpha } from "@mui/material/styles";
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from "@mui/material";
@@ -33,6 +33,7 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
     const anchorRef = useRef(null);
     const user = useSelector((state) => state.data.user);
+    const navigate = useNavigate();
 
     const [open, setOpen] = useState(null);
 
@@ -43,6 +44,15 @@ export default function AccountPopover() {
     const handleClose = () => {
         setOpen(null);
     };
+
+    const handleLogout = () => {
+        try {
+            localStorage.removeItem('token');
+            navigate("/login");
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <>
@@ -91,18 +101,18 @@ export default function AccountPopover() {
 
                 <Divider sx={{ borderStyle: "dashed" }} />
 
-                <Stack sx={{ p: 1 }}>
+                {/* <Stack sx={{ p: 1 }}>
                     {MENU_OPTIONS.map((option) => (
                         <MenuItem key={option.label} to={option.linkTo} component={RouterLink} onClick={handleClose}>
                             {option.label}
                         </MenuItem>
                     ))}
-                </Stack>
+                </Stack> */}
 
                 <Divider sx={{ borderStyle: "dashed" }} />
 
-                <MenuItem onClick={handleClose} sx={{ m: 1 }}>
-                    Logout
+                <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
+                    Đang xuất
                 </MenuItem>
             </MenuPopover>
         </>
