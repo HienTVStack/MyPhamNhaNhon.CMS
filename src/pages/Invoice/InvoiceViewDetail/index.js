@@ -67,8 +67,10 @@ function InvoiceViewDetail() {
       const res = await invoiceApi.getById(id);
       if (res.success) {
         setInvoiceItem(res?.invoice);
+        
         setProductList(res?.invoice?.products);
       }
+        console.log("🚀 ~ file: index.js:73 ~ saleOrderLoaded ~ res?.invoice", res?.invoice)
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -76,6 +78,7 @@ function InvoiceViewDetail() {
       setLoading(false);
     }
   };
+
   useMemo(() => {
     saleOrderLoaded(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -275,12 +278,6 @@ function InvoiceViewDetail() {
                       <TableCell colSpan={2}>Phí giao hàng</TableCell>
                       <TableCell colSpan={2}>{`${fNumber(invoiceItem?.priceDelivery)} VNĐ`}</TableCell>
                     </TableRow>
-                    {/* <TableRow>
-                                            <TableCell colSpan={2}>Thanh toán</TableCell>
-                                            <TableCell colSpan={2}>{`${fNumber(
-                                                invoiceItem.total + invoiceItem?.priceDelivery - invoiceItem?.discount?.discountValue
-                                            )} VNĐ`}</TableCell>
-                                        </TableRow> */}
                   </>
                 </TableBody>
               </Table>
