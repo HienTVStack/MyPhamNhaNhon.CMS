@@ -117,21 +117,14 @@ function ProductEdit() {
 
   const { slug } = useParams();
 
-  const loadProductFirst = async () => {
-    const res = await productApi.getAll();
-
-    if (res.message === "OK") {
-      navigate(`/dashboard/products/${res.products[0].slug}/edit`);
-    }
-  };
-
   const handleProductLoader = async () => {
     setLoading(true);
     try {
       const res = await productApi.getProductBySlug(slug);
+      const { success, data } = res;
 
-      if (res.message === "OK") {
-        const productItem = res.product;
+      if (success) {
+        const productItem = data.product;
 
         setProductName(productItem.name);
         setDescriptionContent(productItem.descriptionContent);
@@ -141,12 +134,11 @@ function ProductEdit() {
         setTagSelected(productItem.tags);
         setSelectedImages(productItem.imageList);
         setInputTypeList(productItem.type);
-        setLoading(false);
       }
     } catch (error) {
-      console.log(error);
-      setLoading(false);
+      console.error(error);
     }
+    setLoading(false);
   };
 
   const handleImageLoader = async () => {
@@ -161,9 +153,6 @@ function ProductEdit() {
   };
 
   useEffect(() => {
-    if (slug === ":slug") {
-      loadProductFirst();
-    }
     handleProductLoader();
     handleImageLoader();
     // eslint-disable-next-line react-hooks/exhaustive-deps
